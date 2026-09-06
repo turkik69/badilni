@@ -28,7 +28,8 @@
   html,body{height:100%; margin:0; padding:0;}
   body{position:fixed; inset:0; width:100%; height:100%; overflow:hidden; overscroll-behavior:none;
     background:var(--bg); color:var(--ink); font-family:'Cairo',sans-serif; font-weight:500; -webkit-font-smoothing:antialiased;}
-  #frame{max-width:480px; margin:0 auto; height:100%; background:var(--bg); display:flex; flex-direction:column; position:relative; box-shadow:0 0 60px rgba(8,27,49,.12);}
+  #frame{width:100%; max-width:100vw; height:100%; background:var(--bg); display:flex; flex-direction:column; position:relative;}
+  @media (min-width:640px){ #frame{max-width:600px; margin:0 auto; box-shadow:0 0 60px rgba(8,27,49,.12);} }
   svg.ic{display:inline-block; vertical-align:middle;}
 
   /* ---------- Splash ---------- */
@@ -37,14 +38,21 @@
   @keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.06);opacity:.85;}}
   .splash .word{color:var(--gold-light); font-weight:800; font-size:22px; letter-spacing:.5px;}
 
-  /* ---------- Header / nav ---------- */
-  header.topbar{background:linear-gradient(165deg,var(--navy-deep),var(--navy-black)); color:#fff; padding:calc(14px + env(safe-area-inset-top)) 18px 14px; display:flex; align-items:center; gap:10px; flex-shrink:0;}
-  header.topbar .back{cursor:pointer; opacity:.85;}
-  header.topbar .titles{flex:1;}
-  header.topbar .screen-title{font-weight:700; font-size:16px;}
-  header.topbar .brand-row{display:flex; align-items:center; gap:8px;}
-  header.topbar .brand{font-weight:800; font-size:18px; color:var(--gold-light);}
-  header.topbar .icon-btn{cursor:pointer; opacity:.9; color:#C6D3E1; display:flex;}
+  /* ---------- Header / nav ----------
+     direction:ltr هنا عمداً لتثبيت ترتيب المناطق الثلاث بصرياً (يسار/وسط/يمين)
+     بشكل صريح لا يعتمد على انعكاس RTL الضمني - الذي كان يسبب تراكب العناصر */
+  header.topbar{
+    background:linear-gradient(165deg,var(--navy-deep),var(--navy-black)); color:#fff;
+    padding:12px 14px 14px; padding-top:max(50px, calc(12px + env(safe-area-inset-top)));
+    display:flex; direction:ltr; align-items:center; gap:8px; flex-shrink:0; min-height:26px;
+  }
+  header.topbar .zone{display:flex; align-items:center; gap:14px; flex:0 0 auto;}
+  header.topbar .zone.title-zone{flex:1; min-width:0; justify-content:center;}
+  header.topbar .back, header.topbar .icon-btn{cursor:pointer; opacity:.9; color:#C6D3E1; display:flex; flex-shrink:0;}
+  header.topbar .screen-title{font-weight:700; font-size:15.5px; direction:rtl; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  header.topbar .brand-row{display:flex; align-items:center; gap:7px; direction:rtl; flex-shrink:0;}
+  header.topbar .brand{font-weight:800; font-size:17px; color:var(--gold-light);}
+  header.topbar .logout-txt{font-size:11.5px; color:#9FB0C4; cursor:pointer; font-weight:700; flex-shrink:0;}
 
   main{flex:1; padding:18px 18px 92px; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain;}
 
@@ -144,7 +152,9 @@
 
   /* ---------- Form ---------- */
   .check-row{display:flex; align-items:center; gap:8px; margin:6px 0 18px; font-size:13.5px; color:var(--navy-2); font-weight:600;}
-  .photo-upload{border:1.5px dashed var(--line); border-radius:12px; padding:18px; text-align:center; margin-bottom:16px; cursor:pointer; color:var(--muted); font-size:13px; font-weight:600;}
+  .form-section{background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:16px 16px 4px; margin-bottom:16px; box-shadow:0 2px 10px rgba(18,42,71,.05);}
+  .form-section .sec-label{font-size:12px; font-weight:800; color:var(--gold); text-transform:none; margin-bottom:12px; display:flex; align-items:center; gap:6px;}
+  .photo-upload{border:1.5px dashed var(--line); border-radius:12px; padding:18px; text-align:center; margin-bottom:16px; cursor:pointer; color:var(--muted); font-size:13px; font-weight:600; background:var(--bg);}
   .photo-upload img{max-height:110px; border-radius:8px; margin-bottom:6px;}
   .cat-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:16px;}
   .cat-chip{border:1.5px solid var(--line); border-radius:11px; padding:12px 6px; text-align:center; cursor:pointer; font-size:12.5px; font-weight:700; color:var(--muted);}
@@ -218,7 +228,7 @@ function brandMark(size=64){
 }
 
 let state = {
-  session:null, view:'browse', prevView:'browse', authMode:'signin', loading:false, authMsg:null, booting:true,
+  session:null, view:'browse', prevView:'browse', authStep:'phone', phoneNumber:'', otpSending:false, loading:false, authMsg:null, booting:true,
   categories:[], catMap:{},
   browseItems:[],
   myItems:[], myMatches:[],
@@ -248,35 +258,38 @@ async function loadCategories(){
 function catName(id){ return id && state.catMap[id] ? state.catMap[id].name_ar : null; }
 function catEmoji(id){ return id && state.catMap[id] ? (CAT_EMOJI[state.catMap[id].icon] || '🔹') : '🔹'; }
 
-/* ================= AUTH ================= */
-async function handleAuthSubmit(e){
+/* ================= AUTH (Phone + WhatsApp OTP) ================= */
+function normalizePhone(raw){
+  let p = raw.trim().replace(/[\s-]/g,'');
+  if (!p.startsWith('+')){ p = p.replace(/^0+/,''); p = '+968' + p; }
+  return p;
+}
+async function handleSendOtp(e){
   e.preventDefault();
-  const email = document.getElementById('auth-email').value.trim();
-  const password = document.getElementById('auth-password').value;
+  const raw = document.getElementById('auth-phone').value;
+  const phone = normalizePhone(raw);
   state.authMsg = null;
-  if (!email || !password){ state.authMsg = {type:'err', text:'أدخلي البريد وكلمة المرور'}; render(); return; }
-  try{
-    if (state.authMode === 'signup'){
-      const { data, error } = await sb.auth.signUp({ email, password });
-      if (error) throw error;
-      if (data.session){ state.session = data.session; }
-      else state.authMsg = {type:'ok', text:'تم إنشاء الحساب - قد يصلك بريد لتأكيده، افتحيه واضغطي الرابط ثم سجّلي الدخول'};
-    } else {
-      const { data, error } = await sb.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-      state.session = data.session;
-    }
-  } catch(err){ state.authMsg = {type:'err', text: translateAuthError(err.message)}; }
+  if (!/^\+\d{8,15}$/.test(phone)){ state.authMsg = {type:'err', text:'أدخل رقم هاتف صحيح'}; render(); return; }
+  state.phoneNumber = phone;
+  state.otpSending = true; render();
+  const { error } = await sb.auth.signInWithOtp({ phone, options:{ channel:'whatsapp' } });
+  state.otpSending = false;
+  if (error){ state.authMsg = {type:'err', text:'تعذّر إرسال الرمز: ' + error.message}; render(); return; }
+  state.authStep = 'otp'; render();
+}
+async function handleVerifyOtp(e){
+  e.preventDefault();
+  const code = document.getElementById('auth-otp').value.trim();
+  state.authMsg = null;
+  if (!code){ return; }
+  const { data, error } = await sb.auth.verifyOtp({ phone: state.phoneNumber, token: code, type:'sms' });
+  if (error){ state.authMsg = {type:'err', text:'الرمز غير صحيح أو منتهي الصلاحية'}; render(); return; }
+  state.session = data.session;
   render();
   if (state.session){ await loadAllForCurrentTab(); render(); }
 }
-function translateAuthError(msg){
-  if (/already registered|already exists/i.test(msg)) return 'هذا البريد مسجّل مسبقاً - جرّبي تسجيل الدخول';
-  if (/invalid login|invalid.*credentials/i.test(msg)) return 'البريد أو كلمة المرور غير صحيحة';
-  if (/password.*least/i.test(msg)) return 'كلمة المرور قصيرة جداً - 6 أحرف على الأقل';
-  return msg;
-}
-async function handleSignOut(){ await sb.auth.signOut(); state.session = null; state.view = 'browse'; render(); }
+function backToPhoneStep(){ state.authStep = 'phone'; state.authMsg = null; render(); }
+async function handleSignOut(){ await sb.auth.signOut(); state.session = null; state.view = 'browse'; state.authStep='phone'; render(); }
 
 /* ================= LOADING ================= */
 async function loadAllForCurrentTab(){
@@ -345,7 +358,7 @@ function selectCat(id){ state.selectedCat = id; render(); }
 async function handleAddItem(e){
   e.preventDefault();
   const uid = state.session.user.id;
-  if (!state.selectedCat){ alert('اختاري فئة الغرض'); return; }
+  if (!state.selectedCat){ alert('اختر فئة الغرض'); return; }
   const payload = {
     owner_id: uid,
     title: document.getElementById('f-title').value.trim(),
@@ -358,7 +371,7 @@ async function handleAddItem(e){
     accepts_points: document.getElementById('f-points').checked,
     photos: state.newPhotoUrl ? [state.newPhotoUrl] : []
   };
-  if (!payload.title || !payload.condition){ alert('أكملي العنوان والحالة'); return; }
+  if (!payload.title || !payload.condition){ alert('أكمل العنوان والحالة'); return; }
   const { error } = await sb.from('items').insert(payload);
   if (error){ alert('حدث خطأ: ' + error.message); return; }
   state.newPhotoUrl = null; state.selectedCat = null;
@@ -460,7 +473,7 @@ async function handleConfirmReceipt(){
   await loadDeal(state.activeDeal.offer.id); render();
 }
 async function handleCancelDeal(){
-  if (!confirm('هل تريدين إلغاء هذه الصفقة؟')) return;
+  if (!confirm('هل تريد إلغاء هذه الصفقة؟')) return;
   const { error } = await sb.rpc('cancel_trade_offer', { p_trade_offer_id: state.activeDeal.offer.id });
   if (error){ alert(error.message); return; }
   await loadDeal(state.activeDeal.offer.id); render();
@@ -468,7 +481,7 @@ async function handleCancelDeal(){
 function setRatingStars(n){ state.myRating = n; render(); }
 async function handleSubmitRating(){
   const comment = document.getElementById('rate-comment') ? document.getElementById('rate-comment').value.trim() : '';
-  if (!state.myRating){ alert('اختاري عدد النجوم'); return; }
+  if (!state.myRating){ alert('اختر عدد النجوم'); return; }
   const { error } = await sb.from('reviews').insert({
     trade_offer_id: state.activeDeal.offer.id, reviewer_id: state.session.user.id,
     reviewee_id: state.activeDeal.otherOwnerId, rating: state.myRating, comment: comment || null
@@ -507,43 +520,54 @@ function renderDealMessagesOnly(){
 }
 
 function renderAuth(){
-  const isSignup = state.authMode==='signup';
+  const phoneStep = state.authStep==='phone';
   return `<div class="auth-wrap">
     ${brandMark(64)}
     <h1>بادلني</h1>
-    <p class="tag">بدّلي أغراضك القديمة بأخرى تحتاجينها - بدون نقود</p>
-    <form id="auth-form">
-      <div class="field"><label>البريد الإلكتروني</label><input id="auth-email" type="email" placeholder="example@mail.com"></div>
-      <div class="field"><label>كلمة المرور</label><input id="auth-password" type="password" placeholder="6 أحرف على الأقل"></div>
-      <button class="btn gold" type="submit">${isSignup?'إنشاء حساب':'تسجيل الدخول'}</button>
+    <p class="tag">بدّل أغراضك القديمة بأخرى تحتاجها - بدون نقود</p>
+    ${phoneStep ? `
+    <form id="phone-form">
+      <div class="field"><label>رقم الهاتف</label><input id="auth-phone" type="tel" inputmode="tel" placeholder="9XXXXXXX" dir="ltr" style="text-align:left;"></div>
+      <button class="btn gold" type="submit" ${state.otpSending?'disabled':''}>${icon('chat',18,'#0F2A4D')} ${state.otpSending?'جارٍ الإرسال...':'إرسال رمز عبر واتساب'}</button>
+    </form>` : `
+    <form id="otp-form">
+      <p style="font-size:13px;color:var(--muted);margin:-6px 0 16px;line-height:1.7;">أُرسل رمز مكوّن من ٦ أرقام عبر واتساب إلى <span dir="ltr" style="font-weight:700;">${state.phoneNumber}</span></p>
+      <div class="field"><label>رمز التحقق</label><input id="auth-otp" type="tel" inputmode="numeric" maxlength="6" placeholder="000000" dir="ltr" style="text-align:center;letter-spacing:8px;font-size:20px;"></div>
+      <button class="btn gold" type="submit">تأكيد الدخول</button>
     </form>
+    <div class="switch-mode" id="change-number">تغيير رقم الهاتف</div>
+    `}
     ${state.authMsg?`<div class="msg ${state.authMsg.type}">${state.authMsg.text}</div>`:''}
-    <div class="switch-mode" id="switch-mode">${isSignup?'لديك حساب؟ سجّلي الدخول':'حساب جديد؟ أنشئيه من هنا'}</div>
     <div><span class="howit-link" id="howit-link">${icon('help',16,'#C9942F')} كيف يعمل بادلني؟</span></div>
-    <p class="hint">تسجيل بالبريد مؤقتاً لتسهيل الاختبار، وسيُستبدل برقم الهاتف (OTP) في الإطلاق الفعلي.</p>
+    <p class="hint">الإرسال عبر واتساب يتطلب ربط حساب Twilio بمزوّد واتساب من إعدادات Supabase أولاً - قبل اكتمال ذلك لن تصل الرموز فعلياً.</p>
   </div>`;
 }
 function attachAuthEvents(){
-  document.getElementById('auth-form').addEventListener('submit', handleAuthSubmit);
-  document.getElementById('switch-mode').addEventListener('click', ()=>{ state.authMode = state.authMode==='signup'?'signin':'signup'; state.authMsg=null; render(); });
+  const phoneForm = document.getElementById('phone-form'); if (phoneForm) phoneForm.addEventListener('submit', handleSendOtp);
+  const otpForm = document.getElementById('otp-form'); if (otpForm) otpForm.addEventListener('submit', handleVerifyOtp);
+  const changeNum = document.getElementById('change-number'); if (changeNum) changeNum.addEventListener('click', backToPhoneStep);
   document.getElementById('howit-link').addEventListener('click', openHowIt);
 }
 
 function howItStepsHtml(){
   return `
-    <div class="intro-card"><p>"بادلني" يحل مشكلة قديمة: عندك غرض ما تستخدمينه، وتبين غرضاً غيره - بدل ما تبيعين وتشترين بالنقد، بادليه مباشرة مع شخص عنده بالضبط ما تحتاجينه.</p></div>
-    <div class="step"><div class="num">1</div><div class="tx"><h4>أضيفي غرضك</h4><p>صورة، وصف، وحالته، وحدّدي بوضوح: أي فئة أو غرض تبين بالمقابل.</p></div></div>
-    <div class="step"><div class="num">2</div><div class="tx"><h4>التوفيق الذكي يبحث لك</h4><p>بمجرد إضافة الغرض، يبحث النظام تلقائياً عن أي شخص يملك ما تريدين ويريد بالضبط ما تملكين، ويرسل لكما تنبيهاً فورياً.</p></div></div>
+    <div class="intro-card"><p>"بادلني" يحل مشكلة قديمة: لديك غرض غير مستخدَم، وتريد غرضاً آخر - بدل البيع والشراء بالنقد، بادله مباشرة مع شخص لديه بالضبط ما تحتاجه.</p></div>
+    <div class="step"><div class="num">1</div><div class="tx"><h4>أضف غرضك</h4><p>صورة، وصف، وحالته، وحدّد بوضوح: أي فئة أو غرض تريده بالمقابل.</p></div></div>
+    <div class="step"><div class="num">2</div><div class="tx"><h4>التوفيق الذكي يبحث لك</h4><p>بمجرد إضافة الغرض، يبحث النظام تلقائياً عن أي شخص يملك ما تريده ويريد بالضبط ما تملكه، ويرسل لكما تنبيهاً فورياً.</p></div></div>
     <div class="step"><div class="num">3</div><div class="tx"><h4>تفاوضا داخل التطبيق</h4><p>محادثة آمنة لترتيب التفاصيل، مع إمكانية إضافة فرق نقاط بسيط إن لم تتساوَ القيمتان تماماً.</p></div></div>
     <div class="step"><div class="num">4</div><div class="tx"><h4>اتفقا وسلّما الغرضين</h4><p>حدّدا مكاناً آمناً للّقاء، وبعد التسليم الفعلي يؤكد كل طرف الاستلام من داخل التطبيق.</p></div></div>
     <div class="step"><div class="num">5</div><div class="tx"><h4>قيّما بعضكما</h4><p>بعد اكتمال المبادلة، يقيّم كل طرف الآخر - وهذا يبني سمعة موثوقية لكل مستخدم.</p></div></div>
-    <div class="intro-card"><p><b>محفظة النقاط:</b> إذا ما لقيتِ تطابقاً مباشراً، تقدرين تبادلين غرضك مقابل نقاط داخلية، وتستخدمينها لاحقاً للحصول على غرض من شخص ثالث - نقاط لا تُشترى بالمال ولا تتحول له، للحفاظ على بساطة النظام وأمانه.</p></div>
+    <div class="intro-card"><p><b>محفظة النقاط:</b> إذا لم يوجد تطابق مباشر، يمكن مبادلة الغرض مقابل نقاط داخلية، تُستخدم لاحقاً للحصول على غرض من شخص ثالث - نقاط لا تُشترى بالمال ولا تتحول له، للحفاظ على بساطة النظام وأمانه.</p></div>
   `;
 }
 function renderHowItStandalone(){
   return `<div style="height:100%; display:flex; flex-direction:column;">
-    <header class="topbar"><span class="back" id="howit-back">${icon('back',22,'#fff')}</span><div class="titles"><div class="screen-title">كيف يعمل بادلني</div></div><div class="brand-row">${brandMark(26)}</div></header>
-    <main>${howItStepsHtml()}<button class="btn gold" id="howit-start">ابدئي الآن</button></main>
+    <header class="topbar">
+      <div class="zone"><span class="back" id="howit-back">${icon('back',21,'#fff')}</span></div>
+      <div class="zone title-zone"><div class="screen-title">كيف يعمل بادلني</div></div>
+      <div class="zone"><div class="brand-row">${brandMark(24)}<span class="brand">بادلني</span></div></div>
+    </header>
+    <main>${howItStepsHtml()}<button class="btn gold" id="howit-start">ابدأ الآن</button></main>
   </div>`;
 }
 function attachHowItStandaloneEvents(){
@@ -554,13 +578,14 @@ function attachHowItStandaloneEvents(){
 function renderShell(){
   const titles = {browse:'تصفح الأغراض', add:'أضف غرضاً', mine:'أغراضي ومطابقاتي', wallet:'محفظة النقاط', deal:'تفاصيل الصفقة', howit:'كيف يعمل بادلني'};
   const pendingCount = state.myMatches ? state.myMatches.filter(m=>m.status==='suggested').length : 0;
+  const showBack = state.view==='deal' || state.view==='howit';
   return `
     <header class="topbar">
-      ${state.view==='deal' ? `<span class="back" id="back-btn">${icon('back',22,'#fff')}</span>` : ''}
-      ${state.view==='howit' ? `<span class="back" id="howit-back2">${icon('back',22,'#fff')}</span>` : ''}
-      <div class="titles"><div class="screen-title">${titles[state.view]}</div></div>
-      ${state.view!=='howit' ? `<span class="icon-btn" id="howit-open" style="margin-left:6px;">${icon('help',19,'#C6D3E1')}</span>` : ''}
-      <div class="brand-row"><span class="brand">بادلني</span>${brandMark(26)}</div>
+      <div class="zone">
+        ${showBack ? `<span class="back" id="${state.view==='deal'?'back-btn':'howit-back2'}">${icon('back',21,'#fff')}</span>` : `<span class="icon-btn" id="howit-open">${icon('help',19,'#C6D3E1')}</span><span class="logout-txt" id="logout-btn">خروج</span>`}
+      </div>
+      <div class="zone title-zone"><div class="screen-title">${titles[state.view]}</div></div>
+      <div class="zone"><div class="brand-row">${brandMark(24)}<span class="brand">بادلني</span></div></div>
     </header>
     <main>${state.loading ? '<div class="empty">جارٍ التحميل...</div>' : renderView()}</main>
     ${(state.view!=='deal' && state.view!=='howit') ? `
@@ -570,7 +595,6 @@ function renderShell(){
       <button data-v="mine" class="${state.view==='mine'?'active':''} ${pendingCount?'tab-dot':''}">${icon('box',20)}أغراضي</button>
       <button data-v="wallet" class="${state.view==='wallet'?'active':''}">${icon('wallet',20)}محفظتي</button>
     </nav>` : ''}
-    ${state.view!=='howit' ? `<div style="position:absolute;top:calc(16px + env(safe-area-inset-top));left:18px;color:#9FB0C4;font-size:12.5px;cursor:pointer;font-weight:600;" id="logout-btn">خروج</div>` : ''}
   `;
 }
 function renderView(){
@@ -586,7 +610,7 @@ function itemPhoto(it){
   return it.photos && it.photos.length ? `<img class="photo" src="${it.photos[0]}">` : `<div class="photo-ph">${catEmoji(it.category_id)}</div>`;
 }
 function renderBrowse(){
-  if (!state.browseItems.length) return `<div class="empty">${icon('search',40)}<br>لا توجد أغراض متاحة من مستخدمين آخرين بعد<br>جرّبي إضافة غرض بحساب ثانٍ لاختبار التوفيق</div>`;
+  if (!state.browseItems.length) return `<div class="empty">${icon('search',40)}<br>لا توجد أغراض متاحة من مستخدمين آخرين بعد<br>جرّب إضافة غرض بحساب ثانٍ لاختبار التوفيق</div>`;
   return state.browseItems.map(it=>`
     <div class="item">
       ${itemPhoto(it)}
@@ -595,7 +619,7 @@ function renderBrowse(){
         <div class="cat">${catEmoji(it.category_id)} ${catName(it.category_id)||''}</div>
         <h3>${escapeHtml(it.title)}</h3>
         ${it.description?`<p class="desc">${escapeHtml(it.description)}</p>`:''}
-        <div class="wants">${icon('swap',15,'#1C3A5E')} تريد بالمقابل: ${it.wants_category_id?catName(it.wants_category_id):(it.wants_description||'مفتوح للعروض')}</div>
+        <div class="wants">${icon('swap',15,'#1C3A5E')} المطلوب بالمقابل: ${it.wants_category_id?catName(it.wants_category_id):(it.wants_description||'مفتوح للعروض')}</div>
         <span class="cond">${COND_LABEL[it.condition]||it.condition}</span>
       </div>
     </div>`).join('');
@@ -605,20 +629,29 @@ function renderAddForm(){
   const catChips = state.categories.map(c=>`<div class="cat-chip ${state.selectedCat===c.id?'sel':''}" onclick="selectCat('${c.id}')"><span class="em">${CAT_EMOJI[c.icon]||'🔹'}</span>${c.name_ar}</div>`).join('');
   const wantsOptions = state.categories.map(c=>`<option value="${c.id}">${CAT_EMOJI[c.icon]||''} ${c.name_ar}</option>`).join('');
   return `<form id="add-form">
-    <div class="photo-upload" id="photo-upload-box">
-      ${state.uploading ? 'جارٍ الرفع...' : state.newPhotoUrl ? `<img src="${state.newPhotoUrl}"><br>تم اختيار الصورة - اضغطي لتغييرها` : `${icon('camera',26)}<br>اضغطي لإضافة صورة`}
+    <div class="form-section">
+      <div class="sec-label">${icon('camera',15,'#B8862E')} صورة الغرض</div>
+      <div class="photo-upload" id="photo-upload-box">
+        ${state.uploading ? 'جارٍ الرفع...' : state.newPhotoUrl ? `<img src="${state.newPhotoUrl}"><br>تم اختيار الصورة - اضغط لتغييرها` : `${icon('camera',26)}<br>اضغط لإضافة صورة`}
+      </div>
+      <input type="file" id="photo-input" accept="image/*" style="display:none">
     </div>
-    <input type="file" id="photo-input" accept="image/*" style="display:none">
-    <div class="field"><label>عنوان الغرض</label><input id="f-title" placeholder="مثال: ساعة ذكية Galaxy Watch"></div>
-    <div class="field"><label>وصف مختصر (اختياري)</label><textarea id="f-desc" placeholder="الحالة، تفاصيل إضافية..."></textarea></div>
-    <div class="field"><label>الفئة</label><div class="cat-grid">${catChips}</div></div>
-    <div class="field"><label>الحالة</label><select id="f-cond">
-      <option value="new">جديد</option><option value="like_new">كالجديد</option><option value="good" selected>جيد</option><option value="fair">مقبول</option>
-    </select></div>
-    <div class="field"><label>القيمة التقديرية (ر.ع)</label><input id="f-value" type="number" step="0.1" placeholder="0.0"></div>
-    <div class="field"><label>تريدين بالمقابل - فئة (اختياري)</label><select id="f-wants-cat"><option value="">أي فئة</option>${wantsOptions}</select></div>
-    <div class="field"><label>تريدين بالمقابل - وصف حر (اختياري)</label><textarea id="f-wants-desc" placeholder="مثال: أي سماعة لاسلكية بحالة جيدة"></textarea></div>
-    <div class="check-row"><input type="checkbox" id="f-points" checked style="width:auto;"> أوافق على استلام نقاط بدل غرض مباشر</div>
+    <div class="form-section">
+      <div class="sec-label">${icon('box',15,'#B8862E')} تفاصيل الغرض</div>
+      <div class="field"><label>عنوان الغرض</label><input id="f-title" placeholder="مثال: ساعة ذكية Galaxy Watch"></div>
+      <div class="field"><label>وصف مختصر (اختياري)</label><textarea id="f-desc" placeholder="الحالة، تفاصيل إضافية..."></textarea></div>
+      <div class="field"><label>الفئة</label><div class="cat-grid">${catChips}</div></div>
+      <div class="field"><label>الحالة</label><select id="f-cond">
+        <option value="new">جديد</option><option value="like_new">كالجديد</option><option value="good" selected>جيد</option><option value="fair">مقبول</option>
+      </select></div>
+      <div class="field"><label>القيمة التقديرية (ر.ع)</label><input id="f-value" type="number" step="0.1" placeholder="0.0"></div>
+    </div>
+    <div class="form-section">
+      <div class="sec-label">${icon('swap',15,'#B8862E')} ماذا تريد بالمقابل؟</div>
+      <div class="field"><label>فئة (اختياري)</label><select id="f-wants-cat"><option value="">أي فئة</option>${wantsOptions}</select></div>
+      <div class="field"><label>وصف حر (اختياري)</label><textarea id="f-wants-desc" placeholder="مثال: أي سماعة لاسلكية بحالة جيدة"></textarea></div>
+      <div class="check-row"><input type="checkbox" id="f-points" checked style="width:auto;"> أوافق على استلام نقاط بدل غرض مباشر</div>
+    </div>
     <button class="btn" type="submit">${icon('plus',18,'#fff')} نشر الغرض</button>
   </form>`;
 }
@@ -628,7 +661,7 @@ function renderMine(){
   const others = state.myMatches.filter(m=>m.status!=='suggested');
   let html = `<h2 class="section-title">${icon('swap',18,'#0F2A4D')} مطابقات جديدة (${suggested.length})</h2>`;
   if (!suggested.length){
-    html += `<div class="empty" style="padding:16px 10px 30px;">لا مطابقات جديدة - تظهر تلقائياً عند وجود غرض آخر يريد فئة أغراضك ويملك ما تريدينه</div>`;
+    html += `<div class="empty" style="padding:16px 10px 30px;">لا مطابقات جديدة - تظهر تلقائياً عند وجود غرض آخر يريد فئة أغراضك ويملك ما تريده</div>`;
   } else {
     html += suggested.map(m=>matchCardHtml(m)).join('');
   }
@@ -637,7 +670,7 @@ function renderMine(){
     html += others.map(m=>matchCardHtml(m)).join('');
   }
   html += `<h2 class="section-title" style="margin-top:26px;">${icon('box',18,'#0F2A4D')} أغراضي المنشورة (${state.myItems.length})</h2>`;
-  if (!state.myItems.length) html += `<div class="empty">لم تضيفي أي غرض بعد</div>`;
+  if (!state.myItems.length) html += `<div class="empty">لا يوجد غرض مضاف بعد</div>`;
   else html += state.myItems.map(it=>`
     <div class="item">${itemPhoto(it)}<span class="value-tag">${it.estimated_value} ر.ع</span>
       <div class="body"><div class="cat">${catEmoji(it.category_id)} ${catName(it.category_id)||''}</div><h3>${escapeHtml(it.title)}</h3>
@@ -707,13 +740,13 @@ function renderDeal(){
         <button class="btn sm" onclick="handleHoldPoints()">حجز النقاط الآن</button></div>`;
     } else {
       html += `<div class="confirm-box">
-        <p>${d.iConfirmed ? 'أكّدتِ استلامك بالفعل - بانتظار تأكيد الطرف الآخر' : 'بعد استلام الغرض فعلياً، أكّدي ذلك هنا لإتمام المبادلة'}</p>
-        ${!d.iConfirmed ? `<button class="btn sm" onclick="handleConfirmReceipt()">${icon('check',15,'#fff')} أكّدي استلامك للغرض</button>` : ''}
+        <p>${d.iConfirmed ? 'تم تأكيد استلامك بالفعل - بانتظار تأكيد الطرف الآخر' : 'بعد استلام الغرض فعلياً، أكّد ذلك هنا لإتمام المبادلة'}</p>
+        ${!d.iConfirmed ? `<button class="btn sm" onclick="handleConfirmReceipt()">${icon('check',15,'#fff')} تأكيد الاستلام</button>` : ''}
         ${d.theyConfirmed ? `<div style="margin-top:8px;font-size:12.5px;color:var(--success);font-weight:700;">✓ الطرف الآخر أكّد استلامه أيضاً</div>` : ''}
       </div>`;
     }
   } else if (offer.status === 'completed'){
-    html += `<div class="stamp"><div class="stamp-badge">${icon('seal',36,'#3F6B4A')}</div><h3>تمّت المبادلة بنجاح</h3><p>قيّمي تجربتك مع الطرف الآخر</p></div>
+    html += `<div class="stamp"><div class="stamp-badge">${icon('seal',36,'#3F6B4A')}</div><h3>تمّت المبادلة بنجاح</h3><p>قيّم تجربتك مع الطرف الآخر</p></div>
     <div class="rate-stars">${[1,2,3,4,5].map(n=>`<span class="${n<=state.myRating?'on':''}" onclick="setRatingStars(${n})">★</span>`).join('')}</div>
     <textarea id="rate-comment" placeholder="تعليق (اختياري)" style="margin-bottom:12px;"></textarea>
     <button class="btn gold" onclick="handleSubmitRating()">إرسال التقييم</button>`;
@@ -725,7 +758,7 @@ function renderDeal(){
     html += `<h2 class="section-title" style="margin-top:18px;">${icon('chat',18,'#0F2A4D')} المحادثة</h2>
     <div class="chat-wrap">
       <div class="chat-msgs" id="chat-msgs">${dealMessagesHtml()}</div>
-      <form class="chat-input" id="chat-form"><input id="chat-input" placeholder="اكتبي رسالة..."><button type="submit">${icon('send',20,'#C9942F')}</button></form>
+      <form class="chat-input" id="chat-form"><input id="chat-input" placeholder="اكتب رسالة..."><button type="submit">${icon('send',20,'#C9942F')}</button></form>
     </div>
     <button class="btn danger sm" onclick="handleCancelDeal()">إلغاء الصفقة</button>
     <div class="report-link" onclick="handleReport()">الإبلاغ عن هذا الطرف</div>`;
