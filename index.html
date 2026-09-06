@@ -2,44 +2,53 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover, user-scalable=no">
 <title>بادلني</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23122A47'/%3E%3Cpath d='M10 16h16M22 12l4 4-4 4' stroke='%23B8862E' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M30 24H14M18 28l-4-4 4-4' stroke='%23E9CE9C' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#081B31">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="بادلني">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAEKElEQVR4nO3dwW4SURSH8UPDxtrEturWQHXlExhdGGFtIvUBWo178EUE97TGB2j7As6rFNeW+gq4oDGx4U+EzL3nXPr9MisNwzV8OcMwjDQePH9rwCLN2WzmvQYEteW9AMRFHJCIAxJxQCIOSE0zzlawGJMDEnFAIg5IxAGJOCA1jWsrEJgckIgDEnFAIg5IxAGJOCBx4Q0SkwMScUAiDkjEAanJ+1EozRl1QOCwAok4IBEHJOKARByQiAMSF94gMTkgEQck4oDEtRVITA5InK1AYnJAIg5IxAGJOCARByTigMSpLCQmByTigMS1FUhMjhB+9H95L2EB4ogiYB/c8RbIvI/u18feC7nB5Ain6l95L+EGcUQUpA/iCCpCH8QRV9W/8k2EOKJz7GPLbMYWYFum6l+5rIrJUYaqP83/pMRRjKo/zZzIlv9AZZut8IJV/Wm2VTE5ylMNMs0P4ihSNZhmSKSx86yb+jn+ypb83dEdPUq388ynsqhZNZime704rBSvGlwn2jNxbIJqcJ0iEeLYHLX3QRybozt6WO8Om/XuDi5qz2KOm5qK1x3tJ3oROayUrTvaT7fzxs7TN+n2jv9Uff69xqO6w4RlGO85CpU6izkOK+XJU4YRR3GylWEcVgqSM4s57ngrQ2e4l/9DBw4rBegM91yelzii8yrDeM8RmWMWc0yOoNzLMOKIKUIZxoW3gDrD3SAvCv8nWCCdL7veS/gHh5UoopVhZo37B6+914CgmByQiAMScUDiVBYSkwMScUAiDkjEAYk4IDVtFu5s5fLs6OD9d+9VIN7kuDw78l4CbgT6JhhZRBNlclBGQCHioIyY/OOgjLA8b2qanB2rv+JWqwjcJseSMhCETxyUUQSHOCijFFk/5yCLsuSbHJRRnEz3rUzOj1d7ACcrAST/muDk/MNaj6MOf43t1qt0e1+3DCzTPvyW54kSvuegjNKlioMyNkD9p7JksTFqnhyUsUlq/hmv9uGp97/oLsj0s2v1v+doH56SyGZI9YaUPjZAwlNZ+ihdY7v1MukTTM4/rvEowoog+bWVdu/UzCYXKybCp+cBZLoqO08EZcn3i9Tt3skqC8u0KrYlW9ZvgrV7JysmAk8OXxOkj1L4fMGYPorgdmsCfcTneccbb0GC8/8Zr1Zv/PPi060/dF8VLMK9smbW6o29l4AFQsRh9BFSlDjMrNUbk0goW96fwt3eWu/GZv7LYLOZNe49eeEdKIIKdFhBNPzH+JCYHJCIAxJxQCIOSMQBibMVSEwOSMQBid+yh8TkgEQckDhbgcTkgEQckIgDEnFAIg5IxAHJ/443hMXkgMS1FUhMDkjEAYk4IHHhDRKTAxJxQCIOSMQBiTggEQckTmUhcW0FEocVSMQBiTggEQckzlYgMTkgEQck4oBEHJCIA9IfAIbiVdA3T6QAAAAASUVORK5CYII=">
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogItio2KfYr9mE2YbZiiIsICJzaG9ydF9uYW1lIjogItio2KfYr9mE2YbZiiIsICJkZXNjcmlwdGlvbiI6ICLYqNiv2ZHZhNmKINij2LrYsdin2LbZgyDYp9mE2YLYr9mK2YXYqSDYqNij2K7YsdmJINiq2K3Yqtin2KzZitmG2YfYpyAtINio2K/ZiNmGINmG2YLZiNivIiwgInN0YXJ0X3VybCI6ICIuIiwgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwRjIzMzgiLCAidGhlbWVfY29sb3IiOiAiIzBGMjMzOCIsICJsYW5nIjogImFyIiwgImRpciI6ICJydGwiLCAiaWNvbnMiOiBbeyJzcmMiOiAiZGF0YTppbWFnZS9wbmc7YmFzZTY0LGlWQk9SdzBLR2dvQUFBQU5TVWhFVWdBQUFNQUFBQURBQ0FJQUFBRGR2dnRRQUFBRWFFbEVRVlI0bk8zZFFXNGNSUmlHNFJyTEcwSWtTSUF0R2dkV25BREJBbUd2a2JBNVFBSmliM01SYlBaT0VBZXd1UUJ6bFpnMVRyakNzQmdsU0ZZMGx1ZWI3cXBxUDQ5NmxjZ3pKZVgxMzEzdTZYajJ3UmZmRmRqVTduSzVyTDBHT3JaVGV3SDBUVUJFQkVSRVFFUUVSR1MzRkxzd05tY0NFUkVRRVFFUkVSQVJBUkhadFFrallSdFB4Q21NaUlDSUNJaUlnSWdJaUlpQWlOakdFekdCaUFpSWlJQ0lDSWlJbTZsRVRDQWl1MHNqaUlBSlJFUkFSQVJFUkVCRUJFUkVRRVRjalNkaUFoRVJFQkVCRVhFemxZZ0pSRVJBUkd6amlaaEFSQVJFUkVCRUJFUkVRRVFFUk1RMm5vZ0pSRVJBUk54TUpXSUN0ZTZ2NDM5cUwyRWRBWFdnNVlZODJ0eUhWVU1IdjMxU2V5RTNtVUE5V1J4ZjExN0NUUUxxVEdzTkNhZy9pK1ByZGpJU1VLOGFhVWhBSFd1aElRSDFyZnJwYktlVXBhUHQ0M2FMNCt0YXl6T0JKbUp4L0tySyt3cG9PcW8wNUdicXBLd2FPamo3ZUxSM05JRW1hSEV5M2lnUzBEU04xdERzNGVjSDQ3elRXMk4rZnpEMDZhektOcDd4TEU1ZTJjWVRXWnk4SHU3RkJYUXZMRTVlRDVTUmdPNlJJUm9TMEQxeWNQYlIxbDl6ZCt1dlNJT0dTR2ZGQkpxKzRlb3BIbTJldklPeng0UCtFODhlZnZidGNLOU9idkhMdnh0LzdjSHA0eTJ1NUoxY0EwM1RDT21zdUFhYW9OSHFLUUthbmpIcktRS2FtSkhyS2E2QkptUDhkRlk4R3o4Ris2ZVBhdjA0eGltc2UvdW5qeXErdTRENlZyZWU0aHFvWDlYVFdUR0J1dFJJUFVWQVBXcW5uaUtnN2pSVlR5bGx0eXh0NC91dy8rdUhwWlRXUGoxaEF2WGhUVDNORVZBSG1xMm5sREo3LzhrM3RkZEF4MHdnSWdJaUlpQWlQbFJQeEFRaUlpQWlBaUlpSUNJQ0l0TDB6ZFNYRjArZi9QQkg3Vld3VHJzVDZPWEYwOXBMNEhZdGZxUlZPaDFwYmdLcHB5OXRCYVNlN3JSeUNwTk9wNXFZUU9ycFYvMUhtNjh1bnEzNTIrckxZNzJhcDdEMTZkQ0ZhcWN3OVV4RG5ZRFVNeGtWQWxMUGxJeDZEU1NkNlJudlYxNWVYVDdiNU10c3d0bzIwbWVpcnk1LzNQUkxGZFMwMllQNTE0TytRWkFPZDdaMzlQdkk3empzUmJSNkptL0FnTlJ6SHd5eUM1UE8vYkg5Q2FTZWUyWDdBWTEvSFVkRmcyemo5NDVlbEZLdUxuL2EraXR6bTdGLzZqSGdSZlFxSTZadDJHMjhoaVp2OW1EKzFkRHZrWnpMSk5pNE1lN0c3eDI5ME1GVTdaUmxHZWZZTzl5b29iR1c1OWpzR1BYelFCczJSTU4yUmk1MjcvRDVIVmRZKzF2TXNmYW84SW5FdmNQbmQ4K0lSbFg3VUwyR3BxSG1nNFVhbW9ES1Q2WnFxSGYxSDIxMlNkUzErZ0d0YUtoVDlaK05mMnQrZVA3M256L2YrTU4ybHNjN3RUS0JWdWFINTdXWHdOMjBGVkFwWlg1NExxT09qSGN2N0U3SC9QczNEZFZlaVdQOTBkd0VldXYvaG1qWTdMMVB2Nnk5QmpyVzdnU2lDMzVmR0JFVGlJaUFpQWlJaUlDSUNJaUlYUmdSRTRpSWdJaU05NyswTWtrbUVCRUJFUkVRRWR0NElpWVFFUUVSRVJBUkFSRVJFQkVCRVdubzBXWjZaQUlSY1RPVmlBbEVSRUJFQkVSRVFFVGNqU2RpQWhFUkVCRUJFUkVRRVFFUkVSQVIyM2dpYnFZU2NRb2pJaUFpQWlJaUlDSUNJbUliVDhRRUlpSWdJZ0lpSWlBaUFpTHlINSs5MlRiUURCUXdBQUFBQUVsRlRrU3VRbUNDIiwgInNpemVzIjogIjE5MngxOTIiLCAidHlwZSI6ICJpbWFnZS9wbmcifSwgeyJzcmMiOiAiZGF0YTppbWFnZS9wbmc7YmFzZTY0LGlWQk9SdzBLR2dvQUFBQU5TVWhFVWdBQUFnQUFBQUlBQ0FJQUFBQjdHa090QUFBTGpFbEVRVlI0bk8zZFRYSmNWeG5INGFQVW5SQlNSUWd3cFNSZ3hBb29HRkJZWTZvc2I0RHdNWmZaQ0hibXNyT0MyQ3pBdlJXVXNlMWtDODFBeGloeVcxSkw5OTd6OFgrZThqVEpxWFRxL2VVOVYrcDc4SlBmL3JrQWtHZmFicmUxendCQUJaL1VQZ0FBZFFnQVFDZ0JBQWdsQUFDaEJBQWdsQUFBaEJJQWdGQUNBQkJLQUFCQ0NRQkFLQUVBQ0NVQUFLRUVBQ0NVQUFDRUVnQ0FVQUlBRUVvQUFFSk5wWGdqR0VBaUd3QkFLQUVBQ0NVQUFLRUVBQ0NVQUFDRUVnQ0FVQUlBRUVvQUFFSUpBRUFvQVFBSUpRQUFvUVFBSUpRQUFJUVNBSUJRQWdBUWF2STZBSUJNTmdDQVVONElCaERLQmdBUVNnQUFRZ2tBUUNnQkFBZ2xBQUNoQkFBZ2xBQUFoQklBZ0ZBQ0FCQktBQUJDQ1FCQUtBRUFDQ1VBQUtFRUFDQ1VBQUNFRWdDQVVBSUFFTW9id1FCQzJRQUFRZ2tBUUNnQkFBZ2xBQUNoQkFBZ2xBQUFoQklBZ0ZBQ0FCQktBQUJDQ1FCQUtBRUFDQ1VBQUtFRUFDRFU1TXRBQVRMWkFBQkNDUUJBS0FFQUNDVUFBS0dtcmFmQUFKRnNBQUNoQkFBZ2xBQUFoQklBZ0ZBQ0FCQktBQUJDQ1FCQUtBRUFDQ1VBQUtFRUFDQ1VBQUNFRWdDQVVBSUFFRW9BQUVJSkFFQW9BUUFJSlFBQW9hYmlqV0FBa1d3QUFLRUVBQ0NVQUFDRUVnQ0FVQUlBRUVvQUFFSUpBRUFvQVFBSUpRQUFvUVFBSU5Ua215QUFNdGtBQUVJSkFFQW9BUUFJSlFBQW9RUUFJSlFBQUlUeVJqQ0FVRFlBZ0ZBQ0FCQktBQUJDQ1FCQUtBRUFDQ1VBQUtFRUFDQ1VBQUNFRWdDQVVBSUFFRW9BQUVJSkFFQW9BUUFJSlFBQW9RUUFJSlFBQUlRU0FJQlFBZ0FReWlzaEFVTFpBQUJDQ1FCQUtBRUFDQ1VBQUtFRUFDQ1VBQUNFRWdDQVVKTmZBd0RJWkFNQUNDVUFBS0VFQUNDVUFBQ0VFZ0NBVUFJQXpPL1Y2ZXZhUitCbUFnQXNRZ1BhSndEQVVsNmR2cGFCbGdrQXNDd05hTmEwOWF2QXdNSmVuYjQrL3VvWHRVL0JWVFlBWUEyYjB6ZTFqOEJWQWdDc1pIUDZSZ2FhSWdEQXFqU2dIUUlBckUwREdpRUFRQVd1ZzFvZ0FFQTFHbENYQUFBMWFVQkZBZ0JVNWpxb0ZnRUFtcUFCNnhNQW9CVWFzRElCQUJxaUFXc1NBS0F0SGdtc1JnQ0FGbW5BQ2dRQWFKUUdMRTBBZ0hhNURscVVBQUN0MDRDRkNBRFFBUTFZd2xTOEVRem93ZWIwemZGWFA2OTlpcUhZQUlCdWJFN2ZiazdmMWo3Rk9BUUE2SXdHekVVQWdQNW93Q3dFQU9pUzY2RDdFd0NnWXhwd0g1TWZBZ0s2dGpsOWUvelVUd2ZkaFEwQTZON204ZHZOWTZ2QTNnUUFHSVFHN0VzQWdIRm93RjRFQUJpS0J0eWVBQUNqOFVqZ2xnUUFHSk1HM0VnQWdHRnB3UFVFQUJpWjY2QnJDQUF3UGczWVNRQ0FDQnJ3b1lQUGZuTmMrd3lkOFo4UjlNdVhSbHptaldCQWtJdi9nVHQrK3JQYUIybUNLeUFnenVieGQ3V1AwQVFCQUJKcFFCRUFJTmJtOFhmaEdSQUFJRnB5QXdRQVNCZmJBQUVBQ0wwT0VnQ0FkOUlhSUFBQS94ZlZBQUVBK0lHY0JnZ0F3RlVoandRRUFHQzM0UnNnQUFDN0RmK1ZRVlB0QXdBMFovalJmOEVHQVBBRElkTy9DQURBWlRuVHZ3Z0F3SHRSMDc5NEJnQlE4a2IvQlJzQWtDNXoraGV2aEFUQ0hULzlJbllNdWdJQ1FoMC8vYUwyRVNwekJRUWtNdjFMS1ZQcTZnUGtPbjVpK3BmaUNnaUlZdlJmZHZEWnIvOVUrd3pBYURiLy9MNzJFWFl3L2Evd0RBQ0lZUHAvU0FDQThabitPM2tHQUl6TTZMK0dEUUFZbHVsL1BRRUF4bVQ2MzhnVkVEQWFvLytXYkFEQVVFei8yeE1BWUJ5bS8xNEVBQmlFNmI4dnp3Q0E3aG45ZDJNREFQcG0rdCtaQUFBZE0vM3ZZOXI2UG1pZ1F3K2UvTFNVRXZzeXIxbllBSUQrL0cvNmN5OENBSFRHOUorTG53SUN1bUgwejhzR0FQVEI5SitkQUFBZE1QMlhJQUJBNjB6L2hYZ0dBTFRMNkYrVURRQm9sT20vTkFFQVdtVDZyOEFWRU5BV28zODFOZ0NnSWFiL21nUUFhSVhwdnpJQkFKcGcrcS9QTXdDZ01xTy9GaHNBVUpQcFg1RUFBTldZL25XNUFnSXFNUHBiTUhtZkRyQ3lCMDgrTjNsYU1Qa1VnRFU5K05mbnRZL0FPNjZBZ0pVWS9hM3hFQmhZZytuZklBRUFGbWY2dDBrQWdHV1ovczN5REFCWWl0SGZPQnNBc0FqVHYzMEhQLzdWSDJ1ZkFZQUtiQUFBb1FRQUlKUUFBSVFTQUlCUUFnQVFTZ0FBUWdrQVFDZ0JBQWdsQUFDaEJBQWdsRmRDQW9TeUFRQ0VFZ0NBVUFJQUVFb0FBRUlKQUVBb0FRQUlKUUFBb1FRQUlKUUFBSVFTQUlCUUFnQVFTZ0FBUWdrQVFDZ0JBQWdsQUFDaEJBQWcxT1I5TUFDWnZCRU1JSlFyb0E3ODU1dS8xRDRDTUNBQmFKM3BEeXhrcW4wQVBzcm9CeFpsQTJpVTZROHNUUUJhWlBvREt4Q0E1cGord0RvOEEyaUkwUStzeVFiUUN0TWZXSmtBTk1IMEI5Ym5DcWd5b3grb3hRWlFrK2tQVkNRQTFaaitRRjJ1Z0NvdytvRVcyQURXWnZvRGpSQ0FWWm4rUURzRVlEMm1QOUFVendEV1lQUUREWnEyM2dpMnNQTnZ2cnovMzhUSEJNek9GZEN5WnBuK0FFdHdCYlFVb3g5b25BMWdFYVkvMEQ0Qm1KL3BEM1JCQUdabStnTzk4QXhnTmtZLzBCY2J3RHhNZjZBN0FqQUQweC9va1N1Z2V6SDZnWDdaQU83TzlBZTZKZ0IzWlBvRHZYTUZ0RGVqSHhpRERXQS9wajh3REFIWWcra1BqR1R5TmNPM2RQN2l5NXIvZUI4VE1EZlBBRzVXZWZRRExNTVYwQTFNZjJCVWs4dUZhNXkvK0d2dEk3em5Zd0ptNWdwb3Q1WkdQOEFpWEFIdFlQb0RDUVRnS3RNZkNISHc2ZUVmYXAraElhWS85T3ZvMGRlMWo5QVp6d0RlTWZxQk5LNkFTakg5Z1VnQ1lQb0RvYUt2Z0l4K0lGbnVCbUQ2QStGQ0EyRDZBOFJkQVJuOUFCZXlOZ0RUSCtDOW9BQ1kvZ0NYcFFUQTlBZTRZdnhuQUVZL3dFNkRid0NtUDhESERCNEFYdzRGOERHREI2Q1VjdlRvYXhrQStOQW5wV3dUL2h3OWVsNzdYeld3dFBxanBxOC80MjhBNzJrQXdHVkJBU2dhQUhCSlZnQktLVWVQbnNzQVFBa013QVVOQUFnTlFORUFJRjV1QUlycklDQmJkQUF1YUFDUVNRQkswUUFna2dDODR6b0lTSFB3NmVIdmE1K2hMZWN2L2xiN0NEdUlFekE3RzhCVlJpMFFZaXJiMmtkb3o5SEo4L09YamUwQlBpWmdiamFBM1k1T25oK2RXQVdBa1FuQWRUUUFHSmdBM0VBRGdGRUp3TTFjQndGREVvRGIwZ0JnTUpPZkw3bTlvNU5uNXkvL1h1a2Y3bU1DWm1ZRDJNL1J5YlBhUndDWWh3RHM3ZWprbVF3QUF4Q0FPOUlBb0hjQ2NIY2FBSFJOQU83RmRSRFFMd0dZZ1FZQVBSS0FlV2dBMEIwQm1JM3JJS0F2QWpBekRRQjZJUUR6MHdDZ0N3S3dDQTBBMmljQVMvRklBR2ljQUN4TEE0Qm1DY0RpTkFCb2t3Q3N3WFVRMENBQldJOEdBRTBSZ0ZWcEFOQ09hZXRWVStzNlBEbjc5dVUvOXYycmZFekE3R3dBRlJ5ZW5CMmVuTlUrQlpCT0FLclJBS0F1QWFoSkE0Q0tCS0F5MTBGQUxRTFFCQTBBMWljQXJkQUFZR1VDMEJEWFFjQ2FCS0E1R2dDc1F3QmFwQUhBQ2lhL1lkcW13NGRuMy83NzBpOE0rNWlBdWRrQTJuWDQ4T3p3b1ZVQVdJb0F0RTREZ0lVYy9PaVh2NnQ5QmdBcXNBRUFoQklBZ0ZBQ0FCQktBQUJDQ1FCQXFNbXZHQUZrc2dFQWhCSUFnRkFDQUJCS0FBQkNDUUJBS0FFQUNDVUFBS0VFQUNDVUFBQ0VFZ0NBVUFJQUVFb0FBRUlKQUVBb0FRQUlKUUFBb1FRQUlKUUFBSVR5UmpDQVVEWUFnRkFDQUJCS0FBQkNDUUJBS0FFQUNDVUFBS0VtUHdVS2tNa0dBQkJLQUFCQ0NRQkFLQUVBQ0NVQUFLRUVBQ0NVQUFDRUVnQ0FVQUlBRUVvQUFFSjVJeGhBS0JzQVFDZ0JBQWdsQUFDaEJBQWdsQUFBaEJJQWdGQUNBQkJLQUFCQ0NRQkFLQUVBQ0NVQUFLRUVBQ0NVQUFDRUVnQ0FVQUlBRUVvQUFFSUpBRUNvYWV1TllBQ1JiQUFBb1FRQUlKUUFBSVFTQUlCUWsyZkFBSmxzQUFDaEJBQWdsQUFBaEJJQWdGQUNBQkJLQUFCQ0NRQkFLQUVBQ0NVQUFLRUVBQ0NVQUFDRUVnQ0FVQUlBRUdvcXZnNFVJSklOQUNDVUFBQ0VFZ0NBVUFJQUVFb0FBRUlKQUVBb0FRQUlKUUFBb1FRQUlKUUFBSVFTQUlCUUFnQVFTZ0FBUWdrQVFDZ0JBQWdsQUFDaEJBQWdsRGVDQVlTeUFRQ0VtaXdBQUpsc0FBQ2hCQUFnbEFBQWhCSUFnRkFDQUJCS0FBQkNDUUJBS0FFQUNDVUFBS0VFQUNDVUFBQ0VFZ0NBVUFJQUVFb0FBRUlKQUVBb2J3UURDR1VEQUFnbEFBQ2hCQUFnbEFBQWhCSUFnRkFDQUJCS0FBQkNDUUJBS0FFQUNDVUFBS0VFQUNDVUFBQ0VFZ0NBVUFJQUVFb0FBRUlKQUVBb0FRQUk5Vjl0ODJsaGZBWDBjZ0FBQUFCSlJVNUVya0pnZ2c9PSIsICJzaXplcyI6ICI1MTJ4NTEyIiwgInR5cGUiOiAiaW1hZ2UvcG5nIn0sIHsic3JjIjogImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBZ0FBQUFJQUNBSUFBQUI3R2tPdEFBQUxqRWxFUVZSNG5PM2RUWEpjVnhuSDRhUFVuUkJTUlFnd3BTUmd4QW9vR0ZCWVk2b3NiNER3TVpmWkNIYm1zck9DMkN6QXZSV1VzZTFrQzgxQXhpaHlXMUpMOTk3ejhYK2U4alRKcVhUcS9lVTlWK3A3OEpQZi9ya0FrR2ZhYnJlMXp3QkFCWi9VUGdBQWRRZ0FRQ2dCQUFnbEFBQ2hCQUFnbEFBQWhCSUFnRkFDQUJCS0FBQkNDUUJBS0FFQUNDVUFBS0VFQUNDVUFBQ0VFZ0NBVUFJQUVFb0FBRUpOcFhnakdFQWlHd0JBS0FFQUNDVUFBS0VFQUNDVUFBQ0VFZ0NBVUFJQUVFb0FBRUlKQUVBb0FRQUlKUUFBb1FRQUlKUUFBSVFTQUlCUUFnQVFhdkk2QUlCTU5nQ0FVTjRJQmhES0JnQVFTZ0FBUWdrQVFDZ0JBQWdsQUFDaEJBQWdsQUFBaEJJQWdGQUNBQkJLQUFCQ0NRQkFLQUVBQ0NVQUFLRUVBQ0NVQUFDRUVnQ0FVQUlBRU1vYndRQkMyUUFBUWdrQVFDZ0JBQWdsQUFDaEJBQWdsQUFBaEJJQWdGQUNBQkJLQUFCQ0NRQkFLQUVBQ0NVQUFLRUVBQ0RVNU10QUFUTFpBQUJDQ1FCQUtBRUFDQ1VBQUtHbXJhZkFBSkZzQUFDaEJBQWdsQUFBaEJJQWdGQUNBQkJLQUFCQ0NRQkFLQUVBQ0NVQUFLRUVBQ0NVQUFDRUVnQ0FVQUlBRUVvQUFFSUpBRUFvQVFBSUpRQUFvYWJpaldBQWtXd0FBS0VFQUNDVUFBQ0VFZ0NBVUFJQUVFb0FBRUlKQUVBb0FRQUlKUUFBb1FRQUlOVGtteUFBTXRrQUFFSUpBRUFvQVFBSUpRQUFvUVFBSUpRQUFJVHlSakNBVURZQWdGQUNBQkJLQUFCQ0NRQkFLQUVBQ0NVQUFLRUVBQ0NVQUFDRUVnQ0FVQUlBRUVvQUFFSUpBRUFvQVFBSUpRQUFvUVFBSUpRQUFJUVNBSUJRQWdBUXlpc2hBVUxaQUFCQ0NRQkFLQUVBQ0NVQUFLRUVBQ0NVQUFDRUVnQ0FVSk5mQXdESVpBTUFDQ1VBQUtFRUFDQ1VBQUNFRWdDQVVBSUF6Ty9WNmV2YVIrQm1BZ0FzUWdQYUp3REFVbDZkdnBhQmxna0FzQ3dOYU5hMDlhdkF3TUplbmI0Ky91b1h0VS9CVlRZQVlBMmIwemUxajhCVkFnQ3NaSFA2UmdhYUlnREFxalNnSFFJQXJFMERHaUVBUUFXdWcxb2dBRUExR2xDWEFBQTFhVUJGQWdCVTVqcW9GZ0VBbXFBQjZ4TUFvQlVhc0RJQkFCcWlBV3NTQUtBdEhnbXNSZ0NBRm1uQUNnUUFhSlFHTEUwQWdIYTVEbHFVQUFDdDA0Q0ZDQURRQVExWXdsUzhFUXpvd2ViMHpmRlhQNjk5aXFIWUFJQnViRTdmYms3ZjFqN0ZPQVFBNkl3R3pFVUFnUDVvd0N3RUFPaVM2NkQ3RXdDZ1l4cHdINU1mQWdLNnRqbDllL3pVVHdmZGhRMEE2TjdtOGR2Tlk2dkEzZ1FBR0lRRzdFc0FnSEZvd0Y0RUFCaUtCdHllQUFDajhVamdsZ1FBR0pNRzNFZ0FnR0Zwd1BVRUFCaVo2NkJyQ0FBd1BnM1lTUUNBQ0Jyd29ZUFBmbk5jK3d5ZDhaOFI5TXVYUmx6bWpXQkFrSXYvZ1R0KytyUGFCMm1DS3lBZ3p1YnhkN1dQMEFRQkFCSnBRQkVBSU5ibThYZmhHUkFBSUZweUF3UUFTQmZiQUFFQUNMME9FZ0NBZDlJYUlBQUEveGZWQUFFQStJR2NCZ2dBd0ZVaGp3UUVBR0MzNFJzZ0FBQzdEZitWUVZQdEF3QTBaL2pSZjhFR0FQQURJZE8vQ0FEQVpUblR2d2dBd0h0UjA3OTRCZ0JROGtiL0JSc0FrQzV6K2hldmhBVENIVC85SW5ZTXVnSUNRaDAvL2FMMkVTcHpCUVFrTXYxTEtWUHE2Z1BrT241aStwZmlDZ2lJWXZSZmR2RFpyLzlVK3d6QWFEYi8vTDcyRVhZdy9hL3dEQUNJWVBwL1NBQ0E4Wm4rTzNrR0FJek02TCtHRFFBWWx1bC9QUUVBeG1UNjM4Z1ZFREFhby8rV2JBREFVRXovMnhNQVlCeW0vMTRFQUJpRTZiOHZ6d0NBN2huOWQyTURBUHBtK3QrWkFBQWRNLzN2WTlyNlBtaWdRdytlL0xTVUV2c3lyMW5ZQUlEKy9HLzZjeThDQUhURzlKK0xud0lDdW1IMHo4c0dBUFRCOUorZEFBQWRNUDJYSUFCQTYwei9oWGdHQUxUTDZGK1VEUUJvbE9tL05BRUFXbVQ2cjhBVkVOQVdvMzgxTmdDZ0lhYi9tZ1FBYUlYcHZ6SUJBSnBnK3EvUE13Q2dNcU8vRmhzQVVKUHBYNUVBQU5XWS9uVzVBZ0lxTVBwYk1IbWZEckN5QjA4K04zbGFNUGtVZ0RVOStOZm50WS9BTzY2QWdKVVkvYTN4RUJoWWcrbmZJQUVBRm1mNnQwa0FnR1daL3MzeURBQllpdEhmT0JzQXNBalR2MzBIUC83VkgydWZBWUFLYkFBQW9RUUFJSlFBQUlRU0FJQlFBZ0FRU2dBQVFna0FRQ2dCQUFnbEFBQ2hCQUFnbEZkQ0FvU3lBUUNFRWdDQVVBSUFFRW9BQUVJSkFFQW9BUUFJSlFBQW9RUUFJSlFBQUlRU0FJQlFBZ0FRU2dBQVFna0FRQ2dCQUFnbEFBQ2hCQUFnMU9SOU1BQ1p2QkVNSUpRcm9BNzg1NXUvMUQ0Q01DQUJhSjNwRHl4a3FuMEFQc3JvQnhabEEyaVU2UThzVFFCYVpQb0RLeENBNXBqK3dEbzhBMmlJMFErc3lRYlFDdE1mV0prQU5NSDBCOWJuQ3FneW94K294UVpRaytrUFZDUUExWmorUUYydWdDb3crb0VXMkFEV1p2b0RqUkNBVlpuK1FEc0VZRDJtUDlBVXp3RFdZUFFERFpxMjNnaTJzUE52dnJ6LzM4VEhCTXpPRmRDeVpwbitBRXR3QmJRVW94OW9uQTFnRWFZLzBENEJtSi9wRDNSQkFHWm0rZ085OEF4Z05rWS8wQmNid0R4TWY2QTdBakFEMHgvb2tTdWdlekg2Z1g3WkFPN085QWU2SmdCM1pQb0R2WE1GdERlakh4aUREV0EvcGo4d0RBSFlnK2tQakdUeU5jTzNkUDdpeTVyL2VCOFRNRGZQQUc1V2VmUURMTU1WMEExTWYyQlVrOHVGYTV5LytHdnRJN3puWXdKbTVncG90NVpHUDhBaVhBSHRZUG9EQ1FUZ0t0TWZDSEh3NmVFZmFwK2hJYVkvOU92bzBkZTFqOUFaendEZU1mcUJOSzZBU2pIOWdVZ0NZUG9Eb2FLdmdJeCtJRm51Qm1ENkErRkNBMkQ2QThSZEFSbjlBQmV5TmdEVEgrQzlvQUNZL2dDWHBRVEE5QWU0WXZ4bkFFWS93RTZEYndDbVA4REhEQjRBWHc0RjhER0RCNkNVY3ZUb2F4a0ErTkFucFd3VC9odzllbDc3WHpXd3RQcWpwcTgvNDI4QTcya0F3R1ZCQVNnYUFIQkpWZ0JLS1VlUG5zc0FRQWtNd0FVTkFBZ05RTkVBSUY1dUFJcnJJQ0JiZEFBdWFBQ1FTUUJLMFFBZ2tnQzg0em9JU0hQdzZlSHZhNStoTGVjdi9sYjdDRHVJRXpBN0c4QlZSaTBRWWlyYjJrZG96OUhKOC9PWGplMEJQaVpnYmphQTNZNU9uaCtkV0FXQWtRbkFkVFFBR0pnQTNFQURnRkVKd00xY0J3RkRFb0RiMGdCZ01KT2ZMN205bzVObjV5Ly9YdWtmN21NQ1ptWUQyTS9SeWJQYVJ3Q1lod0RzN2Vqa21Rd0FBeENBTzlJQW9IY0NjSGNhQUhSTkFPN0ZkUkRRTHdHWWdRWUFQUktBZVdnQTBCMEJtSTNySUtBdkFqQXpEUUI2SVFEejB3Q2dDd0t3Q0EwQTJpY0FTL0ZJQUdpY0FDeExBNEJtQ2NEaU5BQm9rd0Nzd1hVUTBDQUJXSThHQUUwUmdGVnBBTkNPYWV0VlUrczZQRG43OXVVLzl2MnJmRXpBN0d3QUZSeWVuQjJlbk5VK0JaQk9BS3JSQUtBdUFhaEpBNENLQktBeTEwRkFMUUxRQkEwQTFpY0FyZEFBWUdVQzBCRFhRY0NhQktBNUdnQ3NRd0JhcEFIQUNpYS9ZZHFtdzRkbjMvNzcwaThNKzVpQXVka0Eyblg0OE96d29WVUFXSW9BdEU0RGdJVWMvT2lYdjZ0OUJnQXFzQUVBaEJJQWdGQUNBQkJLQUFCQ0NRQkFxTW12R0FGa3NnRUFoQklBZ0ZBQ0FCQktBQUJDQ1FCQUtBRUFDQ1VBQUtFRUFDQ1VBQUNFRWdDQVVBSUFFRW9BQUVJSkFFQW9BUUFJSlFBQW9RUUFJSlFBQUlUeVJqQ0FVRFlBZ0ZBQ0FCQktBQUJDQ1FCQUtBRUFDQ1VBQUtFbVB3VUtrTWtHQUJCS0FBQkNDUUJBS0FFQUNDVUFBS0VFQUNDVUFBQ0VFZ0NBVUFJQUVFb0FBRUo1SXhoQUtCc0FRQ2dCQUFnbEFBQ2hCQUFnbEFBQWhCSUFnRkFDQUJCS0FBQkNDUUJBS0FFQUNDVUFBS0VFQUNDVUFBQ0VFZ0NBVUFJQUVFb0FBRUlKQUVDb2FldU5ZQUNSYkFBQW9RUUFJSlFBQUlRU0FJQlFrMmZBQUpsc0FBQ2hCQUFnbEFBQWhCSUFnRkFDQUJCS0FBQkNDUUJBS0FFQUNDVUFBS0VFQUNDVUFBQ0VFZ0NBVUFJQUVHb3F2ZzRVSUpJTkFDQ1VBQUNFRWdDQVVBSUFFRW9BQUVJSkFFQW9BUUFJSlFBQW9RUUFJSlFBQUlRU0FJQlFBZ0FRU2dBQVFna0FRQ2dCQUFnbEFBQ2hCQUFnbERlQ0FZU3lBUUNFbWl3QUFKbHNBQUNoQkFBZ2xBQUFoQklBZ0ZBQ0FCQktBQUJDQ1FCQUtBRUFDQ1VBQUtFRUFDQ1VBQUNFRWdDQVVBSUFFRW9BQUVJSkFFQW9id1FEQ0dVREFBZ2xBQUNoQkFBZ2xBQUFoQklBZ0ZBQ0FCQktBQUJDQ1FCQUtBRUFDQ1VBQUtFRUFDQ1VBQUNFRWdDQVVBSUFFRW9BQUVJSkFFQW9BUUFJOVY5dDgybGhmQVgwY2dBQUFBQkpSVTVFcmtKZ2dnPT0iLCAic2l6ZXMiOiAiNTEyeDUxMiIsICJ0eXBlIjogImltYWdlL3BuZyIsICJwdXJwb3NlIjogIm1hc2thYmxlIn1dfQ==">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%230F2A4D'/%3E%3Cpath d='M10 16h16M22 12l4 4-4 4' stroke='%23C9942F' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M30 24H14M18 28l-4-4 4-4' stroke='%23E9CE9C' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --bg:#F7F4EC; --paper:#FFFFFF;
-    --navy:#122A47; --navy-2:#1C3A5E; --navy-deep:#0F2338;
-    --gold:#B8862E; --gold-light:#E9CE9C;
+    --navy:#0F2A4D; --navy-2:#1C3A5E; --navy-deep:#081B31; --navy-black:#050D18;
+    --gold:#C9942F; --gold-2:#D9A83E; --gold-light:#E9CE9C;
     --ink:#1A1F27; --muted:#6B6558; --line:#E4DFD1;
     --success:#3F6B4A; --success-bg:#E4EEE6;
     --warn:#8A3B26; --warn-bg:#F7E4DD;
   }
   *{box-sizing:border-box;}
-  body{margin:0; background:var(--bg); color:var(--ink); font-family:'Cairo',sans-serif; font-weight:500; -webkit-font-smoothing:antialiased;}
-  #frame{max-width:480px; margin:0 auto; min-height:100vh; background:var(--bg); display:flex; flex-direction:column; position:relative; box-shadow:0 0 50px rgba(18,42,71,.08);}
+  html,body{height:100%; margin:0; padding:0;}
+  body{position:fixed; inset:0; width:100%; height:100%; overflow:hidden; overscroll-behavior:none;
+    background:var(--bg); color:var(--ink); font-family:'Cairo',sans-serif; font-weight:500; -webkit-font-smoothing:antialiased;}
+  #frame{max-width:480px; margin:0 auto; height:100%; background:var(--bg); display:flex; flex-direction:column; position:relative; box-shadow:0 0 60px rgba(8,27,49,.12);}
   svg.ic{display:inline-block; vertical-align:middle;}
 
   /* ---------- Splash ---------- */
-  .splash{height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; background:var(--navy-deep); gap:16px;}
+  .splash{height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background:linear-gradient(165deg,var(--navy-deep),var(--navy-black)); gap:16px;}
   .splash .mark{animation:pulse 1.6s ease-in-out infinite;}
   @keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.06);opacity:.85;}}
   .splash .word{color:var(--gold-light); font-weight:800; font-size:22px; letter-spacing:.5px;}
 
   /* ---------- Header / nav ---------- */
-  header.topbar{background:var(--navy-deep); color:#fff; padding:16px 18px 14px; display:flex; align-items:center; gap:10px;}
+  header.topbar{background:linear-gradient(165deg,var(--navy-deep),var(--navy-black)); color:#fff; padding:calc(14px + env(safe-area-inset-top)) 18px 14px; display:flex; align-items:center; gap:10px; flex-shrink:0;}
   header.topbar .back{cursor:pointer; opacity:.85;}
   header.topbar .titles{flex:1;}
-  header.topbar .screen-title{font-weight:700; font-size:16.5px;}
+  header.topbar .screen-title{font-weight:700; font-size:16px;}
   header.topbar .brand-row{display:flex; align-items:center; gap:8px;}
-  header.topbar .brand{font-weight:800; font-size:19px; color:var(--gold-light);}
-  header.topbar .logout{font-size:12.5px; color:#9FB0C4; cursor:pointer; font-weight:600;}
+  header.topbar .brand{font-weight:800; font-size:18px; color:var(--gold-light);}
+  header.topbar .icon-btn{cursor:pointer; opacity:.9; color:#C6D3E1; display:flex;}
 
-  main{flex:1; padding:18px 18px 92px; overflow-y:auto;}
+  main{flex:1; padding:18px 18px 92px; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain;}
 
-  nav.tabbar{position:absolute; bottom:0; right:0; left:0; background:#fff; border-top:1px solid var(--line); display:flex; padding:7px 4px calc(7px + env(safe-area-inset-bottom));}
+  nav.tabbar{flex-shrink:0; background:#fff; border-top:1px solid var(--line); display:flex; padding:7px 4px calc(7px + env(safe-area-inset-bottom));}
   nav.tabbar button{flex:1; background:none; border:none; font-family:inherit; padding:7px 2px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; color:var(--muted); font-size:11px; font-weight:700;}
   nav.tabbar button.active{color:var(--navy);}
   nav.tabbar button.active svg{color:var(--gold);}
@@ -47,37 +56,38 @@
   .tab-dot::after{content:''; position:absolute; top:-2px; left:15px; width:8px; height:8px; border-radius:50%; background:var(--warn); border:1.5px solid #fff;}
 
   /* ---------- Auth ---------- */
-  .auth-wrap{padding:54px 26px 30px; text-align:center;}
+  .auth-wrap{padding:44px 26px 24px; text-align:center;}
   .auth-wrap h1{font-size:29px; font-weight:800; color:var(--navy); margin:16px 0 5px;}
-  .auth-wrap p.tag{color:var(--muted); font-size:14px; margin-bottom:32px; line-height:1.75;}
+  .auth-wrap p.tag{color:var(--muted); font-size:14px; margin-bottom:28px; line-height:1.75;}
   .field{text-align:right; margin-bottom:14px;}
   .field label{display:block; font-size:12.5px; color:var(--muted); margin-bottom:6px; font-weight:700;}
   input, select, textarea{width:100%; padding:13px 14px; border:1.5px solid var(--line); border-radius:10px; font-family:inherit; font-size:15px; background:#fff; color:var(--ink);}
   input:focus, select:focus, textarea:focus{outline:none; border-color:var(--navy);}
   textarea{resize:vertical; min-height:64px;}
-  .btn{width:100%; padding:14px; border:none; border-radius:10px; background:var(--navy); color:#fff; font-family:inherit; font-weight:700; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;}
+  .btn{width:100%; padding:14px; border:none; border-radius:10px; background:var(--navy); color:#fff; font-family:inherit; font-weight:700; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 3px 10px rgba(15,42,77,.18);}
   .btn:active{opacity:.85;}
-  .btn.gold{background:var(--gold); color:var(--navy-deep);}
-  .btn.ghost{background:#EFEBE3; color:var(--muted);}
-  .btn.danger{background:var(--warn-bg); color:var(--warn);}
+  .btn.gold{background:linear-gradient(135deg,var(--gold-2),var(--gold)); color:var(--navy-black); box-shadow:0 3px 12px rgba(201,148,47,.35);}
+  .btn.ghost{background:#EFEBE3; color:var(--muted); box-shadow:none;}
+  .btn.danger{background:var(--warn-bg); color:var(--warn); box-shadow:none;}
   .btn.sm{padding:10px; font-size:13.5px;}
   .btn[disabled]{opacity:.5; cursor:default;}
-  .switch-mode{margin-top:18px; font-size:13.5px; color:var(--navy-2); cursor:pointer; font-weight:700;}
+  .switch-mode{margin-top:16px; font-size:13.5px; color:var(--navy-2); cursor:pointer; font-weight:700;}
+  .howit-link{margin-top:10px; font-size:13px; color:var(--gold); cursor:pointer; font-weight:700; display:inline-flex; align-items:center; gap:5px;}
   .msg{font-size:13px; margin-top:14px; padding:10px 12px; border-radius:8px; text-align:right; line-height:1.6;}
   .msg.err{background:var(--warn-bg); color:var(--warn);}
   .msg.ok{background:var(--success-bg); color:var(--success);}
-  .hint{font-size:11.5px; color:var(--muted); margin-top:24px; line-height:1.8;}
+  .hint{font-size:11.5px; color:var(--muted); margin-top:22px; line-height:1.8;}
 
   h2.section-title{font-size:17px; font-weight:700; color:var(--navy); margin:2px 0 14px; display:flex; align-items:center; gap:8px;}
   .empty{text-align:center; padding:46px 20px; color:var(--muted); font-size:14px; line-height:1.85;}
   .empty svg{opacity:.35; margin-bottom:10px;}
 
   /* ---------- Item card ---------- */
-  .item{position:relative; background:var(--paper); border:1px solid var(--line); border-radius:13px; padding:0; margin-bottom:13px; overflow:hidden; border-right:4px solid var(--navy);}
+  .item{position:relative; background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:0; margin-bottom:13px; overflow:hidden; border-right:4px solid var(--navy); box-shadow:0 2px 10px rgba(18,42,71,.05);}
   .item .photo{width:100%; height:150px; object-fit:cover; display:block; background:var(--bg);}
   .item .photo-ph{width:100%; height:110px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--bg),#EFE9D8); font-size:34px;}
   .item .body{padding:13px 15px 14px;}
-  .item .value-tag{position:absolute; top:10px; left:10px; background:var(--gold); color:var(--navy-deep); font-weight:800; font-size:12px; padding:4px 10px; border-radius:20px; z-index:2;}
+  .item .value-tag{position:absolute; top:10px; left:10px; background:linear-gradient(135deg,var(--gold-2),var(--gold)); color:var(--navy-black); font-weight:800; font-size:12px; padding:4px 10px; border-radius:20px; z-index:2; box-shadow:0 2px 6px rgba(0,0,0,.15);}
   .item .cat{font-size:12px; color:var(--muted); font-weight:700; margin-bottom:3px; display:flex; align-items:center; gap:5px;}
   .item h3{font-size:15.5px; font-weight:700; margin:0 0 6px; color:var(--ink);}
   .item p.desc{font-size:13px; color:var(--muted); line-height:1.6; margin:0 0 9px;}
@@ -85,7 +95,7 @@
   .item .cond{display:inline-block; font-size:11px; font-weight:700; color:var(--success); background:var(--success-bg); padding:3px 9px; border-radius:20px; margin-top:9px;}
 
   /* ---------- Match / deal cards ---------- */
-  .match-card{background:var(--paper); border:1.5px solid var(--gold); border-radius:13px; padding:14px 16px; margin-bottom:14px;}
+  .match-card{background:var(--paper); border:1.5px solid var(--gold); border-radius:14px; padding:14px 16px; margin-bottom:14px; box-shadow:0 2px 10px rgba(201,148,47,.08);}
   .match-card .badge{font-size:12px; font-weight:800; color:var(--gold); margin-bottom:11px; display:flex; align-items:center; gap:6px;}
   .match-row{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
   .match-item-box{flex:1; background:var(--bg); border-radius:9px; padding:10px 12px;}
@@ -99,7 +109,7 @@
   .status-pill.negotiating{background:#E6EEF5; color:var(--navy-2);}
 
   /* ---------- Deal view ---------- */
-  .deal-hero{background:var(--navy-deep); color:#fff; border-radius:14px; padding:18px; margin-bottom:18px;}
+  .deal-hero{background:linear-gradient(165deg,var(--navy-deep),var(--navy-black)); color:#fff; border-radius:16px; padding:18px; margin-bottom:18px;}
   .deal-hero .swap-line{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
   .deal-hero .box{flex:1; background:rgba(255,255,255,.08); border-radius:10px; padding:10px 12px;}
   .deal-hero .box .lbl{font-size:10.5px; color:#9FB0C4; font-weight:700; margin-bottom:3px;}
@@ -119,7 +129,7 @@
   .confirm-box{background:var(--success-bg); border-radius:12px; padding:14px 16px; margin-bottom:16px;}
   .confirm-box p{font-size:13px; color:var(--success); margin:0 0 10px; line-height:1.7; font-weight:600;}
 
-  .chat-wrap{display:flex; flex-direction:column; height:340px; border:1px solid var(--line); border-radius:12px; background:#fff; margin-bottom:14px; overflow:hidden;}
+  .chat-wrap{display:flex; flex-direction:column; height:320px; border:1px solid var(--line); border-radius:12px; background:#fff; margin-bottom:14px; overflow:hidden;}
   .chat-msgs{flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:8px;}
   .bubble{max-width:78%; padding:9px 13px; border-radius:14px; font-size:13.5px; line-height:1.55;}
   .bubble.mine{align-self:flex-start; background:var(--navy); color:#fff; border-bottom-right-radius:4px;}
@@ -142,15 +152,23 @@
   .cat-chip.sel{border-color:var(--gold); background:#FCF6EA; color:var(--navy);}
 
   /* ---------- Wallet ---------- */
-  .balance-card{background:var(--navy-deep); color:#fff; border-radius:16px; padding:26px 20px; text-align:center; margin-bottom:22px;}
+  .balance-card{background:linear-gradient(165deg,var(--navy-deep),var(--navy-black)); color:#fff; border-radius:18px; padding:26px 20px; text-align:center; margin-bottom:22px; box-shadow:0 8px 24px rgba(8,27,49,.25);}
   .balance-card .lbl{font-size:12.5px; color:#9FB0C4; font-weight:700; margin-bottom:6px;}
-  .balance-card .num{font-size:38px; font-weight:800; color:var(--gold-light);}
+  .balance-card .num{font-size:40px; font-weight:800; background:linear-gradient(135deg,var(--gold-2),var(--gold-light)); -webkit-background-clip:text; background-clip:text; color:transparent;}
   .ledger-row{display:flex; justify-content:space-between; align-items:center; padding:11px 4px; border-bottom:1px solid var(--line);}
   .ledger-row .t{font-size:13px; color:var(--muted); font-weight:600;}
   .ledger-row .a{font-weight:800; font-size:14.5px;}
   .a.pos{color:var(--success);} .a.neg{color:var(--warn);}
 
   .report-link{text-align:center; font-size:12px; color:var(--muted); margin-top:18px; cursor:pointer; text-decoration:underline;}
+
+  /* ---------- How it works ---------- */
+  .step{display:flex; gap:14px; margin-bottom:22px;}
+  .step .num{flex-shrink:0; width:34px; height:34px; border-radius:50%; background:var(--navy); color:var(--gold-light); font-weight:800; font-size:14px; display:flex; align-items:center; justify-content:center;}
+  .step .tx h4{margin:0 0 4px; font-size:14.5px; color:var(--navy); font-weight:700;}
+  .step .tx p{margin:0; font-size:13px; color:var(--muted); line-height:1.7;}
+  .intro-card{background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:20px;}
+  .intro-card p{font-size:13.5px; color:var(--ink); line-height:1.85; margin:0;}
 </style>
 </head>
 <body>
@@ -179,6 +197,8 @@ function icon(name, size=20, color='currentColor'){
     close:'<line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/>',
     back:'<polyline points="15 5 8 12 15 19"/>',
     check:'<polyline points="5 12 10 17 19 7"/>',
+    help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.5 2.5 0 1 1 3.4 2.3c-.8.4-1.4.9-1.4 1.8v.4"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/>',
+    list:'<circle cx="5" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="5" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="5" cy="18" r="1.2" fill="currentColor" stroke="none"/><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/>',
   };
   if (name === 'star'){
     return `<svg class="ic" width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}"><path d="M12 3.2l2.7 5.9 6.4.6-4.8 4.3 1.4 6.3-5.7-3.4-5.7 3.4 1.4-6.3-4.8-4.3 6.4-.6z"/></svg>`;
@@ -191,14 +211,14 @@ function icon(name, size=20, color='currentColor'){
 
 function brandMark(size=64){
   return `<svg width="${size}" height="${size}" viewBox="0 0 40 40">
-    <circle cx="20" cy="20" r="20" fill="#122A47"/>
-    <path d="M10 16h16M22 12l4 4-4 4" stroke="#B8862E" stroke-width="2.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="20" cy="20" r="20" fill="#0F2A4D"/>
+    <path d="M10 16h16M22 12l4 4-4 4" stroke="#C9942F" stroke-width="2.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M30 24H14M18 28l-4-4 4-4" stroke="#E9CE9C" stroke-width="2.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>`;
 }
 
 let state = {
-  session:null, view:'browse', authMode:'signin', loading:false, authMsg:null, booting:true,
+  session:null, view:'browse', prevView:'browse', authMode:'signin', loading:false, authMsg:null, booting:true,
   categories:[], catMap:{},
   browseItems:[],
   myItems:[], myMatches:[],
@@ -464,13 +484,18 @@ async function handleReport(){
   alert('تم إرسال البلاغ - سنراجعه قريباً');
 }
 
+/* ================= HOW IT WORKS ================= */
+function openHowIt(){ state.prevView = state.session ? state.view : null; state.view = 'howit'; render(); }
+function closeHowIt(){ if (!state.session){ render(); return; } state.view = state.prevView || 'browse'; render(); }
+
 /* ================= NAV ================= */
 async function goTo(view){ state.view=view; render(); await loadAllForCurrentTab(); render(); }
 
 /* ================= RENDER ================= */
 function render(){
   if (state.booting) return;
-  if (!state.session){ frame.innerHTML = renderAuth(); attachAuthEvents(); return; }
+  if (!state.session && state.view !== 'howit'){ frame.innerHTML = renderAuth(); attachAuthEvents(); return; }
+  if (!state.session && state.view === 'howit'){ frame.innerHTML = renderHowItStandalone(); attachHowItStandaloneEvents(); return; }
   frame.innerHTML = renderShell();
   attachShellEvents();
 }
@@ -494,32 +519,58 @@ function renderAuth(){
     </form>
     ${state.authMsg?`<div class="msg ${state.authMsg.type}">${state.authMsg.text}</div>`:''}
     <div class="switch-mode" id="switch-mode">${isSignup?'لديك حساب؟ سجّلي الدخول':'حساب جديد؟ أنشئيه من هنا'}</div>
+    <div><span class="howit-link" id="howit-link">${icon('help',16,'#C9942F')} كيف يعمل بادلني؟</span></div>
     <p class="hint">تسجيل بالبريد مؤقتاً لتسهيل الاختبار، وسيُستبدل برقم الهاتف (OTP) في الإطلاق الفعلي.</p>
   </div>`;
 }
 function attachAuthEvents(){
   document.getElementById('auth-form').addEventListener('submit', handleAuthSubmit);
   document.getElementById('switch-mode').addEventListener('click', ()=>{ state.authMode = state.authMode==='signup'?'signin':'signup'; state.authMsg=null; render(); });
+  document.getElementById('howit-link').addEventListener('click', openHowIt);
+}
+
+function howItStepsHtml(){
+  return `
+    <div class="intro-card"><p>"بادلني" يحل مشكلة قديمة: عندك غرض ما تستخدمينه، وتبين غرضاً غيره - بدل ما تبيعين وتشترين بالنقد، بادليه مباشرة مع شخص عنده بالضبط ما تحتاجينه.</p></div>
+    <div class="step"><div class="num">1</div><div class="tx"><h4>أضيفي غرضك</h4><p>صورة، وصف، وحالته، وحدّدي بوضوح: أي فئة أو غرض تبين بالمقابل.</p></div></div>
+    <div class="step"><div class="num">2</div><div class="tx"><h4>التوفيق الذكي يبحث لك</h4><p>بمجرد إضافة الغرض، يبحث النظام تلقائياً عن أي شخص يملك ما تريدين ويريد بالضبط ما تملكين، ويرسل لكما تنبيهاً فورياً.</p></div></div>
+    <div class="step"><div class="num">3</div><div class="tx"><h4>تفاوضا داخل التطبيق</h4><p>محادثة آمنة لترتيب التفاصيل، مع إمكانية إضافة فرق نقاط بسيط إن لم تتساوَ القيمتان تماماً.</p></div></div>
+    <div class="step"><div class="num">4</div><div class="tx"><h4>اتفقا وسلّما الغرضين</h4><p>حدّدا مكاناً آمناً للّقاء، وبعد التسليم الفعلي يؤكد كل طرف الاستلام من داخل التطبيق.</p></div></div>
+    <div class="step"><div class="num">5</div><div class="tx"><h4>قيّما بعضكما</h4><p>بعد اكتمال المبادلة، يقيّم كل طرف الآخر - وهذا يبني سمعة موثوقية لكل مستخدم.</p></div></div>
+    <div class="intro-card"><p><b>محفظة النقاط:</b> إذا ما لقيتِ تطابقاً مباشراً، تقدرين تبادلين غرضك مقابل نقاط داخلية، وتستخدمينها لاحقاً للحصول على غرض من شخص ثالث - نقاط لا تُشترى بالمال ولا تتحول له، للحفاظ على بساطة النظام وأمانه.</p></div>
+  `;
+}
+function renderHowItStandalone(){
+  return `<div style="height:100%; display:flex; flex-direction:column;">
+    <header class="topbar"><span class="back" id="howit-back">${icon('back',22,'#fff')}</span><div class="titles"><div class="screen-title">كيف يعمل بادلني</div></div><div class="brand-row">${brandMark(26)}</div></header>
+    <main>${howItStepsHtml()}<button class="btn gold" id="howit-start">ابدئي الآن</button></main>
+  </div>`;
+}
+function attachHowItStandaloneEvents(){
+  document.getElementById('howit-back').addEventListener('click', ()=>{ state.view='browse'; render(); });
+  document.getElementById('howit-start').addEventListener('click', ()=>{ state.view='browse'; render(); });
 }
 
 function renderShell(){
-  const titles = {browse:'تصفح الأغراض', add:'أضف غرضاً', mine:'أغراضي ومطابقاتي', wallet:'محفظة النقاط', deal:'تفاصيل الصفقة'};
+  const titles = {browse:'تصفح الأغراض', add:'أضف غرضاً', mine:'أغراضي ومطابقاتي', wallet:'محفظة النقاط', deal:'تفاصيل الصفقة', howit:'كيف يعمل بادلني'};
   const pendingCount = state.myMatches ? state.myMatches.filter(m=>m.status==='suggested').length : 0;
   return `
     <header class="topbar">
       ${state.view==='deal' ? `<span class="back" id="back-btn">${icon('back',22,'#fff')}</span>` : ''}
+      ${state.view==='howit' ? `<span class="back" id="howit-back2">${icon('back',22,'#fff')}</span>` : ''}
       <div class="titles"><div class="screen-title">${titles[state.view]}</div></div>
+      ${state.view!=='howit' ? `<span class="icon-btn" id="howit-open" style="margin-left:6px;">${icon('help',19,'#C6D3E1')}</span>` : ''}
       <div class="brand-row"><span class="brand">بادلني</span>${brandMark(26)}</div>
     </header>
     <main>${state.loading ? '<div class="empty">جارٍ التحميل...</div>' : renderView()}</main>
-    ${state.view!=='deal' ? `
+    ${(state.view!=='deal' && state.view!=='howit') ? `
     <nav class="tabbar">
       <button data-v="browse" class="${state.view==='browse'?'active':''}">${icon('search',20)}تصفح</button>
       <button data-v="add" class="${state.view==='add'?'active':''}">${icon('plus',20)}أضف</button>
       <button data-v="mine" class="${state.view==='mine'?'active':''} ${pendingCount?'tab-dot':''}">${icon('box',20)}أغراضي</button>
       <button data-v="wallet" class="${state.view==='wallet'?'active':''}">${icon('wallet',20)}محفظتي</button>
     </nav>` : ''}
-    <div style="position:absolute;top:16px;left:18px;color:#9FB0C4;font-size:12.5px;cursor:pointer;font-weight:600;" id="logout-btn">خروج</div>
+    ${state.view!=='howit' ? `<div style="position:absolute;top:calc(16px + env(safe-area-inset-top));left:18px;color:#9FB0C4;font-size:12.5px;cursor:pointer;font-weight:600;" id="logout-btn">خروج</div>` : ''}
   `;
 }
 function renderView(){
@@ -528,6 +579,7 @@ function renderView(){
   if (state.view==='mine') return renderMine();
   if (state.view==='wallet') return renderWallet();
   if (state.view==='deal') return renderDeal();
+  if (state.view==='howit') return howItStepsHtml();
 }
 
 function itemPhoto(it){
@@ -574,7 +626,7 @@ function renderAddForm(){
 function renderMine(){
   const suggested = state.myMatches.filter(m=>m.status==='suggested');
   const others = state.myMatches.filter(m=>m.status!=='suggested');
-  let html = `<h2 class="section-title">${icon('swap',18,'#122A47')} مطابقات جديدة (${suggested.length})</h2>`;
+  let html = `<h2 class="section-title">${icon('swap',18,'#0F2A4D')} مطابقات جديدة (${suggested.length})</h2>`;
   if (!suggested.length){
     html += `<div class="empty" style="padding:16px 10px 30px;">لا مطابقات جديدة - تظهر تلقائياً عند وجود غرض آخر يريد فئة أغراضك ويملك ما تريدينه</div>`;
   } else {
@@ -584,7 +636,7 @@ function renderMine(){
     html += `<h2 class="section-title" style="margin-top:22px;">صفقاتي (${others.length})</h2>`;
     html += others.map(m=>matchCardHtml(m)).join('');
   }
-  html += `<h2 class="section-title" style="margin-top:26px;">${icon('box',18,'#122A47')} أغراضي المنشورة (${state.myItems.length})</h2>`;
+  html += `<h2 class="section-title" style="margin-top:26px;">${icon('box',18,'#0F2A4D')} أغراضي المنشورة (${state.myItems.length})</h2>`;
   if (!state.myItems.length) html += `<div class="empty">لم تضيفي أي غرض بعد</div>`;
   else html += state.myItems.map(it=>`
     <div class="item">${itemPhoto(it)}<span class="value-tag">${it.estimated_value} ر.ع</span>
@@ -595,16 +647,16 @@ function renderMine(){
 }
 function matchCardHtml(m){
   return `<div class="match-card">
-    <div class="badge">${icon('swap',16,'#B8862E')} ${STATUS_LABEL[m.status]}</div>
+    <div class="badge">${icon('swap',16,'#C9942F')} ${STATUS_LABEL[m.status]}</div>
     <div class="match-row">
       <div class="match-item-box"><div class="lbl">غرضك</div><div class="nm">${escapeHtml(m.myItem.title)}</div></div>
-      <span style="color:#B8862E;">⇄</span>
+      <span style="color:#C9942F;">⇄</span>
       <div class="match-item-box"><div class="lbl">غرض الطرف الآخر</div><div class="nm">${escapeHtml(m.otherItem.title)}</div></div>
     </div>
     ${m.status==='suggested' ? `<div class="row-btns">
         <button class="btn sm" onclick="handleAcceptMatch('${m.matchId}')">${icon('check',15,'#fff')} أعجبتني</button>
         <button class="btn sm ghost" onclick="handleDismissMatch('${m.matchId}')">تجاهل</button>
-      </div>` : m.status==='dismissed' ? '' : `<button class="btn sm gold" onclick='openDealFromMine("${m.matchId}")'>${icon('chat',15,'#122A47')} فتح الصفقة</button>`}
+      </div>` : m.status==='dismissed' ? '' : `<button class="btn sm gold" onclick='openDealFromMine("${m.matchId}")'>${icon('chat',15,'#0F2A4D')} فتح الصفقة</button>`}
   </div>`;
 }
 function openDealFromMine(matchId){ const m = state.myMatches.find(x=>x.matchId===matchId); if (m) openDeal(m); }
@@ -648,7 +700,7 @@ function renderDeal(){
         <button class="btn sm ghost" type="submit" style="width:100%;">تحديث الشروط</button>
       </form>
     </div>
-    <button class="btn gold" onclick="handleAgree()" style="margin-bottom:12px;">${icon('check',18,'#122A47')} اتفقنا - ننتقل للتسليم</button>`;
+    <button class="btn gold" onclick="handleAgree()" style="margin-bottom:12px;">${icon('check',18,'#0F2A4D')} اتفقنا - ننتقل للتسليم</button>`;
   } else if (offer.status === 'agreed'){
     if (offer.points_amount>0 && offer.points_payer_id===state.session.user.id && !d.iHeldPoints){
       html += `<div class="confirm-box"><p>يوجد فرق ${offer.points_amount} نقطة عليك دفعها - يُحجز المبلغ الآن ويُحرَّر تلقائياً عند إتمام المبادلة</p>
@@ -670,10 +722,10 @@ function renderDeal(){
   }
 
   if (d.theyJoined && ['negotiating','agreed'].includes(offer.status)){
-    html += `<h2 class="section-title" style="margin-top:18px;">${icon('chat',18,'#122A47')} المحادثة</h2>
+    html += `<h2 class="section-title" style="margin-top:18px;">${icon('chat',18,'#0F2A4D')} المحادثة</h2>
     <div class="chat-wrap">
       <div class="chat-msgs" id="chat-msgs">${dealMessagesHtml()}</div>
-      <form class="chat-input" id="chat-form"><input id="chat-input" placeholder="اكتبي رسالة..."><button type="submit">${icon('send',20,'#B8862E')}</button></form>
+      <form class="chat-input" id="chat-form"><input id="chat-input" placeholder="اكتبي رسالة..."><button type="submit">${icon('send',20,'#C9942F')}</button></form>
     </div>
     <button class="btn danger sm" onclick="handleCancelDeal()">إلغاء الصفقة</button>
     <div class="report-link" onclick="handleReport()">الإبلاغ عن هذا الطرف</div>`;
@@ -682,9 +734,11 @@ function renderDeal(){
 }
 
 function attachShellEvents(){
-  document.getElementById('logout-btn').addEventListener('click', handleSignOut);
+  const logoutBtn = document.getElementById('logout-btn'); if (logoutBtn) logoutBtn.addEventListener('click', handleSignOut);
   document.querySelectorAll('nav.tabbar button').forEach(b=>b.addEventListener('click',()=>goTo(b.dataset.v)));
   const back = document.getElementById('back-btn'); if (back) back.addEventListener('click', leaveDeal);
+  const howitOpen = document.getElementById('howit-open'); if (howitOpen) howitOpen.addEventListener('click', openHowIt);
+  const howitBack2 = document.getElementById('howit-back2'); if (howitBack2) howitBack2.addEventListener('click', closeHowIt);
   const addForm = document.getElementById('add-form'); if (addForm) addForm.addEventListener('submit', handleAddItem);
   const photoBox = document.getElementById('photo-upload-box');
   if (photoBox) photoBox.addEventListener('click', ()=>document.getElementById('photo-input').click());
