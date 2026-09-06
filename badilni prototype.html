@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>بادلني</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --bg:#F7F4EC;
+    --navy:#122A47;
+    --navy-2:#1C3A5E;
+    --gold:#B8862E;
+    --gold-light:#E9CE9C;
+    --ink:#1A1F27;
+    --muted:#6B6558;
+    --line:#E4DFD1;
+    --success:#3F6B4A;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Cairo',sans-serif; font-weight:500;
+    -webkit-font-smoothing:antialiased;
+  }
+  #frame{max-width:480px; margin:0 auto; min-height:100vh; background:var(--bg);
+    display:flex; flex-direction:column; position:relative; box-shadow:0 0 40px rgba(18,42,71,.06);}
+
+  header.topbar{
+    background:var(--navy); color:#fff; padding:18px 20px 16px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  header.topbar .brand{font-weight:800; font-size:22px; color:var(--gold-light); letter-spacing:.5px;}
+  header.topbar .screen-title{font-weight:700; font-size:17px;}
+  header.topbar .logout{font-size:13px; color:#C9D4E0; cursor:pointer; font-weight:600;}
+
+  main{flex:1; padding:18px 18px 90px; overflow-y:auto;}
+
+  /* ---------- Auth ---------- */
+  .auth-wrap{padding:40px 26px; text-align:center;}
+  .auth-wrap h1{font-size:30px; font-weight:800; color:var(--navy); margin:6px 0 4px;}
+  .auth-wrap p.tag{color:var(--muted); font-size:14.5px; margin-bottom:34px; line-height:1.7;}
+  .field{text-align:right; margin-bottom:14px;}
+  .field label{display:block; font-size:13px; color:var(--muted); margin-bottom:6px; font-weight:600;}
+  .field input{
+    width:100%; padding:13px 14px; border:1.5px solid var(--line); border-radius:10px;
+    font-family:inherit; font-size:15px; background:#fff; color:var(--ink);
+  }
+  .field input:focus{outline:none; border-color:var(--navy);}
+  .btn-main{
+    width:100%; padding:14px; border:none; border-radius:10px; background:var(--navy); color:#fff;
+    font-family:inherit; font-weight:700; font-size:15.5px; cursor:pointer; margin-top:6px;
+  }
+  .btn-main:active{background:var(--navy-2);}
+  .btn-gold{background:var(--gold); color:var(--navy);}
+  .switch-mode{margin-top:20px; font-size:14px; color:var(--navy-2); cursor:pointer; font-weight:600;}
+  .msg{font-size:13.5px; margin-top:14px; padding:10px 12px; border-radius:8px; text-align:right; line-height:1.6;}
+  .msg.err{background:#F7E4DD; color:#8A3B26;}
+  .msg.ok{background:#E4EEE6; color:var(--success);}
+
+  /* ---------- Shared ---------- */
+  h2.section-title{font-size:18px; font-weight:700; color:var(--navy); margin:2px 0 16px;}
+  .empty{
+    text-align:center; padding:50px 20px; color:var(--muted); font-size:14.5px; line-height:1.9;
+  }
+  .empty .big{font-size:34px; display:block; margin-bottom:10px;}
+
+  /* ---------- Item card ---------- */
+  .item{
+    position:relative; background:#fff; border:1px solid var(--line); border-radius:12px;
+    padding:14px 16px; margin-bottom:12px; border-right:4px solid var(--navy);
+  }
+  .item .value-tag{
+    position:absolute; top:12px; left:12px; background:var(--gold); color:var(--navy);
+    font-weight:800; font-size:12.5px; padding:4px 10px; border-radius:20px;
+  }
+  .item .cat{font-size:12.5px; color:var(--muted); font-weight:600; margin-bottom:4px;}
+  .item h3{font-size:16px; font-weight:700; margin:0 0 6px; color:var(--ink); padding-left:70px;}
+  .item p.desc{font-size:13.5px; color:var(--muted); line-height:1.6; margin:0 0 10px;}
+  .item .wants{
+    font-size:13px; background:var(--bg); border-radius:8px; padding:8px 10px; color:var(--navy-2); font-weight:600;
+  }
+  .item .cond{
+    display:inline-block; font-size:11.5px; font-weight:700; color:var(--success);
+    background:#E4EEE6; padding:3px 9px; border-radius:20px; margin-top:8px;
+  }
+
+  /* ---------- Match card ---------- */
+  .match-card{
+    background:#fff; border:1.5px solid var(--gold); border-radius:12px; padding:14px 16px; margin-bottom:14px;
+  }
+  .match-card .badge{
+    font-size:12px; font-weight:800; color:var(--gold); margin-bottom:10px; display:flex; align-items:center; gap:6px;
+  }
+  .match-row{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
+  .match-item-box{flex:1; background:var(--bg); border-radius:9px; padding:10px 12px;}
+  .match-item-box .lbl{font-size:11px; color:var(--muted); font-weight:700; margin-bottom:3px;}
+  .match-item-box .nm{font-size:14px; font-weight:700; color:var(--ink);}
+  .swap-icon{font-size:18px; color:var(--gold);}
+  .status-pill{
+    display:inline-block; font-size:12px; font-weight:700; padding:5px 12px; border-radius:20px;
+  }
+  .status-pill.suggested{background:#FCF1DD; color:var(--gold);}
+  .status-pill.accepted{background:#E4EEE6; color:var(--success);}
+  .status-pill.dismissed{background:#EFEBE3; color:var(--muted);}
+
+  /* ---------- Form ---------- */
+  select, textarea{
+    width:100%; padding:13px 14px; border:1.5px solid var(--line); border-radius:10px;
+    font-family:inherit; font-size:15px; background:#fff; color:var(--ink);
+  }
+  textarea{resize:vertical; min-height:70px;}
+  .check-row{display:flex; align-items:center; gap:8px; margin:6px 0 18px; font-size:14px; color:var(--navy-2); font-weight:600;}
+
+  /* ---------- Wallet ---------- */
+  .balance-card{
+    background:var(--navy); color:#fff; border-radius:16px; padding:26px 20px; text-align:center; margin-bottom:22px;
+  }
+  .balance-card .lbl{font-size:13px; color:#B9C6D6; font-weight:600; margin-bottom:6px;}
+  .balance-card .num{font-size:38px; font-weight:800; color:var(--gold-light);}
+  .ledger-row{
+    display:flex; justify-content:space-between; align-items:center; padding:12px 4px; border-bottom:1px solid var(--line);
+  }
+  .ledger-row .t{font-size:13.5px; color:var(--muted); font-weight:600;}
+  .ledger-row .a{font-weight:800; font-size:15px;}
+  .a.pos{color:var(--success);} .a.neg{color:#8A3B26;}
+
+  /* ---------- Bottom nav ---------- */
+  nav.tabbar{
+    position:absolute; bottom:0; right:0; left:0; background:#fff; border-top:1px solid var(--line);
+    display:flex; padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+  }
+  nav.tabbar button{
+    flex:1; background:none; border:none; font-family:inherit; padding:8px 2px; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--muted); font-size:11.5px; font-weight:700;
+  }
+  nav.tabbar button .ic{font-size:20px;}
+  nav.tabbar button.active{color:var(--navy);}
+  nav.tabbar button.active .ic{color:var(--gold);}
+</style>
+</head>
+<body>
+<div id="frame"></div>
+
+<script>
+const SUPABASE_URL = 'https://kidmbxmbeiutgnexghyv.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_eZtfiyWq6Hqxus0Yu4aKDw_0VZM7H1T';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const CAT_ICON = {smartphone:'📱', gamepad:'🎮', book:'📚'};
+const COND_LABEL = {new:'جديد', like_new:'كالجديد', good:'جيد', fair:'مقبول'};
+
+let state = {
+  session: null,
+  view: 'browse',
+  authMode: 'signin',
+  categories: [],
+  catMap: {},
+  browseItems: [],
+  myItems: [],
+  myMatches: [], // [{myItem, otherItem, match:{id,status}}]
+  balance: 0,
+  ledger: [],
+  loading: false,
+  authMsg: null
+};
+
+const frame = document.getElementById('frame');
+
+async function init(){
+  const { data } = await sb.auth.getSession();
+  state.session = data.session;
+  sb.auth.onAuthStateChange((_event, session) => { state.session = session; render(); });
+  await loadCategories();
+  render();
+}
+
+async function loadCategories(){
+  const { data, error } = await sb.from('categories').select('*').eq('is_active', true);
+  if (!error && data){
+    state.categories = data;
+    state.catMap = Object.fromEntries(data.map(c => [c.id, c]));
+  }
+}
+
+function catName(id){ return id && state.catMap[id] ? state.catMap[id].name_ar : null; }
+function catIcon(id){ return id && state.catMap[id] ? (CAT_ICON[state.catMap[id].icon] || '🔹') : '🔹'; }
+
+/* ================= AUTH ================= */
+async function handleAuthSubmit(e){
+  e.preventDefault();
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  state.authMsg = null;
+  if (!email || !password){ state.authMsg = {type:'err', text:'أدخلي البريد وكلمة المرور'}; render(); return; }
+
+  try{
+    if (state.authMode === 'signup'){
+      const { data, error } = await sb.auth.signUp({ email, password });
+      if (error) throw error;
+      if (data.session){
+        state.session = data.session;
+      } else {
+        state.authMsg = {type:'ok', text:'تم إنشاء الحساب - قد يصلك بريد لتأكيده، افتحيه واضغطي الرابط ثم سجّلي الدخول'};
+      }
+    } else {
+      const { data, error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      state.session = data.session;
+    }
+  } catch(err){
+    state.authMsg = {type:'err', text: translateAuthError(err.message)};
+  }
+  render();
+  if (state.session){ await loadAllForCurrentTab(); render(); }
+}
+
+function translateAuthError(msg){
+  if (/already registered|already exists/i.test(msg)) return 'هذا البريد مسجّل مسبقاً - جرّبي تسجيل الدخول';
+  if (/invalid login|invalid.*credentials/i.test(msg)) return 'البريد أو كلمة المرور غير صحيحة';
+  if (/password.*least/i.test(msg)) return 'كلمة المرور قصيرة جداً - 6 أحرف على الأقل';
+  return msg;
+}
+
+async function handleSignOut(){
+  await sb.auth.signOut();
+  state.session = null;
+  state.view = 'browse';
+  render();
+}
+
+/* ================= DATA LOADING ================= */
+async function loadAllForCurrentTab(){
+  state.loading = true; render();
+  if (state.view === 'browse') await loadBrowse();
+  else if (state.view === 'mine') await loadMine();
+  else if (state.view === 'wallet') await loadWallet();
+  state.loading = false;
+}
+
+async function loadBrowse(){
+  const uid = state.session.user.id;
+  const { data, error } = await sb.from('items').select('*')
+    .eq('status', 'available').neq('owner_id', uid)
+    .order('created_at', { ascending:false });
+  if (!error) state.browseItems = data || [];
+}
+
+async function loadMine(){
+  const uid = state.session.user.id;
+  const { data: mine } = await sb.from('items').select('*').eq('owner_id', uid).order('created_at', { ascending:false });
+  state.myItems = mine || [];
+
+  const myIds = state.myItems.map(i => i.id);
+  state.myMatches = [];
+  if (myIds.length === 0) return;
+
+  const { data: myMatchLinks } = await sb.from('match_items').select('match_id, item_id').in('item_id', myIds);
+  if (!myMatchLinks || myMatchLinks.length === 0) return;
+
+  const matchIds = [...new Set(myMatchLinks.map(m => m.match_id))];
+  const { data: allLinks } = await sb.from('match_items').select('match_id, item_id').in('match_id', matchIds);
+  const { data: matchRows } = await sb.from('matches').select('id, status').in('id', matchIds);
+  const matchStatus = Object.fromEntries((matchRows||[]).map(m => [m.id, m.status]));
+
+  const otherItemIds = [...new Set((allLinks||[]).filter(l => !myIds.includes(l.item_id)).map(l => l.item_id))];
+  let otherItems = {};
+  if (otherItemIds.length){
+    const { data: oi } = await sb.from('items').select('*').in('id', otherItemIds);
+    otherItems = Object.fromEntries((oi||[]).map(i => [i.id, i]));
+  }
+
+  matchIds.forEach(mid => {
+    const links = (allLinks||[]).filter(l => l.match_id === mid);
+    const myLink = links.find(l => myIds.includes(l.item_id));
+    const otherLink = links.find(l => !myIds.includes(l.item_id));
+    if (myLink && otherLink && otherItems[otherLink.item_id]){
+      state.myMatches.push({
+        matchId: mid,
+        status: matchStatus[mid] || 'suggested',
+        myItem: state.myItems.find(i => i.id === myLink.item_id),
+        otherItem: otherItems[otherLink.item_id]
+      });
+    }
+  });
+}
+
+async function loadWallet(){
+  const uid = state.session.user.id;
+  const { data: bal } = await sb.from('user_points_balance').select('balance').eq('user_id', uid).maybeSingle();
+  state.balance = bal ? bal.balance : 0;
+  const { data: ledger } = await sb.from('points_ledger').select('*').eq('user_id', uid).order('created_at', { ascending:false }).limit(30);
+  state.ledger = ledger || [];
+}
+
+async function handleAddItem(e){
+  e.preventDefault();
+  const uid = state.session.user.id;
+  const payload = {
+    owner_id: uid,
+    title: document.getElementById('f-title').value.trim(),
+    description: document.getElementById('f-desc').value.trim() || null,
+    category_id: document.getElementById('f-cat').value,
+    condition: document.getElementById('f-cond').value,
+    estimated_value: parseFloat(document.getElementById('f-value').value || '0'),
+    wants_category_id: document.getElementById('f-wants-cat').value || null,
+    wants_description: document.getElementById('f-wants-desc').value.trim() || null,
+    accepts_points: document.getElementById('f-points').checked,
+    photos: []
+  };
+  if (!payload.title || !payload.category_id || !payload.condition){
+    alert('أكملي الحقول الأساسية: العنوان، الفئة، والحالة');
+    return;
+  }
+  const { error } = await sb.from('items').insert(payload);
+  if (error){ alert('حدث خطأ: ' + error.message); return; }
+  state.view = 'mine';
+  await loadAllForCurrentTab();
+  render();
+}
+
+async function handleAcceptMatch(matchId){
+  const { error } = await sb.from('matches').update({ status:'accepted' }).eq('id', matchId);
+  if (error){ alert('حدث خطأ: ' + error.message); return; }
+  await loadMine();
+  render();
+}
+
+async function handleDismissMatch(matchId){
+  const { error } = await sb.from('matches').update({ status:'dismissed' }).eq('id', matchId);
+  if (error){ alert('حدث خطأ: ' + error.message); return; }
+  await loadMine();
+  render();
+}
+
+/* ================= NAV ================= */
+async function goTo(view){
+  state.view = view;
+  render();
+  await loadAllForCurrentTab();
+  render();
+}
+
+/* ================= RENDER ================= */
+function render(){
+  if (!state.session){ frame.innerHTML = renderAuth(); attachAuthEvents(); return; }
+  frame.innerHTML = renderShell();
+  attachShellEvents();
+}
+
+function renderAuth(){
+  const isSignup = state.authMode === 'signup';
+  return `
+    <div class="auth-wrap">
+      <div style="font-size:38px;">🔄</div>
+      <h1>بادلني</h1>
+      <p class="tag">بدّلي أغراضك القديمة بأخرى تحتاجينها - بدون نقود</p>
+      <form id="auth-form">
+        <div class="field"><label>البريد الإلكتروني</label><input id="auth-email" type="email" placeholder="example@mail.com"></div>
+        <div class="field"><label>كلمة المرور</label><input id="auth-password" type="password" placeholder="6 أحرف على الأقل"></div>
+        <button class="btn-main btn-gold" type="submit">${isSignup ? 'إنشاء حساب' : 'تسجيل الدخول'}</button>
+      </form>
+      ${state.authMsg ? `<div class="msg ${state.authMsg.type}">${state.authMsg.text}</div>` : ''}
+      <div class="switch-mode" id="switch-mode">${isSignup ? 'لديك حساب؟ سجّلي الدخول' : 'حساب جديد؟ أنشئيه من هنا'}</div>
+      <p style="font-size:12px;color:var(--muted);margin-top:30px;line-height:1.8;">
+        هذا نموذج تجريبي للاختبار - الدخول هنا بالبريد مؤقتاً بدل رقم الهاتف، وسيُستبدل بتسجيل OTP في النسخة النهائية.
+      </p>
+    </div>`;
+}
+
+function attachAuthEvents(){
+  document.getElementById('auth-form').addEventListener('submit', handleAuthSubmit);
+  document.getElementById('switch-mode').addEventListener('click', () => {
+    state.authMode = state.authMode === 'signup' ? 'signin' : 'signup';
+    state.authMsg = null;
+    render();
+  });
+}
+
+function renderShell(){
+  const titles = {browse:'تصفح الأغراض', add:'أضف غرضاً', mine:'أغراضي ومطابقاتي', wallet:'محفظة النقاط'};
+  return `
+    <header class="topbar">
+      <span class="screen-title">${titles[state.view]}</span>
+      <span class="brand">بادلني</span>
+    </header>
+    <main>${state.loading ? '<div class="empty">جارٍ التحميل...</div>' : renderView()}</main>
+    <nav class="tabbar">
+      <button data-v="browse" class="${state.view==='browse'?'active':''}"><span class="ic">🔍</span>تصفح</button>
+      <button data-v="add" class="${state.view==='add'?'active':''}"><span class="ic">➕</span>أضف</button>
+      <button data-v="mine" class="${state.view==='mine'?'active':''}"><span class="ic">📦</span>أغراضي</button>
+      <button data-v="wallet" class="${state.view==='wallet'?'active':''}"><span class="ic">💰</span>محفظتي</button>
+    </nav>
+    <div style="position:absolute;top:16px;left:20px;color:#C9D4E0;font-size:13px;cursor:pointer;font-weight:600;" id="logout-btn">خروج</div>
+  `;
+}
+
+function renderView(){
+  if (state.view === 'browse') return renderBrowse();
+  if (state.view === 'add') return renderAddForm();
+  if (state.view === 'mine') return renderMine();
+  if (state.view === 'wallet') return renderWallet();
+}
+
+function renderBrowse(){
+  if (!state.browseItems.length){
+    return `<div class="empty"><span class="big">🔍</span>لا توجد أغراض متاحة من مستخدمين آخرين بعد<br>جرّبي إضافة غرض بحساب ثانٍ لاختبار التوفيق</div>`;
+  }
+  return state.browseItems.map(it => `
+    <div class="item">
+      <span class="value-tag">${it.estimated_value} ر.ع</span>
+      <div class="cat">${catIcon(it.category_id)} ${catName(it.category_id) || ''}</div>
+      <h3>${escapeHtml(it.title)}</h3>
+      ${it.description ? `<p class="desc">${escapeHtml(it.description)}</p>` : ''}
+      <div class="wants">🎯 تريد بالمقابل: ${it.wants_category_id ? catName(it.wants_category_id) : (it.wants_description || 'مفتوح للعروض')}</div>
+      <span class="cond">${COND_LABEL[it.condition] || it.condition}</span>
+    </div>
+  `).join('');
+}
+
+function renderAddForm(){
+  const catOptions = state.categories.map(c => `<option value="${c.id}">${CAT_ICON[c.icon]||''} ${c.name_ar}</option>`).join('');
+  return `
+    <form id="add-form">
+      <div class="field"><label>عنوان الغرض</label><input id="f-title" placeholder="مثال: ساعة ذكية Galaxy Watch"></div>
+      <div class="field"><label>وصف مختصر (اختياري)</label><textarea id="f-desc" placeholder="الحالة، تفاصيل إضافية..."></textarea></div>
+      <div class="field"><label>الفئة</label><select id="f-cat"><option value="">اختاري الفئة</option>${catOptions}</select></div>
+      <div class="field"><label>الحالة</label>
+        <select id="f-cond">
+          <option value="new">جديد</option>
+          <option value="like_new">كالجديد</option>
+          <option value="good" selected>جيد</option>
+          <option value="fair">مقبول</option>
+        </select>
+      </div>
+      <div class="field"><label>القيمة التقديرية (ر.ع)</label><input id="f-value" type="number" step="0.1" placeholder="0.0"></div>
+      <div class="field"><label>تريدين بالمقابل - فئة (اختياري)</label><select id="f-wants-cat"><option value="">أي فئة</option>${catOptions}</select></div>
+      <div class="field"><label>تريدين بالمقابل - وصف حر (اختياري)</label><textarea id="f-wants-desc" placeholder="مثال: أي سماعة لاسلكية بحالة جيدة"></textarea></div>
+      <div class="check-row"><input type="checkbox" id="f-points" checked> أوافق على استلام نقاط بدل غرض مباشر</div>
+      <button class="btn-main" type="submit">نشر الغرض</button>
+    </form>`;
+}
+
+function renderMine(){
+  let html = `<h2 class="section-title">مطابقات وُجدت لك (${state.myMatches.filter(m=>m.status==='suggested').length})</h2>`;
+  if (!state.myMatches.length){
+    html += `<div class="empty" style="padding:20px 10px 34px;">لا مطابقات بعد - تظهر تلقائياً عند وجود غرض آخر يريد فئة أغراضك ويملك ما تريدينه</div>`;
+  } else {
+    html += state.myMatches.map(m => `
+      <div class="match-card">
+        <div class="badge">✨ مطابقة محتملة</div>
+        <div class="match-row">
+          <div class="match-item-box"><div class="lbl">غرضك</div><div class="nm">${escapeHtml(m.myItem.title)}</div></div>
+          <div class="swap-icon">⇄</div>
+          <div class="match-item-box"><div class="lbl">غرض الطرف الآخر</div><div class="nm">${escapeHtml(m.otherItem.title)}</div></div>
+        </div>
+        ${m.status === 'suggested' ? `
+          <div style="display:flex; gap:8px;">
+            <button class="btn-main" style="padding:10px;font-size:13.5px;" onclick="handleAcceptMatch('${m.matchId}')">أعجبتني - اقبل</button>
+            <button class="btn-main" style="padding:10px;font-size:13.5px;background:#EFEBE3;color:var(--muted);" onclick="handleDismissMatch('${m.matchId}')">تجاهل</button>
+          </div>` : `<span class="status-pill ${m.status}">${m.status==='accepted'?'مقبولة - قريباً: بدء التفاوض والتسليم':'تم التجاهل'}</span>`}
+      </div>
+    `).join('');
+  }
+
+  html += `<h2 class="section-title" style="margin-top:26px;">أغراضي المنشورة (${state.myItems.length})</h2>`;
+  if (!state.myItems.length){
+    html += `<div class="empty">لم تضيفي أي غرض بعد</div>`;
+  } else {
+    html += state.myItems.map(it => `
+      <div class="item">
+        <span class="value-tag">${it.estimated_value} ر.ع</span>
+        <div class="cat">${catIcon(it.category_id)} ${catName(it.category_id) || ''}</div>
+        <h3>${escapeHtml(it.title)}</h3>
+        <span class="cond">${COND_LABEL[it.condition] || it.condition} · ${it.status === 'available' ? 'متاح' : it.status}</span>
+      </div>
+    `).join('');
+  }
+  return html;
+}
+
+function renderWallet(){
+  return `
+    <div class="balance-card">
+      <div class="lbl">رصيدك الحالي</div>
+      <div class="num">${state.balance}</div>
+      <div class="lbl">نقطة</div>
+    </div>
+    <h2 class="section-title">سجل الحركات</h2>
+    ${state.ledger.length ? state.ledger.map(l => `
+      <div class="ledger-row">
+        <span class="t">${ledgerLabel(l.transaction_type)}</span>
+        <span class="a ${l.amount>=0?'pos':'neg'}">${l.amount>=0?'+':''}${l.amount}</span>
+      </div>
+    `).join('') : `<div class="empty">لا حركات بعد - رصيدك يُبنى عند إتمام مبادلات فعلية</div>`}
+  `;
+}
+
+function ledgerLabel(t){
+  return {trade_earn:'أرباح مبادلة', hold:'حجز لصفقة', release:'إفراج عن حجز', signup_bonus:'مكافأة تسجيل', referral_bonus:'مكافأة إحالة', adjustment:'تعديل يدوي'}[t] || t;
+}
+
+function attachShellEvents(){
+  document.getElementById('logout-btn').addEventListener('click', handleSignOut);
+  document.querySelectorAll('nav.tabbar button').forEach(b => {
+    b.addEventListener('click', () => goTo(b.dataset.v));
+  });
+  const addForm = document.getElementById('add-form');
+  if (addForm) addForm.addEventListener('submit', handleAddItem);
+}
+
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+}
+
+init();
+</script>
+</body>
+</html>
