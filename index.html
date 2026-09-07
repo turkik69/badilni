@@ -63,9 +63,9 @@
   .greet-sub{font-size:13px; color:var(--muted); margin-bottom:20px;}
   .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:11px; margin-bottom:22px;}
   .stat-card{background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:14px 15px; box-shadow:0 2px 10px rgba(18,42,71,.05); position:relative; overflow:hidden;}
-  .stat-card .stat-num{font-size:24px; font-weight:800; color:var(--navy);}
+  .stat-card .stat-num{font-size:24px; font-weight:800; color:var(--navy); margin-top:40px;}
   .stat-card .stat-lbl{font-size:11.5px; color:var(--muted); font-weight:700; margin-top:2px;}
-  .stat-card .stat-ic{position:absolute; top:12px; left:12px; opacity:.5; color:var(--gold);}
+  .stat-card .stat-ic{position:absolute; top:12px; left:12px; width:32px; height:32px; border-radius:10px; background:#FCF6EA; display:flex; align-items:center; justify-content:center; color:var(--gold);}
   .quick-actions{display:flex; gap:10px; margin-bottom:24px;}
   .quick-actions .btn{flex:1;}
   .dash-section-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
@@ -96,12 +96,14 @@
 
   main{flex:1; padding:18px 18px 92px; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain;}
 
-  nav.tabbar{flex-shrink:0; background:#fff; border-top:1px solid var(--line); display:flex; padding:7px 4px calc(7px + env(safe-area-inset-bottom));}
-  nav.tabbar button{flex:1; background:none; border:none; font-family:inherit; padding:7px 2px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; color:var(--muted); font-size:11px; font-weight:700;}
+  nav.tabbar{flex-shrink:0; background:#fff; border-top:1px solid var(--line); display:flex; padding:9px 4px calc(9px + env(safe-area-inset-bottom)); box-shadow:0 -2px 10px rgba(18,42,71,.04);}
+  nav.tabbar button{flex:1; background:none; border:none; font-family:inherit; padding:4px 2px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; color:#9A9482; font-size:11px; font-weight:800;}
+  nav.tabbar button .tab-ic-wrap{width:38px; height:30px; border-radius:12px; display:flex; align-items:center; justify-content:center; position:relative;}
   nav.tabbar button.active{color:var(--navy);}
-  nav.tabbar button.active svg{color:var(--gold);}
-  .tab-dot{position:relative;}
-  .tab-dot::after{content:''; position:absolute; top:-2px; left:15px; width:8px; height:8px; border-radius:50%; background:var(--warn); border:1.5px solid #fff;}
+  nav.tabbar button.active .tab-ic-wrap{background:linear-gradient(135deg,var(--gold-2),var(--gold)); box-shadow:0 3px 8px rgba(201,148,47,.4);}
+  nav.tabbar button.active svg{color:#fff;}
+  nav.tabbar button svg{color:#9A9482;}
+  .tab-dot .tab-ic-wrap::after{content:''; position:absolute; top:1px; left:6px; width:9px; height:9px; border-radius:50%; background:var(--warn); border:2px solid #fff;}
 
   /* ---------- Auth ---------- */
   .auth-wrap{padding:44px 26px 24px; text-align:center;}
@@ -132,7 +134,9 @@
 
   /* ---------- Item card ---------- */
   .item{position:relative; background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:0; margin-bottom:13px; overflow:hidden; border-right:4px solid var(--navy); box-shadow:0 2px 10px rgba(18,42,71,.05);}
-  .item .photo{width:100%; height:150px; object-fit:cover; display:block; background:var(--bg);}
+  .item .photo{width:100%; height:190px; object-fit:cover; display:block; background:var(--bg);}
+  .item.item-tap{cursor:pointer; transition:transform .1s ease, box-shadow .1s ease;}
+  .item.item-tap:active{transform:scale(.98); box-shadow:0 1px 4px rgba(18,42,71,.08);}
   .item .photo-ph{width:100%; height:110px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--bg),#EFE9D8); font-size:34px;}
   .item .body{padding:13px 15px 14px;}
   .item .value-tag{position:absolute; top:10px; left:10px; background:linear-gradient(135deg,var(--gold-2),var(--gold)); color:var(--navy-black); font-weight:800; font-size:12px; padding:4px 10px; border-radius:20px; z-index:2; box-shadow:0 2px 6px rgba(0,0,0,.15);}
@@ -261,7 +265,7 @@ function icon(name, size=20, color='currentColor'){
   if (name === 'send'){
     return `<svg class="ic" width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}"><path d="M4 12l16-8-6.5 16-3-6.5z"/></svg>`;
   }
-  return `<svg class="ic" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p[name]||''}</svg>`;
+  return `<svg class="ic" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">${p[name]||''}</svg>`;
 }
 
 function brandMark(size=64){
@@ -276,7 +280,8 @@ let state = {
   session:null, view:'dashboard', prevView:'dashboard', authStep:'phone', phoneNumber:'', otpSending:false, loading:false, authMsg:null, booting:true,
   categories:[], catMap:{},
   browseItems:[],
-  myItems:[], myMatches:[],
+  myItems:[], myMatches:[], directOffers:[],
+  viewingItem:null, offerPicking:false,
   balance:0, ledger:[],
   newPhotoUrl:null, uploading:false, selectedCat:null,
   activeDeal:null, dealMessages:[], dealChannel:null, myRating:0,
@@ -390,27 +395,75 @@ async function loadMine(){
   state.myItems = mine || [];
   const myIds = state.myItems.map(i=>i.id);
   state.myMatches = [];
+  state.directOffers = [];
   if (!myIds.length) return;
+
+  // ---- المطابقات التلقائية (محرك التوفيق) ----
   const { data: myLinks } = await sb.from('match_items').select('match_id,item_id').in('item_id', myIds);
-  if (!myLinks || !myLinks.length) return;
-  const matchIds = [...new Set(myLinks.map(m=>m.match_id))];
-  const { data: allLinks } = await sb.from('match_items').select('match_id,item_id').in('match_id', matchIds);
-  const { data: matchRows } = await sb.from('matches').select('id,status').in('id', matchIds);
-  const mStatus = Object.fromEntries((matchRows||[]).map(m=>[m.id,m.status]));
-  const otherIds = [...new Set((allLinks||[]).filter(l=>!myIds.includes(l.item_id)).map(l=>l.item_id))];
-  let otherItems = {};
-  if (otherIds.length){ const { data: oi } = await sb.from('items').select('*').in('id', otherIds); otherItems = Object.fromEntries((oi||[]).map(i=>[i.id,i])); }
-  const { data: existingOffers } = await sb.from('trade_offers').select('*').in('match_id', matchIds);
-  const offerByMatch = Object.fromEntries((existingOffers||[]).map(o=>[o.match_id,o]));
-  matchIds.forEach(mid=>{
-    const links=(allLinks||[]).filter(l=>l.match_id===mid);
-    const mine=links.find(l=>myIds.includes(l.item_id));
-    const other=links.find(l=>!myIds.includes(l.item_id));
-    if (mine && other && otherItems[other.item_id]){
-      state.myMatches.push({matchId:mid, status:mStatus[mid]||'suggested', myItem:state.myItems.find(i=>i.id===mine.item_id), otherItem:otherItems[other.item_id], offer:offerByMatch[mid]||null});
-    }
-  });
+  if (myLinks && myLinks.length){
+    const matchIds = [...new Set(myLinks.map(m=>m.match_id))];
+    const { data: allLinks } = await sb.from('match_items').select('match_id,item_id').in('match_id', matchIds);
+    const { data: matchRows } = await sb.from('matches').select('id,status').in('id', matchIds);
+    const mStatus = Object.fromEntries((matchRows||[]).map(m=>[m.id,m.status]));
+    const otherIds = [...new Set((allLinks||[]).filter(l=>!myIds.includes(l.item_id)).map(l=>l.item_id))];
+    let otherItems = {};
+    if (otherIds.length){ const { data: oi } = await sb.from('items').select('*').in('id', otherIds); otherItems = Object.fromEntries((oi||[]).map(i=>[i.id,i])); }
+    const { data: existingOffers } = await sb.from('trade_offers').select('*').in('match_id', matchIds);
+    const offerByMatch = Object.fromEntries((existingOffers||[]).map(o=>[o.match_id,o]));
+    matchIds.forEach(mid=>{
+      const links=(allLinks||[]).filter(l=>l.match_id===mid);
+      const mine=links.find(l=>myIds.includes(l.item_id));
+      const other=links.find(l=>!myIds.includes(l.item_id));
+      if (mine && other && otherItems[other.item_id]){
+        state.myMatches.push({matchId:mid, status:mStatus[mid]||'suggested', myItem:state.myItems.find(i=>i.id===mine.item_id), otherItem:otherItems[other.item_id], offer:offerByMatch[mid]||null});
+      }
+    });
+  }
+
+  // ---- العروض المباشرة (بدأتها أنا، أو موجَّهة لأحد أغراضي) ----
+  const { data: myParticipant } = await sb.from('trade_offer_items').select('trade_offer_id, item_id').eq('offered_by', uid);
+  const myOfferIds = [...new Set((myParticipant||[]).map(p=>p.trade_offer_id))];
+  const { data: targetingMe } = await sb.from('trade_offers').select('*').in('target_item_id', myIds);
+  const offerMap = {};
+  (targetingMe||[]).forEach(o => offerMap[o.id] = o);
+  let initiatedOffers = [];
+  if (myOfferIds.length){
+    const { data: io } = await sb.from('trade_offers').select('*').in('id', myOfferIds).not('target_item_id','is', null);
+    initiatedOffers = io || [];
+  }
+  initiatedOffers.forEach(o => offerMap[o.id] = o);
+
+  const directOfferRows = Object.values(offerMap);
+  if (directOfferRows.length){
+    const myItemIdByOffer = {};
+    (myParticipant||[]).forEach(p => { myItemIdByOffer[p.trade_offer_id] = p.item_id; });
+    const otherIdsNeeded = [];
+    directOfferRows.forEach(o=>{
+      if (!myIds.includes(o.target_item_id)) otherIdsNeeded.push(o.target_item_id);
+    });
+    const { data: parts } = await sb.from('trade_offer_items').select('*').in('trade_offer_id', directOfferRows.map(o=>o.id));
+    (parts||[]).forEach(p=>{ if (!myIds.includes(p.item_id)) otherIdsNeeded.push(p.item_id); });
+    let otherItemsMap = {};
+    const uniqOther = [...new Set(otherIdsNeeded)];
+    if (uniqOther.length){ const { data: oi } = await sb.from('items').select('*').in('id', uniqOther); otherItemsMap = Object.fromEntries((oi||[]).map(i=>[i.id,i])); }
+
+    directOfferRows.forEach(o=>{
+      const myPartItemId = myItemIdByOffer[o.id];
+      const targetIsMine = myIds.includes(o.target_item_id);
+      const myItem = myPartItemId ? state.myItems.find(i=>i.id===myPartItemId) : (targetIsMine ? state.myItems.find(i=>i.id===o.target_item_id) : null);
+      let otherItem = null;
+      if (targetIsMine){
+        const otherPart = (parts||[]).find(p=>p.trade_offer_id===o.id && !myIds.includes(p.item_id));
+        otherItem = otherPart ? otherItemsMap[otherPart.item_id] : null;
+      } else {
+        otherItem = otherItemsMap[o.target_item_id];
+      }
+      const iJoined = !!myPartItemId;
+      state.directOffers.push({ offer:o, myItem, otherItem, iJoined, needsToJoin: targetIsMine && !iJoined });
+    });
+  }
 }
+
 async function loadWallet(){
   const uid = state.session.user.id;
   const { data: bal } = await sb.from('user_points_balance').select('balance').eq('user_id',uid).maybeSingle();
@@ -463,16 +516,23 @@ async function handleAcceptMatch(matchId){ await sb.from('matches').update({stat
 async function handleDismissMatch(matchId){ await sb.from('matches').update({status:'dismissed'}).eq('id',matchId); await loadMine(); render(); }
 
 async function openDeal(match){
+  return openDealGeneric({ offer: match.offer, matchId: match.matchId, myItem: match.myItem, otherItem: match.otherItem });
+}
+async function openDealGeneric({ offer, matchId, targetItemId, myItem, otherItem }){
   state.loading = true; render();
   const uid = state.session.user.id;
-  let offer = match.offer;
   if (!offer){
-    const { data: created, error } = await sb.from('trade_offers').insert({ match_id: match.matchId, status:'negotiating' }).select().single();
+    const payload = { status:'negotiating' };
+    if (matchId) payload.match_id = matchId;
+    if (targetItemId) payload.target_item_id = targetItemId;
+    const { data: created, error } = await sb.from('trade_offers').insert(payload).select().single();
     if (error){ alert('خطأ: '+error.message); state.loading=false; render(); return; }
     offer = created;
   }
-  await sb.from('trade_offer_items').upsert({ trade_offer_id: offer.id, item_id: match.myItem.id, offered_by: uid }, { onConflict:'trade_offer_id,item_id' });
-  await loadDeal(offer.id, match);
+  if (myItem){
+    await sb.from('trade_offer_items').upsert({ trade_offer_id: offer.id, item_id: myItem.id, offered_by: uid }, { onConflict:'trade_offer_id,item_id' });
+  }
+  await loadDeal(offer.id, { myItem, otherItem });
   state.view = 'deal';
   state.loading = false;
   render();
@@ -583,6 +643,32 @@ function closeHowIt(){ if (!state.session){ render(); return; } state.view = sta
 async function openProfile(){ state.prevView = state.view; state.view = 'profile'; render(); await loadProfile(); render(); }
 function closeProfile(){ state.view = state.prevView || 'dashboard'; render(); }
 
+function openItemDetail(item){
+  state.prevView = state.view;
+  state.viewingItem = item;
+  state.offerPicking = false;
+  state.view = 'item-detail';
+  render();
+}
+function closeItemDetail(){
+  state.viewingItem = null; state.offerPicking = false;
+  state.view = state.prevView || 'browse';
+  render();
+}
+async function startOfferPicker(){
+  state.offerPicking = true; render();
+  if (!state.myItems.length) await loadMine();
+  render();
+}
+async function confirmDirectOffer(myItemId){
+  const myItem = state.myItems.find(i=>i.id===myItemId);
+  if (!myItem) return;
+  await openDealGeneric({ offer:null, targetItemId: state.viewingItem.id, myItem, otherItem: state.viewingItem });
+}
+async function joinDirectOffer(directOfferEntry){
+  await openDealGeneric({ offer: directOfferEntry.offer, myItem: directOfferEntry.myItem, otherItem: directOfferEntry.otherItem });
+}
+
 /* ================= NAV ================= */
 async function goTo(view){ state.view=view; render(); await loadAllForCurrentTab(); render(); }
 
@@ -658,10 +744,10 @@ function attachHowItStandaloneEvents(){
 }
 
 function renderShell(){
-  const titles = {dashboard:'الرئيسية', browse:'تصفح الأغراض', add:'أضف غرضاً', mine:'أغراضي ومطابقاتي', wallet:'محفظة النقاط', deal:'تفاصيل الصفقة', howit:'كيف يعمل بادلني', profile:'حسابي'};
+  const titles = {dashboard:'الرئيسية', browse:'تصفح الأغراض', add:'أضف غرضاً', mine:'أغراضي ومطابقاتي', wallet:'محفظة النقاط', deal:'تفاصيل الصفقة', howit:'كيف يعمل بادلني', profile:'حسابي', 'item-detail':'تفاصيل الغرض'};
   const pendingCount = state.myMatches ? state.myMatches.filter(m=>m.status==='suggested').length : 0;
-  const showBack = state.view==='deal' || state.view==='howit' || state.view==='profile';
-  const backId = state.view==='deal' ? 'back-btn' : state.view==='profile' ? 'profile-back' : 'howit-back2';
+  const showBack = state.view==='deal' || state.view==='howit' || state.view==='profile' || state.view==='item-detail';
+  const backId = state.view==='deal' ? 'back-btn' : state.view==='profile' ? 'profile-back' : state.view==='item-detail' ? 'item-detail-back' : 'howit-back2';
   return `
     <header class="topbar">
       <div class="zone">
@@ -673,11 +759,11 @@ function renderShell(){
     <main>${state.loading ? '<div class="empty">جارٍ التحميل...</div>' : renderView()}</main>
     ${!showBack ? `
     <nav class="tabbar">
-      <button data-v="dashboard" class="${state.view==='dashboard'?'active':''}">${icon('home',20)}الرئيسية</button>
-      <button data-v="browse" class="${state.view==='browse'?'active':''}">${icon('search',20)}تصفح</button>
-      <button data-v="add" class="${state.view==='add'?'active':''}">${icon('plus',20)}أضف</button>
-      <button data-v="mine" class="${state.view==='mine'?'active':''} ${pendingCount?'tab-dot':''}">${icon('box',20)}أغراضي</button>
-      <button data-v="wallet" class="${state.view==='wallet'?'active':''}">${icon('wallet',20)}محفظتي</button>
+      <button data-v="dashboard" class="${state.view==='dashboard'?'active':''}"><span class="tab-ic-wrap">${icon('home',20)}</span>الرئيسية</button>
+      <button data-v="browse" class="${state.view==='browse'?'active':''}"><span class="tab-ic-wrap">${icon('search',20)}</span>تصفح</button>
+      <button data-v="add" class="${state.view==='add'?'active':''}"><span class="tab-ic-wrap">${icon('plus',20)}</span>أضف</button>
+      <button data-v="mine" class="${state.view==='mine'?'active':''} ${pendingCount?'tab-dot':''}"><span class="tab-ic-wrap">${icon('box',20)}</span>أغراضي</button>
+      <button data-v="wallet" class="${state.view==='wallet'?'active':''}"><span class="tab-ic-wrap">${icon('wallet',20)}</span>محفظتي</button>
     </nav>` : ''}
   `;
 }
@@ -690,6 +776,7 @@ function renderView(){
   if (state.view==='deal') return renderDeal();
   if (state.view==='howit') return howItStepsHtml();
   if (state.view==='profile') return renderProfile();
+  if (state.view==='item-detail') return renderItemDetail();
 }
 
 
@@ -703,10 +790,10 @@ function renderDashboard(){
     <div class="greet">${greeting()} 👋</div>
     <div class="greet-sub">هذا ملخص حسابك في بادلني</div>
     <div class="stat-grid">
-      <div class="stat-card">${icon('box',20,'#B8862E')}<div class="stat-num">${activeItems}</div><div class="stat-lbl">أغراض نشطة</div></div>
-      <div class="stat-card">${icon('swap',20,'#B8862E')}<div class="stat-num">${pendingMatches}</div><div class="stat-lbl">مطابقات جديدة</div></div>
-      <div class="stat-card">${icon('wallet',20,'#B8862E')}<div class="stat-num">${state.balance}</div><div class="stat-lbl">رصيد النقاط</div></div>
-      <div class="stat-card">${icon('star',20,'#B8862E')}<div class="stat-num">${ratingText}</div><div class="stat-lbl">تقييمك العام</div></div>
+      <div class="stat-card"><span class="stat-ic">${icon('box',17,'#B8862E')}</span><div class="stat-num">${activeItems}</div><div class="stat-lbl">أغراض نشطة</div></div>
+      <div class="stat-card"><span class="stat-ic">${icon('swap',17,'#B8862E')}</span><div class="stat-num">${pendingMatches}</div><div class="stat-lbl">مطابقات جديدة</div></div>
+      <div class="stat-card"><span class="stat-ic">${icon('wallet',17,'#B8862E')}</span><div class="stat-num">${state.balance}</div><div class="stat-lbl">رصيد النقاط</div></div>
+      <div class="stat-card"><span class="stat-ic">${icon('star',17,'#B8862E')}</span><div class="stat-num">${ratingText}</div><div class="stat-lbl">تقييمك العام</div></div>
     </div>
     <div class="quick-actions">
       <button class="btn gold" id="dash-add-btn">${icon('plus',18,'#0F2A4D')} أضف غرضاً</button>
@@ -771,13 +858,50 @@ function renderProfile(){
   return html;
 }
 
+function renderItemDetail(){
+  const it = state.viewingItem;
+  if (!it) return '';
+  const isMine = it.owner_id === state.session.user.id;
+  let html = `
+    ${it.photos && it.photos.length ? `<img src="${it.photos[0]}" style="width:100%; height:240px; object-fit:cover; border-radius:16px; margin-bottom:16px;">` : `<div class="photo-ph" style="height:200px; border-radius:16px; margin-bottom:16px; font-size:52px;">${catEmoji(it.category_id)}</div>`}
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+      <div class="cat">${catEmoji(it.category_id)} ${catName(it.category_id)||''}</div>
+      <span class="value-tag" style="position:static;">${it.estimated_value} ر.ع</span>
+    </div>
+    <h2 style="font-size:21px; color:var(--navy); margin:4px 0 10px;">${escapeHtml(it.title)}</h2>
+    <span class="cond" style="margin-bottom:14px;">${COND_LABEL[it.condition]||it.condition}</span>
+    ${it.description ? `<p style="font-size:14px; color:var(--ink); line-height:1.8; margin:14px 0;">${escapeHtml(it.description)}</p>` : ''}
+    <div class="wants" style="margin:14px 0 22px;">${icon('swap',16,'#1C3A5E')} يريد صاحبه بالمقابل: ${it.wants_category_id?catName(it.wants_category_id):(it.wants_description || 'مفتوح للعروض')}</div>
+  `;
+
+  if (isMine){
+    html += `<div class="empty">هذا أحد أغراضك المنشورة</div>`;
+  } else if (!state.offerPicking){
+    html += `<button class="btn gold" id="start-offer-btn">${icon('swap',18,'#0F2A4D')} تقديم عرض مبادلة</button>`;
+  } else {
+    const myAvailable = (state.myItems||[]).filter(i=>i.status==='available');
+    html += `<h2 class="section-title">اختاري الغرض الذي تعرضينه</h2>`;
+    if (!myAvailable.length){
+      html += `<div class="empty">ليس لديك أغراض متاحة بعد - أضيفي غرضاً أولاً من تبويب "أضف"</div>`;
+    } else {
+      html += myAvailable.map(mi => `
+        <div class="item" style="cursor:pointer; border-right-color:var(--gold);" onclick="confirmDirectOffer('${mi.id}')">
+          ${itemPhoto(mi)}
+          <div class="body"><div class="cat">${catEmoji(mi.category_id)} ${catName(mi.category_id)||''}</div><h3>${escapeHtml(mi.title)}</h3></div>
+        </div>
+      `).join('');
+    }
+  }
+  return html;
+}
+
 function itemPhoto(it){
   return it.photos && it.photos.length ? `<img class="photo" src="${it.photos[0]}">` : `<div class="photo-ph">${catEmoji(it.category_id)}</div>`;
 }
 function renderBrowse(){
   if (!state.browseItems.length) return `<div class="empty">${icon('search',40)}<br>لا توجد أغراض متاحة من مستخدمين آخرين بعد<br>جرّب إضافة غرض بحساب ثانٍ لاختبار التوفيق</div>`;
   return state.browseItems.map(it=>`
-    <div class="item">
+    <div class="item item-tap" onclick="openItemDetailById('${it.id}')">
       ${itemPhoto(it)}
       <span class="value-tag">${it.estimated_value} ر.ع</span>
       <div class="body">
@@ -830,6 +954,10 @@ function renderMine(){
   } else {
     html += suggested.map(m=>matchCardHtml(m)).join('');
   }
+  if ((state.directOffers||[]).length){
+    html += `<h2 class="section-title" style="margin-top:22px;">${icon('user',17,'#0F2A4D')} عروض مباشرة (${state.directOffers.length})</h2>`;
+    html += state.directOffers.map(o=>directOfferCardHtml(o)).join('');
+  }
   if (others.length){
     html += `<h2 class="section-title" style="margin-top:22px;">صفقاتي (${others.length})</h2>`;
     html += others.map(m=>matchCardHtml(m)).join('');
@@ -837,7 +965,7 @@ function renderMine(){
   html += `<h2 class="section-title" style="margin-top:26px;">${icon('box',18,'#0F2A4D')} أغراضي المنشورة (${state.myItems.length})</h2>`;
   if (!state.myItems.length) html += `<div class="empty">لا يوجد غرض مضاف بعد</div>`;
   else html += state.myItems.map(it=>`
-    <div class="item">${itemPhoto(it)}<span class="value-tag">${it.estimated_value} ر.ع</span>
+    <div class="item item-tap" onclick="openItemDetailById('${it.id}')">${itemPhoto(it)}<span class="value-tag">${it.estimated_value} ر.ع</span>
       <div class="body"><div class="cat">${catEmoji(it.category_id)} ${catName(it.category_id)||''}</div><h3>${escapeHtml(it.title)}</h3>
       <span class="cond">${COND_LABEL[it.condition]||it.condition} · ${it.status==='available'?'متاح':STATUS_LABEL[it.status]||it.status}</span></div>
     </div>`).join('');
@@ -857,7 +985,20 @@ function matchCardHtml(m){
       </div>` : m.status==='dismissed' ? '' : `<button class="btn sm gold" onclick='openDealFromMine("${m.matchId}")'>${icon('chat',15,'#0F2A4D')} فتح الصفقة</button>`}
   </div>`;
 }
+function directOfferCardHtml(o){
+  const label = o.needsToJoin ? 'عرض جديد لأحد أغراضك' : STATUS_LABEL[o.offer.status] || o.offer.status;
+  return `<div class="match-card">
+    <div class="badge">${icon('user',16,'#C9942F')} ${label}</div>
+    <div class="match-row">
+      <div class="match-item-box"><div class="lbl">غرضك</div><div class="nm">${o.myItem?escapeHtml(o.myItem.title):'—'}</div></div>
+      <span style="color:#C9942F;">⇄</span>
+      <div class="match-item-box"><div class="lbl">غرض الطرف الآخر</div><div class="nm">${o.otherItem?escapeHtml(o.otherItem.title):'—'}</div></div>
+    </div>
+    <button class="btn sm gold" onclick="openDirectOfferById('${o.offer.id}')">${icon('chat',15,'#0F2A4D')} ${o.needsToJoin?'مراجعة العرض':'فتح الصفقة'}</button>
+  </div>`;
+}
 function openDealFromMine(matchId){ const m = state.myMatches.find(x=>x.matchId===matchId); if (m) openDeal(m); }
+function openDirectOfferById(offerId){ const o = state.directOffers.find(x=>x.offer.id===offerId); if (o) joinDirectOffer(o); }
 
 function renderWallet(){
   return `<div class="balance-card"><div class="lbl">رصيدك الحالي</div><div class="num">${state.balance}</div><div class="lbl">نقطة</div></div>
@@ -938,6 +1079,8 @@ function attachShellEvents(){
   const howitBack2 = document.getElementById('howit-back2'); if (howitBack2) howitBack2.addEventListener('click', closeHowIt);
   const profileOpen = document.getElementById('profile-open'); if (profileOpen) profileOpen.addEventListener('click', openProfile);
   const profileBack = document.getElementById('profile-back'); if (profileBack) profileBack.addEventListener('click', closeProfile);
+  const itemDetailBack = document.getElementById('item-detail-back'); if (itemDetailBack) itemDetailBack.addEventListener('click', closeItemDetail);
+  const startOfferBtn = document.getElementById('start-offer-btn'); if (startOfferBtn) startOfferBtn.addEventListener('click', startOfferPicker);
   const logoutBtn = document.getElementById('logout-btn'); if (logoutBtn) logoutBtn.addEventListener('click', handleSignOut);
   const editNameBtn = document.getElementById('edit-name-btn'); if (editNameBtn) editNameBtn.addEventListener('click', ()=>{ state.editingName=true; render(); });
   const nameForm = document.getElementById('name-form'); if (nameForm) nameForm.addEventListener('submit', (e)=>{ e.preventDefault(); handleSaveName(); });
