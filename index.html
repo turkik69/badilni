@@ -53,6 +53,46 @@
   header.topbar .brand-row{display:flex; align-items:center; gap:7px; direction:rtl; flex-shrink:0;}
   header.topbar .brand{font-weight:800; font-size:17px; color:var(--gold-light);}
   header.topbar .logout-txt{font-size:11.5px; color:#9FB0C4; cursor:pointer; font-weight:700; flex-shrink:0;}
+  header.topbar .avatar-btn{
+    width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,var(--gold-light),var(--gold));
+    display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;
+  }
+
+  /* ---------- Dashboard ---------- */
+  .greet{font-size:20px; font-weight:800; color:var(--navy); margin-bottom:2px;}
+  .greet-sub{font-size:13px; color:var(--muted); margin-bottom:20px;}
+  .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:11px; margin-bottom:22px;}
+  .stat-card{background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:14px 15px; box-shadow:0 2px 10px rgba(18,42,71,.05); position:relative; overflow:hidden;}
+  .stat-card .stat-num{font-size:24px; font-weight:800; color:var(--navy);}
+  .stat-card .stat-lbl{font-size:11.5px; color:var(--muted); font-weight:700; margin-top:2px;}
+  .stat-card .stat-ic{position:absolute; top:12px; left:12px; opacity:.5; color:var(--gold);}
+  .quick-actions{display:flex; gap:10px; margin-bottom:24px;}
+  .quick-actions .btn{flex:1;}
+  .dash-section-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+  .dash-section-head .see-all{font-size:12.5px; color:var(--gold); font-weight:700; cursor:pointer;}
+
+  /* ---------- Profile ---------- */
+  .profile-hero{text-align:center; padding:8px 0 26px;}
+  .profile-avatar{
+    width:84px; height:84px; border-radius:50%; margin:0 auto 14px; background:linear-gradient(135deg,var(--navy-deep),var(--navy));
+    display:flex; align-items:center; justify-content:center; color:var(--gold-light); font-size:30px; font-weight:800; box-shadow:0 6px 18px rgba(15,42,77,.25);
+  }
+  .profile-name-row{display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:4px;}
+  .profile-name-row h2{font-size:19px; color:var(--navy); margin:0;}
+  .profile-name-row .edit-ic{color:var(--muted); cursor:pointer;}
+  .profile-phone{font-size:13px; color:var(--muted); direction:ltr; display:inline-block;}
+  .verify-badge{display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:800; padding:5px 12px; border-radius:20px; margin-top:10px; background:var(--success-bg); color:var(--success);}
+  .verify-badge.basic{background:#FCF1DD; color:var(--gold);}
+  .profile-stats{display:flex; background:var(--paper); border:1px solid var(--line); border-radius:14px; margin-bottom:20px; overflow:hidden; box-shadow:0 2px 10px rgba(18,42,71,.05);}
+  .profile-stats .cell{flex:1; text-align:center; padding:14px 6px; border-left:1px solid var(--line);}
+  .profile-stats .cell:last-child{border-left:none;}
+  .profile-stats .cell .n{font-size:19px; font-weight:800; color:var(--navy);}
+  .profile-stats .cell .l{font-size:10.5px; color:var(--muted); font-weight:700; margin-top:2px;}
+  .review-row{background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:10px;}
+  .review-row .stars{color:var(--gold); font-size:13px; margin-bottom:5px;}
+  .review-row p{margin:0; font-size:13px; color:var(--ink); line-height:1.6;}
+  .review-row .dt{font-size:10.5px; color:var(--muted); margin-top:5px;}
+  .join-date{font-size:12px; color:var(--muted); text-align:center; margin-bottom:20px;}
 
   main{flex:1; padding:18px 18px 92px; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain;}
 
@@ -209,6 +249,11 @@ function icon(name, size=20, color='currentColor'){
     check:'<polyline points="5 12 10 17 19 7"/>',
     help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.5 2.5 0 1 1 3.4 2.3c-.8.4-1.4.9-1.4 1.8v.4"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/>',
     list:'<circle cx="5" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="5" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="5" cy="18" r="1.2" fill="currentColor" stroke="none"/><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/>',
+    home:'<path d="M4 11.5L12 4l8 7.5"/><path d="M6.5 10v9.5h11V10"/><path d="M10 19.5v-5.5h4v5.5"/>',
+    user:'<circle cx="12" cy="8.2" r="3.6"/><path d="M4.8 20c0-4.1 3.1-6.8 7.2-6.8s7.2 2.7 7.2 6.8"/>',
+    badge:'<path d="M12 3.2l6.5 2.8v5.6c0 4.3-2.8 7.2-6.5 8.6-3.7-1.4-6.5-4.3-6.5-8.6V6z"/><path d="M9 12.2l2.1 2.1L15.3 10"/>',
+    chart:'<path d="M4 19V12.5M9.5 19V5M15 19V13.5M20 19V9"/>',
+    edit:'<path d="M4.5 19.5l.8-3.6L15.8 5.4l2.8 2.8L8.1 18.7l-3.6.8z"/><path d="M14 7l3 3"/>',
   };
   if (name === 'star'){
     return `<svg class="ic" width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}"><path d="M12 3.2l2.7 5.9 6.4.6-4.8 4.3 1.4 6.3-5.7-3.4-5.7 3.4 1.4-6.3-4.8-4.3 6.4-.6z"/></svg>`;
@@ -228,13 +273,14 @@ function brandMark(size=64){
 }
 
 let state = {
-  session:null, view:'browse', prevView:'browse', authStep:'phone', phoneNumber:'', otpSending:false, loading:false, authMsg:null, booting:true,
+  session:null, view:'dashboard', prevView:'dashboard', authStep:'phone', phoneNumber:'', otpSending:false, loading:false, authMsg:null, booting:true,
   categories:[], catMap:{},
   browseItems:[],
   myItems:[], myMatches:[],
   balance:0, ledger:[],
   newPhotoUrl:null, uploading:false, selectedCat:null,
   activeDeal:null, dealMessages:[], dealChannel:null, myRating:0,
+  profile:null, profileRating:null, completedCount:0, myItemsCount:0, recentReviews:[], editingName:false,
 };
 
 const frame = document.getElementById('frame');
@@ -289,15 +335,49 @@ async function handleVerifyOtp(e){
   if (state.session){ await loadAllForCurrentTab(); render(); }
 }
 function backToPhoneStep(){ state.authStep = 'phone'; state.authMsg = null; render(); }
-async function handleSignOut(){ await sb.auth.signOut(); state.session = null; state.view = 'browse'; state.authStep='phone'; render(); }
+async function handleSignOut(){ await sb.auth.signOut(); state.session = null; state.view = 'dashboard'; state.authStep='phone'; render(); }
 
 /* ================= LOADING ================= */
 async function loadAllForCurrentTab(){
   state.loading = true; render();
-  if (state.view === 'browse') await loadBrowse();
+  if (state.view === 'dashboard') await loadDashboard();
+  else if (state.view === 'browse') await loadBrowse();
   else if (state.view === 'mine') await loadMine();
   else if (state.view === 'wallet') await loadWallet();
+  else if (state.view === 'profile') await loadProfile();
   state.loading = false;
+}
+async function loadDashboard(){
+  await Promise.all([loadMine(), loadWallet()]);
+  const uid = state.session.user.id;
+  const { data: r } = await sb.from('user_ratings').select('*').eq('user_id', uid).maybeSingle();
+  state.profileRating = r;
+}
+async function loadProfile(){
+  const uid = state.session.user.id;
+  const { data: p } = await sb.from('profiles').select('*').eq('id', uid).maybeSingle();
+  state.profile = p;
+  const { data: r } = await sb.from('user_ratings').select('*').eq('user_id', uid).maybeSingle();
+  state.profileRating = r;
+  const { count: itemCount } = await sb.from('items').select('id', {count:'exact', head:true}).eq('owner_id', uid);
+  state.myItemsCount = itemCount || 0;
+  const { data: myParts } = await sb.from('trade_offer_items').select('trade_offer_id').eq('offered_by', uid);
+  const offerIds = [...new Set((myParts||[]).map(p=>p.trade_offer_id))];
+  state.completedCount = 0;
+  if (offerIds.length){
+    const { count } = await sb.from('trade_offers').select('id', {count:'exact', head:true}).in('id', offerIds).eq('status','completed');
+    state.completedCount = count || 0;
+  }
+  const { data: reviews } = await sb.from('reviews').select('*').eq('reviewee_id', uid).order('created_at',{ascending:false}).limit(3);
+  state.recentReviews = reviews || [];
+}
+async function handleSaveName(){
+  const name = document.getElementById('p-name').value.trim();
+  const uid = state.session.user.id;
+  const { error } = await sb.from('profiles').update({ full_name: name }).eq('id', uid);
+  if (error){ alert('خطأ: '+error.message); return; }
+  state.editingName = false;
+  await loadProfile(); render();
 }
 async function loadBrowse(){
   const uid = state.session.user.id;
@@ -499,7 +579,9 @@ async function handleReport(){
 
 /* ================= HOW IT WORKS ================= */
 function openHowIt(){ state.prevView = state.session ? state.view : null; state.view = 'howit'; render(); }
-function closeHowIt(){ if (!state.session){ render(); return; } state.view = state.prevView || 'browse'; render(); }
+function closeHowIt(){ if (!state.session){ render(); return; } state.view = state.prevView || 'dashboard'; render(); }
+async function openProfile(){ state.prevView = state.view; state.view = 'profile'; render(); await loadProfile(); render(); }
+function closeProfile(){ state.view = state.prevView || 'dashboard'; render(); }
 
 /* ================= NAV ================= */
 async function goTo(view){ state.view=view; render(); await loadAllForCurrentTab(); render(); }
@@ -576,20 +658,22 @@ function attachHowItStandaloneEvents(){
 }
 
 function renderShell(){
-  const titles = {browse:'تصفح الأغراض', add:'أضف غرضاً', mine:'أغراضي ومطابقاتي', wallet:'محفظة النقاط', deal:'تفاصيل الصفقة', howit:'كيف يعمل بادلني'};
+  const titles = {dashboard:'الرئيسية', browse:'تصفح الأغراض', add:'أضف غرضاً', mine:'أغراضي ومطابقاتي', wallet:'محفظة النقاط', deal:'تفاصيل الصفقة', howit:'كيف يعمل بادلني', profile:'حسابي'};
   const pendingCount = state.myMatches ? state.myMatches.filter(m=>m.status==='suggested').length : 0;
-  const showBack = state.view==='deal' || state.view==='howit';
+  const showBack = state.view==='deal' || state.view==='howit' || state.view==='profile';
+  const backId = state.view==='deal' ? 'back-btn' : state.view==='profile' ? 'profile-back' : 'howit-back2';
   return `
     <header class="topbar">
       <div class="zone">
-        ${showBack ? `<span class="back" id="${state.view==='deal'?'back-btn':'howit-back2'}">${icon('back',21,'#fff')}</span>` : `<span class="icon-btn" id="howit-open">${icon('help',19,'#C6D3E1')}</span><span class="logout-txt" id="logout-btn">خروج</span>`}
+        ${showBack ? `<span class="back" id="${backId}">${icon('back',21,'#fff')}</span>` : `<span class="icon-btn" id="howit-open">${icon('help',19,'#C6D3E1')}</span><span class="avatar-btn" id="profile-open">${icon('user',15,'#0F2A4D')}</span>`}
       </div>
       <div class="zone title-zone"><div class="screen-title">${titles[state.view]}</div></div>
       <div class="zone"><div class="brand-row">${brandMark(24)}<span class="brand">بادلني</span></div></div>
     </header>
     <main>${state.loading ? '<div class="empty">جارٍ التحميل...</div>' : renderView()}</main>
-    ${(state.view!=='deal' && state.view!=='howit') ? `
+    ${!showBack ? `
     <nav class="tabbar">
+      <button data-v="dashboard" class="${state.view==='dashboard'?'active':''}">${icon('home',20)}الرئيسية</button>
       <button data-v="browse" class="${state.view==='browse'?'active':''}">${icon('search',20)}تصفح</button>
       <button data-v="add" class="${state.view==='add'?'active':''}">${icon('plus',20)}أضف</button>
       <button data-v="mine" class="${state.view==='mine'?'active':''} ${pendingCount?'tab-dot':''}">${icon('box',20)}أغراضي</button>
@@ -598,12 +682,93 @@ function renderShell(){
   `;
 }
 function renderView(){
+  if (state.view==='dashboard') return renderDashboard();
   if (state.view==='browse') return renderBrowse();
   if (state.view==='add') return renderAddForm();
   if (state.view==='mine') return renderMine();
   if (state.view==='wallet') return renderWallet();
   if (state.view==='deal') return renderDeal();
   if (state.view==='howit') return howItStepsHtml();
+  if (state.view==='profile') return renderProfile();
+}
+
+
+function greeting(){ return new Date().getHours() < 12 ? 'صباح الخير' : 'مساء الخير'; }
+
+function renderDashboard(){
+  const activeItems = (state.myItems||[]).filter(i=>i.status==='available').length;
+  const pendingMatches = (state.myMatches||[]).filter(m=>m.status==='suggested').length;
+  const ratingText = state.profileRating ? state.profileRating.rating_avg : '—';
+  let html = `
+    <div class="greet">${greeting()} 👋</div>
+    <div class="greet-sub">هذا ملخص حسابك في بادلني</div>
+    <div class="stat-grid">
+      <div class="stat-card">${icon('box',20,'#B8862E')}<div class="stat-num">${activeItems}</div><div class="stat-lbl">أغراض نشطة</div></div>
+      <div class="stat-card">${icon('swap',20,'#B8862E')}<div class="stat-num">${pendingMatches}</div><div class="stat-lbl">مطابقات جديدة</div></div>
+      <div class="stat-card">${icon('wallet',20,'#B8862E')}<div class="stat-num">${state.balance}</div><div class="stat-lbl">رصيد النقاط</div></div>
+      <div class="stat-card">${icon('star',20,'#B8862E')}<div class="stat-num">${ratingText}</div><div class="stat-lbl">تقييمك العام</div></div>
+    </div>
+    <div class="quick-actions">
+      <button class="btn gold" id="dash-add-btn">${icon('plus',18,'#0F2A4D')} أضف غرضاً</button>
+      <button class="btn ghost" id="dash-browse-btn">${icon('search',18,'#6B6558')} تصفح</button>
+    </div>
+  `;
+  const suggested = (state.myMatches||[]).filter(m=>m.status==='suggested').slice(0,2);
+  html += `<div class="dash-section-head"><h2 class="section-title" style="margin:0;">${icon('swap',18,'#0F2A4D')} أحدث المطابقات</h2>${(state.myMatches||[]).length ? `<span class="see-all" onclick="goTo('mine')">عرض الكل</span>` : ''}</div>`;
+  if (!suggested.length){
+    html += `<div class="empty" style="padding:24px 10px;">لا مطابقات جديدة حالياً</div>`;
+  } else {
+    html += suggested.map(m=>matchCardHtml(m)).join('');
+  }
+  return html;
+}
+
+function renderProfile(){
+  if (!state.profile) return '<div class="empty">جارٍ التحميل...</div>';
+  const name = state.profile.full_name || '';
+  const initials = name ? name.trim().charAt(0).toUpperCase() : '؟';
+  const kyc = state.profile.kyc_level;
+  const joinDate = new Date(state.profile.created_at).toLocaleDateString('ar-OM', {year:'numeric', month:'long'});
+  const ratingAvg = state.profileRating ? state.profileRating.rating_avg : null;
+  const ratingCount = state.profileRating ? state.profileRating.rating_count : 0;
+
+  let html = `<div class="profile-hero">
+    <div class="profile-avatar">${initials}</div>
+    ${state.editingName ? `
+      <form id="name-form" style="display:flex; gap:8px; max-width:260px; margin:0 auto 6px;">
+        <input id="p-name" value="${escapeHtml(name)}" placeholder="اكتب اسمك">
+        <button class="btn sm gold" type="submit" style="width:auto; padding:0 16px;">حفظ</button>
+      </form>
+    ` : `
+      <div class="profile-name-row">
+        <h2>${name ? escapeHtml(name) : 'مستخدم بادلني'}</h2>
+        <span class="edit-ic" id="edit-name-btn">${icon('edit',15)}</span>
+      </div>
+    `}
+    <span class="profile-phone" dir="ltr">${state.session.user.phone ? '+'+state.session.user.phone : ''}</span><br>
+    <span class="verify-badge ${kyc==='id_verified'?'':'basic'}">${icon('badge',13)} ${kyc==='id_verified' ? 'موثّق بالهوية' : 'موثّق بالهاتف'}</span>
+  </div>
+  <div class="join-date">عضو منذ ${joinDate}</div>
+  <div class="profile-stats">
+    <div class="cell"><div class="n">${state.myItemsCount}</div><div class="l">غرض منشور</div></div>
+    <div class="cell"><div class="n">${state.completedCount}</div><div class="l">مبادلة مكتملة</div></div>
+    <div class="cell"><div class="n">${ratingAvg !== null ? ratingAvg : '—'}</div><div class="l">${ratingCount} تقييم</div></div>
+  </div>`;
+
+  html += `<h2 class="section-title">${icon('star',18,'#0F2A4D')} آخر التقييمات</h2>`;
+  if (!state.recentReviews.length){
+    html += `<div class="empty" style="padding:20px 10px;">لا تقييمات بعد</div>`;
+  } else {
+    html += state.recentReviews.map(r=>`
+      <div class="review-row">
+        <div class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+        ${r.comment ? `<p>${escapeHtml(r.comment)}</p>` : ''}
+      </div>
+    `).join('');
+  }
+
+  html += `<button class="btn danger" id="logout-btn" style="margin-top:24px;">تسجيل الخروج</button>`;
+  return html;
 }
 
 function itemPhoto(it){
@@ -767,11 +932,17 @@ function renderDeal(){
 }
 
 function attachShellEvents(){
-  const logoutBtn = document.getElementById('logout-btn'); if (logoutBtn) logoutBtn.addEventListener('click', handleSignOut);
   document.querySelectorAll('nav.tabbar button').forEach(b=>b.addEventListener('click',()=>goTo(b.dataset.v)));
   const back = document.getElementById('back-btn'); if (back) back.addEventListener('click', leaveDeal);
   const howitOpen = document.getElementById('howit-open'); if (howitOpen) howitOpen.addEventListener('click', openHowIt);
   const howitBack2 = document.getElementById('howit-back2'); if (howitBack2) howitBack2.addEventListener('click', closeHowIt);
+  const profileOpen = document.getElementById('profile-open'); if (profileOpen) profileOpen.addEventListener('click', openProfile);
+  const profileBack = document.getElementById('profile-back'); if (profileBack) profileBack.addEventListener('click', closeProfile);
+  const logoutBtn = document.getElementById('logout-btn'); if (logoutBtn) logoutBtn.addEventListener('click', handleSignOut);
+  const editNameBtn = document.getElementById('edit-name-btn'); if (editNameBtn) editNameBtn.addEventListener('click', ()=>{ state.editingName=true; render(); });
+  const nameForm = document.getElementById('name-form'); if (nameForm) nameForm.addEventListener('submit', (e)=>{ e.preventDefault(); handleSaveName(); });
+  const dashAddBtn = document.getElementById('dash-add-btn'); if (dashAddBtn) dashAddBtn.addEventListener('click', ()=>goTo('add'));
+  const dashBrowseBtn = document.getElementById('dash-browse-btn'); if (dashBrowseBtn) dashBrowseBtn.addEventListener('click', ()=>goTo('browse'));
   const addForm = document.getElementById('add-form'); if (addForm) addForm.addEventListener('submit', handleAddItem);
   const photoBox = document.getElementById('photo-upload-box');
   if (photoBox) photoBox.addEventListener('click', ()=>document.getElementById('photo-input').click());
