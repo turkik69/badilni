@@ -79,7 +79,7 @@
 
   async function createNotification(userId, type, relatedId, title, body) {
     if (!userId) return;
-    await push(`notifications/${userId}`, { user_id: userId, type, related_id: relatedId || null, title, body, is_read: false, created_at: now() });
+    await push('notifications', { user_id: userId, type, related_id: relatedId || null, title, body, is_read: false, created_at: now() });
   }
 
   async function autoMatch(itemId, item) {
