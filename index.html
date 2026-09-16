@@ -288,6 +288,7 @@ function icon(name, size=20, color='currentColor'){
     user:'<circle cx="12" cy="8.2" r="3.6"/><path d="M4.8 20c0-4.1 3.1-6.8 7.2-6.8s7.2 2.7 7.2 6.8"/>',
     badge:'<path d="M12 3.2l6.5 2.8v5.6c0 4.3-2.8 7.2-6.5 8.6-3.7-1.4-6.5-4.3-6.5-8.6V6z"/><path d="M9 12.2l2.1 2.1L15.3 10"/>',
     chart:'<path d="M4 19V12.5M9.5 19V5M15 19V13.5M20 19V9"/>',
+    bell:'<path d="M6 9a6 6 0 0 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9z"/><path d="M9.5 21h5"/>',
     edit:'<path d="M4.5 19.5l.8-3.6L15.8 5.4l2.8 2.8L8.1 18.7l-3.6.8z"/><path d="M14 7l3 3"/>',
   };
   if (name === 'star'){
@@ -318,6 +319,7 @@ let state = {
   newPhotoUrl:null, uploading:false, selectedCat:null,
   activeDeal:null, dealMessages:[], dealChannel:null, myRating:0,
   profile:null, profileRating:null, completedCount:0, myItemsCount:0, recentReviews:[], editingName:false,
+  notifications:[], notificationOpen:false, notificationPermission:('Notification' in window ? Notification.permission : 'unsupported'),
   pulseOffered:[], pulseRequested:[],
 };
 
@@ -332,9 +334,52 @@ async function init(){
   await loadCategories();
   state.booting = false;
   render();
-  if (state.session) await loadAllForCurrentTab();
+  if (state.session){ await Promise.all([loadAllForCurrentTab(), loadNotifications()]); startNotificationPolling(); }
   render();
 }
+
+let notificationTimer = null;
+function startNotificationPolling(){
+  if (notificationTimer) clearInterval(notificationTimer);
+  notificationTimer = setInterval(()=>{ if (state.session) loadNotifications(true).catch(()=>{}); }, 12000);
+}
+async function loadNotifications(announce=false){
+  if (!state.session) return;
+  const uid = state.session.user.id;
+  const { data } = await sb.from('notifications').select('*').eq('user_id',uid).order('created_at',{ascending:false}).limit(20);
+  const rows = data || [];
+  if (announce && state.notificationPermission==='granted'){
+    const shown = new Set(JSON.parse(localStorage.getItem('badilni_shown_notifications') || '[]'));
+    for (const row of rows.filter(n=>!n.is_read && !shown.has(n.id)).slice(0,3)){
+      await showDeviceNotification(row);
+      shown.add(row.id);
+    }
+    localStorage.setItem('badilni_shown_notifications', JSON.stringify([...shown].slice(-100)));
+  }
+  state.notifications = rows;
+  render();
+}
+async function enableNotifications(){
+  if (!('Notification' in window)){ alert('هذا المتصفح لا يدعم إشعارات الجهاز'); return; }
+  const permission = await Notification.requestPermission();
+  state.notificationPermission = permission;
+  if (permission==='granted') await loadNotifications(true);
+  else render();
+}
+async function showDeviceNotification(row){
+  const options = { body:row.body || 'لديك تحديث جديد في بادلني', icon:'./icon.svg', badge:'./icon.svg', tag:`badilni-${row.id}`, data:{url:'./?open=mine'} };
+  if ('serviceWorker' in navigator){
+    const reg = await navigator.serviceWorker.ready;
+    await reg.showNotification(row.title || 'بادلني', options);
+  } else new Notification(row.title || 'بادلني', options);
+}
+async function openNotification(id){
+  await sb.from('notifications').update({is_read:true}).eq('id',id);
+  state.notificationOpen=false;
+  await loadNotifications(false);
+  await goTo('mine');
+}
+function toggleNotifications(){ state.notificationOpen=!state.notificationOpen; render(); }
 
 async function loadCategories(){
   const { data, error } = await sb.from('categories').select('*').eq('is_active', true);
@@ -371,10 +416,10 @@ async function handleVerifyOtp(e){
   if (error){ state.authMsg = {type:'err', text:error.message || 'رمز الدخول غير صحيح'}; render(); return; }
   state.session = data.session;
   render();
-  if (state.session){ await loadAllForCurrentTab(); render(); }
+  if (state.session){ await Promise.all([loadAllForCurrentTab(), loadNotifications()]); startNotificationPolling(); render(); }
 }
 function backToPhoneStep(){ state.authStep = 'phone'; state.authMsg = null; render(); }
-async function handleSignOut(){ await sb.auth.signOut(); state.session = null; state.view = 'dashboard'; state.authStep='phone'; render(); }
+async function handleSignOut(){ await sb.auth.signOut(); state.session = null; state.view = 'dashboard'; state.authStep='phone'; if(notificationTimer) clearInterval(notificationTimer); render(); }
 
 /* ================= LOADING ================= */
 async function loadAllForCurrentTab(){
@@ -841,14 +886,16 @@ function renderShell(){
   const pendingCount = state.myMatches ? state.myMatches.filter(m=>m.status==='suggested').length : 0;
   const showBack = state.view==='deal' || state.view==='howit' || state.view==='profile' || state.view==='item-detail';
   const backId = state.view==='deal' ? 'back-btn' : state.view==='profile' ? 'profile-back' : state.view==='item-detail' ? 'item-detail-back' : 'howit-back2';
+  const unreadCount = (state.notifications||[]).filter(n=>!n.is_read).length;
   return `
     <header class="topbar">
       <div class="zone">
-        ${showBack ? `<span class="back" id="${backId}">${icon('back',21,'#fff')}</span>` : `<span class="icon-btn" id="howit-open">${icon('help',19,'#D6C5EE')}</span><span class="avatar-btn" id="profile-open">${icon('user',15,'#3D2278')}</span>`}
+        ${showBack ? `<span class="back" id="${backId}">${icon('back',21,'#fff')}</span>` : `<span class="icon-btn notification-btn ${unreadCount?'has-unread':''}" id="notification-open">${icon('bell',19,'#fff')}${unreadCount?`<b>${Math.min(unreadCount,9)}</b>`:''}</span><span class="avatar-btn" id="profile-open">${icon('user',15,'#3D2278')}</span>`}
       </div>
       <div class="zone title-zone"><div class="screen-title">${titles[state.view]}</div></div>
       <div class="zone"><div class="brand-row">${brandMark(24)}<span class="brand">بادلني</span></div></div>
     </header>
+    ${state.notificationOpen ? renderNotificationPanel() : ''}
     <main class="view-${state.view}">${state.loading ? '<div class="empty loading-state"><span></span><span></span><span></span><p>جارٍ تحميل بياناتك...</p></div>' : renderView()}</main>
     ${!showBack ? `
     <nav class="tabbar">
@@ -859,6 +906,15 @@ function renderShell(){
       <button data-v="wallet" class="${state.view==='wallet'?'active':''}"><span class="tab-ic-wrap">${tabIcon('wallet')}</span>محفظتي</button>
     </nav>` : ''}
   `;
+}
+function renderNotificationPanel(){
+  const permissionPrompt = state.notificationPermission==='default' ? `<button class="btn gold sm" id="enable-notifications">تفعيل إشعارات الجهاز</button>` : state.notificationPermission==='denied' ? `<p class="notification-note">الإشعارات محظورة من إعدادات المتصفح. اسمح بها للموقع لتصلك على الجهاز.</p>` : '';
+  const rows = (state.notifications||[]).slice(0,8);
+  return `<section class="notification-panel">
+    <div class="notification-head"><div><b>الإشعارات</b><small>${rows.filter(n=>!n.is_read).length} غير مقروء</small></div><button type="button" id="notification-close">×</button></div>
+    ${permissionPrompt}
+    <div class="notification-list">${rows.length ? rows.map(n=>`<button type="button" class="notification-row ${n.is_read?'':'unread'}" onclick="openNotification('${n.id}')"><span>${icon(n.type==='direct_offer'?'swap':'bell',18,n.is_read?'#81798e':'#e65f69')}</span><div><b>${escapeHtml(n.title||'تنبيه جديد')}</b><p>${escapeHtml(n.body||'')}</p><small>${new Date(n.created_at).toLocaleString('ar-OM')}</small></div></button>`).join('') : '<div class="empty compact-empty">لا توجد إشعارات بعد</div>'}</div>
+  </section>`;
 }
 function renderView(){
   if (state.view==='dashboard') return renderDashboard();
@@ -1219,6 +1275,9 @@ function attachShellEvents(){
   const howitOpen = document.getElementById('howit-open'); if (howitOpen) howitOpen.addEventListener('click', openHowIt);
   const howitBack2 = document.getElementById('howit-back2'); if (howitBack2) howitBack2.addEventListener('click', closeHowIt);
   const profileOpen = document.getElementById('profile-open'); if (profileOpen) profileOpen.addEventListener('click', openProfile);
+  const notificationOpen = document.getElementById('notification-open'); if (notificationOpen) notificationOpen.addEventListener('click', toggleNotifications);
+  const notificationClose = document.getElementById('notification-close'); if (notificationClose) notificationClose.addEventListener('click', toggleNotifications);
+  const enableNotificationBtn = document.getElementById('enable-notifications'); if (enableNotificationBtn) enableNotificationBtn.addEventListener('click', enableNotifications);
   const profileBack = document.getElementById('profile-back'); if (profileBack) profileBack.addEventListener('click', closeProfile);
   const itemDetailBack = document.getElementById('item-detail-back'); if (itemDetailBack) itemDetailBack.addEventListener('click', closeItemDetail);
   const startOfferBtn = document.getElementById('start-offer-btn'); if (startOfferBtn) startOfferBtn.addEventListener('click', startOfferPicker);
@@ -1243,7 +1302,7 @@ if ('serviceWorker' in navigator) window.addEventListener('load', () => navigato
 init();
 
 document.addEventListener('visibilitychange', ()=>{
-  if (document.visibilityState==='visible' && state.session && !state.loading){ loadAllForCurrentTab().then(render).catch(()=>{}); }
+  if (document.visibilityState==='visible' && state.session && !state.loading){ Promise.all([loadAllForCurrentTab(),loadNotifications(true)]).then(render).catch(()=>{}); }
 });
 window.addEventListener('online', ()=>{
   if (state.session && !state.loading){ loadAllForCurrentTab().then(render).catch(()=>{}); }

@@ -91,6 +91,12 @@ function createClient() {
   const offer = offerResult.data;
   await buyer.from('trade_offer_items').upsert({ trade_offer_id: offer.id, item_id: buyerItem.id, offered_by: buyerId });
 
+  const sellerNotifications = await seller.from('notifications').select('*').eq('user_id', sellerId);
+  const directNotifications = sellerNotifications.data.filter(row => row.type === 'direct_offer');
+  assert.equal(directNotifications.length, 1, 'Seller must receive one direct notification for the incoming offer');
+  assert.equal(directNotifications[0].related_id, offer.id);
+  assert.equal(directNotifications[0].is_read, false);
+
   const sellerItems = await seller.from('items').select('*').eq('owner_id', sellerId);
   const sellerItemIds = sellerItems.data.map(item => item.id);
   const incoming = await seller.from('trade_offers').select('*').in('target_item_id', sellerItemIds);
