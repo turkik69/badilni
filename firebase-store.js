@@ -200,6 +200,12 @@
         const saved = { id, ...row };
         created.push(saved);
         if (this.table === 'items') await autoMatch(id, saved);
+        if (this.table === 'trade_offers' && saved.target_item_id) {
+          const targetItem = await get(`items/${saved.target_item_id}`);
+          if (targetItem && targetItem.owner_id) {
+            await createNotification(targetItem.owner_id, 'direct_offer', id, 'وصلك عرض مبادلة جديد', `هناك مستخدم يرغب في مبادلة «${targetItem.title}»`);
+          }
+        }
       }
       return { data: this.one ? created[0] : created, error: null };
     }

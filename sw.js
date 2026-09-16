@@ -1,4 +1,4 @@
-const CACHE = 'badilni-v3';
+const CACHE = 'badilni-v3.1';
 const ASSETS = ['./', './index.html', './firebase-store.js', './theme-v3.css', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())));
