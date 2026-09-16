@@ -318,6 +318,7 @@ let state = {
   quickOfferOpen:false,
   balance:0, ledger:[],
   newPhotoUrl:null, uploading:false, selectedCat:null,
+  addDraft:{title:'',description:'',condition:'good',value:'',wantsCategory:'',wantsDescription:'',acceptsPoints:true},
   activeDeal:null, dealMessages:[], dealChannel:null, myRating:0,
   profile:null, profileRating:null, completedCount:0, myItemsCount:0, recentReviews:[], editingName:false,
   notifications:[], notificationOpen:false, notificationPermission:('Notification' in window ? Notification.permission : 'unsupported'),
@@ -357,8 +358,14 @@ async function loadNotifications(announce=false){
     }
     localStorage.setItem('badilni_shown_notifications', JSON.stringify([...shown].slice(-100)));
   }
+  const before = JSON.stringify(state.notifications.map(n=>[n.id,n.is_read]));
+  const after = JSON.stringify(rows.map(n=>[n.id,n.is_read]));
   state.notifications = rows;
-  render();
+  if (before !== after && !isEditingForm()) render();
+}
+function isEditingForm(){
+  const active = document.activeElement;
+  return state.view==='add' || !!(active && ['INPUT','TEXTAREA','SELECT'].includes(active.tagName));
 }
 async function enableNotifications(){
   if (!('Notification' in window)){ alert('هذا المتصفح لا يدعم إشعارات الجهاز'); return; }
@@ -577,9 +584,23 @@ async function handlePhotoSelect(e){
   } catch(err){ alert('تعذّر رفع الصورة: ' + err.message); }
   state.uploading = false; render();
 }
-function selectCat(id){ state.selectedCat = id; render(); }
+function syncAddDraft(){
+  const form = document.getElementById('add-form');
+  if (!form) return;
+  state.addDraft = {
+    title:document.getElementById('f-title').value,
+    description:document.getElementById('f-desc').value,
+    condition:document.getElementById('f-cond').value,
+    value:document.getElementById('f-value').value,
+    wantsCategory:document.getElementById('f-wants-cat').value,
+    wantsDescription:document.getElementById('f-wants-desc').value,
+    acceptsPoints:document.getElementById('f-points').checked
+  };
+}
+function selectCat(id){ syncAddDraft(); state.selectedCat = id; render(); }
 async function handleAddItem(e){
   e.preventDefault();
+  syncAddDraft();
   const uid = state.session.user.id;
   if (!state.selectedCat){ alert('اختر فئة الغرض'); return; }
   const payload = {
@@ -598,6 +619,7 @@ async function handleAddItem(e){
   const { error } = await sb.from('items').insert(payload);
   if (error){ alert('حدث خطأ: ' + error.message); return; }
   state.newPhotoUrl = null; state.selectedCat = null;
+  state.addDraft = {title:'',description:'',condition:'good',value:'',wantsCategory:'',wantsDescription:'',acceptsPoints:true};
   await goTo('mine');
 }
 
@@ -1112,8 +1134,9 @@ function renderBrowse(){
 }
 
 function renderAddForm(){
+  const d = state.addDraft;
   const catChips = state.categories.map(c=>`<div class="cat-chip ${state.selectedCat===c.id?'sel':''}" onclick="selectCat('${c.id}')"><span class="em">${CAT_EMOJI[c.icon]||'🔹'}</span>${c.name_ar}</div>`).join('');
-  const wantsOptions = state.categories.map(c=>`<option value="${c.id}">${CAT_EMOJI[c.icon]||''} ${c.name_ar}</option>`).join('');
+  const wantsOptions = state.categories.map(c=>`<option value="${c.id}" ${d.wantsCategory===c.id?'selected':''}>${CAT_EMOJI[c.icon]||''} ${c.name_ar}</option>`).join('');
   return `<form id="add-form">
     <div class="form-section">
       <div class="sec-label">${icon('camera',15,'#D946B8')} صورة الغرض</div>
@@ -1124,19 +1147,19 @@ function renderAddForm(){
     </div>
     <div class="form-section">
       <div class="sec-label">${icon('box',15,'#D946B8')} تفاصيل الغرض</div>
-      <div class="field"><label>عنوان الغرض</label><input id="f-title" placeholder="مثال: ساعة ذكية Galaxy Watch"></div>
-      <div class="field"><label>وصف مختصر (اختياري)</label><textarea id="f-desc" placeholder="الحالة، تفاصيل إضافية..."></textarea></div>
+      <div class="field"><label>عنوان الغرض</label><input id="f-title" value="${escapeHtml(d.title)}" placeholder="مثال: ساعة ذكية Galaxy Watch"></div>
+      <div class="field"><label>وصف مختصر (اختياري)</label><textarea id="f-desc" placeholder="الحالة، تفاصيل إضافية...">${escapeHtml(d.description)}</textarea></div>
       <div class="field"><label>الفئة</label><div class="cat-grid">${catChips}</div></div>
       <div class="field"><label>الحالة</label><select id="f-cond">
-        <option value="new">جديد</option><option value="like_new">كالجديد</option><option value="good" selected>جيد</option><option value="fair">مقبول</option>
+        <option value="new" ${d.condition==='new'?'selected':''}>جديد</option><option value="like_new" ${d.condition==='like_new'?'selected':''}>كالجديد</option><option value="good" ${d.condition==='good'?'selected':''}>جيد</option><option value="fair" ${d.condition==='fair'?'selected':''}>مقبول</option>
       </select></div>
-      <div class="field"><label>القيمة التقديرية (ر.ع)</label><input id="f-value" type="number" step="0.1" placeholder="0.0"></div>
+      <div class="field"><label>القيمة التقديرية (ر.ع)</label><input id="f-value" type="number" step="0.1" value="${escapeHtml(d.value)}" placeholder="0.0"></div>
     </div>
     <div class="form-section">
       <div class="sec-label">${icon('swap',15,'#D946B8')} ماذا تريد بالمقابل؟</div>
-      <div class="field"><label>فئة (اختياري)</label><select id="f-wants-cat"><option value="">أي فئة</option>${wantsOptions}</select></div>
-      <div class="field"><label>وصف حر (اختياري)</label><textarea id="f-wants-desc" placeholder="مثال: أي سماعة لاسلكية بحالة جيدة"></textarea></div>
-      <div class="check-row"><input type="checkbox" id="f-points" checked style="width:auto;"> أوافق على استلام نقاط بدل غرض مباشر</div>
+      <div class="field"><label>فئة (اختياري)</label><select id="f-wants-cat"><option value="" ${!d.wantsCategory?'selected':''}>أي فئة</option>${wantsOptions}</select></div>
+      <div class="field"><label>وصف حر (اختياري)</label><textarea id="f-wants-desc" placeholder="مثال: أي سماعة لاسلكية بحالة جيدة">${escapeHtml(d.wantsDescription)}</textarea></div>
+      <div class="check-row"><input type="checkbox" id="f-points" ${d.acceptsPoints?'checked':''} style="width:auto;"> أوافق على استلام نقاط بدل غرض مباشر</div>
     </div>
     <button class="btn" type="submit">${icon('plus',18,'#fff')} نشر الغرض</button>
   </form>`;
@@ -1288,6 +1311,7 @@ function attachShellEvents(){
   const dashAddBtn = document.getElementById('dash-add-btn'); if (dashAddBtn) dashAddBtn.addEventListener('click', ()=>goTo('add'));
   const dashBrowseBtn = document.getElementById('dash-browse-btn'); if (dashBrowseBtn) dashBrowseBtn.addEventListener('click', ()=>goTo('browse'));
   const addForm = document.getElementById('add-form'); if (addForm) addForm.addEventListener('submit', handleAddItem);
+  if (addForm){ addForm.addEventListener('input', syncAddDraft); addForm.addEventListener('change', syncAddDraft); }
   const quickOfferForm = document.getElementById('quick-offer-form'); if (quickOfferForm) quickOfferForm.addEventListener('submit', handleQuickOfferItem);
   const photoBox = document.getElementById('photo-upload-box');
   if (photoBox) photoBox.addEventListener('click', ()=>document.getElementById('photo-input').click());
@@ -1303,10 +1327,10 @@ if ('serviceWorker' in navigator) window.addEventListener('load', () => navigato
 init();
 
 document.addEventListener('visibilitychange', ()=>{
-  if (document.visibilityState==='visible' && state.session && !state.loading){ Promise.all([loadAllForCurrentTab(),loadNotifications(true)]).then(render).catch(()=>{}); }
+  if (document.visibilityState==='visible' && state.session && !state.loading && !isEditingForm()){ Promise.all([loadAllForCurrentTab(),loadNotifications(true)]).then(render).catch(()=>{}); }
 });
 window.addEventListener('online', ()=>{
-  if (state.session && !state.loading){ loadAllForCurrentTab().then(render).catch(()=>{}); }
+  if (state.session && !state.loading && !isEditingForm()){ loadAllForCurrentTab().then(render).catch(()=>{}); }
 });
 </script>
 </body>
