@@ -9,7 +9,7 @@ function json(data,status=200){ return new Response(JSON.stringify(data,null,2),
 function b64(input){ const bytes=typeof input==='string'?new TextEncoder().encode(input):new Uint8Array(input); let s=''; for(const b of bytes)s+=String.fromCharCode(b); return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/g,''); }
 function pem(p){ const raw=p.replace('-----BEGIN PRIVATE KEY-----','').replace('-----END PRIVATE KEY-----','').replace(/\s/g,''); const bin=atob(raw),out=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i); return out.buffer; }
 async function accessToken(env){
-  const secretBinding=env.FIREBASE_SERVICE_ACCOUNT_JSON;
+  const secretBinding=env.FIREBASE_SERVICE_ACCOUNT_SECRET||env.FIREBASE_SERVICE_ACCOUNT_JSON;
   const secretValue=typeof secretBinding==='string'
     ? secretBinding
     : secretBinding?.get
