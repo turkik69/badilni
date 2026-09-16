@@ -9,7 +9,13 @@ function json(data,status=200){ return new Response(JSON.stringify(data,null,2),
 function b64(input){ const bytes=typeof input==='string'?new TextEncoder().encode(input):new Uint8Array(input); let s=''; for(const b of bytes)s+=String.fromCharCode(b); return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/g,''); }
 function pem(p){ const raw=p.replace('-----BEGIN PRIVATE KEY-----','').replace('-----END PRIVATE KEY-----','').replace(/\s/g,''); const bin=atob(raw),out=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i); return out.buffer; }
 async function accessToken(env){
-  const sa=JSON.parse(env.FIREBASE_SERVICE_ACCOUNT_JSON||'{}');
+  const secretBinding=env.FIREBASE_SERVICE_ACCOUNT_JSON;
+  const secretValue=typeof secretBinding==='string'
+    ? secretBinding
+    : secretBinding?.get
+      ? await secretBinding.get()
+      : '';
+  const sa=JSON.parse(secretValue||'{}');
   if(!sa.client_email||!sa.private_key) throw new Error('FIREBASE_SERVICE_ACCOUNT_JSON is missing');
   const now=Math.floor(Date.now()/1000), header={alg:'RS256',typ:'JWT'}, payload={iss:sa.client_email,scope:'https://www.googleapis.com/auth/firebase.database https://www.googleapis.com/auth/firebase.messaging',aud:'https://oauth2.googleapis.com/token',iat:now,exp:now+3600};
   const unsigned=`${b64(JSON.stringify(header))}.${b64(JSON.stringify(payload))}`;
