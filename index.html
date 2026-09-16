@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover, user-scalable=no">
 <title>بادلني</title>
-<meta name="theme-color" content="#160A2E">
+<meta name="theme-color" content="#25164F">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -247,6 +247,7 @@
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="theme-v3.css">
 </head>
 <body>
 <div id="frame"></div>
@@ -742,9 +743,15 @@ function renderDealMessagesOnly(){
 function renderAuth(){
   const phoneStep = state.authStep==='phone';
   return `<div class="auth-wrap">
-    ${brandMark(64)}
-    <h1>بادلني</h1>
-    <p class="tag">بدّل أغراضك القديمة بأخرى تحتاجها - بدون نقود</p>
+    <div class="auth-brand-panel">
+      <div class="auth-logo">${brandMark(76)}</div>
+      <span class="auth-kicker">مبادلة أذكى · مجتمع أوثق</span>
+      <h1>بادلني</h1>
+      <p class="tag">امنح أغراضك فرصة جديدة، واحصل على ما تحتاجه بدون شراء جديد.</p>
+      <div class="auth-benefits"><span>مطابقة تلقائية</span><span>تفاوض مباشر</span><span>نقاط مرنة</span></div>
+    </div>
+    <div class="auth-form-panel">
+      <div class="auth-form-head"><span>أهلاً بك</span><small>سجّل دخولك أو أنشئ حسابك خلال لحظات</small></div>
     ${phoneStep ? `
     <form id="phone-form">
       <div class="field"><label>رقم الهاتف</label><input id="auth-phone" type="tel" inputmode="tel" placeholder="9XXXXXXX" dir="ltr" style="text-align:left;"></div>
@@ -760,6 +767,7 @@ function renderAuth(){
     ${state.authMsg?`<div class="msg ${state.authMsg.type}">${state.authMsg.text}</div>`:''}
     <div><span class="howit-link" id="howit-link">${icon('help',16,'#D946B8')} كيف يعمل بادلني؟</span></div>
     <p class="hint">يُحفظ رمز الدخول بصورة مشفّرة. لا تشاركه مع أي شخص، ويمكنك البقاء مسجّلًا على جهازك.</p>
+    </div>
   </div>`;
 }
 function attachAuthEvents(){
@@ -808,7 +816,7 @@ function renderShell(){
       <div class="zone title-zone"><div class="screen-title">${titles[state.view]}</div></div>
       <div class="zone"><div class="brand-row">${brandMark(24)}<span class="brand">بادلني</span></div></div>
     </header>
-    <main>${state.loading ? '<div class="empty">جارٍ التحميل...</div>' : renderView()}</main>
+    <main class="view-${state.view}">${state.loading ? '<div class="empty loading-state"><span></span><span></span><span></span><p>جارٍ تحميل بياناتك...</p></div>' : renderView()}</main>
     ${!showBack ? `
     <nav class="tabbar">
       <button data-v="dashboard" class="${state.view==='dashboard'?'active':''}"><span class="tab-ic-wrap">${tabIcon('home')}</span>الرئيسية</button>
@@ -868,7 +876,7 @@ function renderMarketPulse(){
   const maxReq = Math.max(1, ...state.pulseRequested.map(x=>x.count));
   let html = `<div class="pulse-card">
     <h2 class="section-title" style="margin-bottom:2px;">${icon('chart',18,'#3D2278')} نبض السوق</h2>
-    <p style="font-size:12px; color:var(--muted); margin:0 0 16px;">اعرفي ما يكثر عرضه وما يكثر طلبه بين المستخدمين، لتقرري ماذا تضيفين</p>
+    <p style="font-size:12px; color:var(--muted); margin:0 0 16px;">تعرّف على أكثر الفئات عرضاً وطلباً لتختار ما تضيفه</p>
     <div class="pulse-sub">${icon('box',13,'#5A3A9E')} الأكثر عرضاً الآن</div>
     ${state.pulseOffered.map(x=>`
       <div class="pulse-row">
@@ -957,7 +965,7 @@ function renderItemDetail(){
     html += `<button class="btn gold" id="start-offer-btn">${icon('swap',18,'#3D2278')} تقديم عرض مبادلة</button>`;
   } else {
     const myAvailable = (state.myItems||[]).filter(i=>i.status==='available');
-    html += `<h2 class="section-title">اختاري الغرض الذي تعرضينه</h2>`;
+      html += `<h2 class="section-title">اختر الغرض الذي تريد عرضه</h2>`;
     if (!myAvailable.length){
       html += `<div class="empty">ليس لديك أغراض متاحة بعد - أضيفي غرضاً أولاً من تبويب "أضف"</div>`;
     } else {
@@ -985,7 +993,7 @@ function itemPhoto(it){
 }
 function renderBrowse(){
   if (!state.browseItems.length) return `<div class="empty">${icon('search',40)}<br>لا توجد أغراض متاحة من مستخدمين آخرين بعد<br>جرّب إضافة غرض بحساب ثانٍ لاختبار التوفيق</div>`;
-  return state.browseItems.map(it=>`
+  return `<div class="browse-grid">${state.browseItems.map(it=>`
     <div class="item item-tap" onclick="openItemDetailById('${it.id}')">
       ${itemPhoto(it)}
       <span class="value-tag">${it.estimated_value} ر.ع</span>
@@ -996,7 +1004,7 @@ function renderBrowse(){
         <div class="wants">${icon('swap',15,'#5A3A9E')} المطلوب بالمقابل: ${it.wants_category_id?catName(it.wants_category_id):escapeHtml(it.wants_description||'مفتوح للعروض')}</div>
         <span class="cond">${COND_LABEL[it.condition]||it.condition}</span>
       </div>
-    </div>`).join('');
+    </div>`).join('')}</div>`;
 }
 
 function renderAddForm(){
