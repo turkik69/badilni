@@ -265,11 +265,14 @@ const TAB_ICONS = {
   swap: 'data:image/png;base64,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',
   star: 'data:image/png;base64,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',
 };
-function tabIcon(name){ return `<img src="${TAB_ICONS[name]}" alt="">`; }
+function tabIcon(name){
+  const iconName = {home:'home', search:'search', plus:'plus', box:'box', wallet:'wallet', swap:'swap', star:'star'}[name] || name;
+  return `<span class="nav-icon nav-icon-${name}">${icon(iconName,23,'currentColor')}</span>`;
+}
 
 const CAT_EMOJI = {smartphone:'📱', gamepad:'🎮', book:'📚'};
 const COND_LABEL = {new:'جديد', like_new:'كالجديد', good:'جيد', fair:'مقبول'};
-const STATUS_LABEL = {suggested:'مطابقة جديدة', accepted:'مقبولة', dismissed:'متجاهَلة', negotiating:'قيد التفاوض', agreed:'تم الاتفاق', completed:'مكتملة', cancelled:'ملغاة'};
+const STATUS_LABEL = {suggested:'مطابقة جديدة', accepted:'مقبولة', dismissed:'متجاهَلة', negotiating:'قيد التفاوض', agreed:'تم الاتفاق', completed:'مكتملة', cancelled:'ملغاة', rejected:'مرفوضة'};
 
 function icon(name, size=20, color='currentColor'){
   const p = {
@@ -320,9 +323,11 @@ let state = {
   quickOfferOpen:false,
   balance:0, ledger:[],
   newPhotoUrl:null, uploading:false, selectedCat:null,
-  addDraft:{title:'',description:'',condition:'good',value:'',wantsCategory:'',wantsDescription:'',acceptsPoints:true},
+  addDraft:{title:'',description:'',condition:'good',wantsCategory:'',wantsDescription:'',acceptsPoints:true},
+  editingItemId:null, browseCategory:'all', browseSearch:'',
   activeDeal:null, dealMessages:[], dealChannel:null, myRating:0,
   profile:null, profileRating:null, completedCount:0, myItemsCount:0, recentReviews:[], editingName:false,
+  adminItems:[], adminReports:[], adminUsers:[],
   notifications:[], notificationOpen:false, notificationPermission:('Notification' in window ? Notification.permission : 'unsupported'),
   pulseOffered:[], pulseRequested:[],
 };
@@ -447,6 +452,7 @@ async function loadAllForCurrentTab(){
   else if (state.view === 'mine') await loadMine();
   else if (state.view === 'wallet') await loadWallet();
   else if (state.view === 'profile') await loadProfile();
+  else if (state.view === 'admin') await loadAdmin();
   state.loading = false;
 }
 async function loadDashboard(){
@@ -456,9 +462,9 @@ async function loadDashboard(){
   state.profileRating = r;
 }
 async function loadMarketPulse(){
-  const { data } = await sb.from('items').select('category_id, wants_category_id').eq('status','available');
+  const { data } = await sb.from('items').select('category_id, wants_category_id');
   const offered = {}, requested = {};
-  (data||[]).forEach(it=>{
+  (data||[]).filter(item => !item.status || item.status === 'available').forEach(it=>{
     if (it.category_id) offered[it.category_id] = (offered[it.category_id]||0)+1;
     if (it.wants_category_id) requested[it.wants_category_id] = (requested[it.wants_category_id]||0)+1;
   });
@@ -483,6 +489,17 @@ async function loadProfile(){
   const { data: reviews } = await sb.from('reviews').select('*').eq('reviewee_id', uid).order('created_at',{ascending:false}).limit(3);
   state.recentReviews = reviews || [];
 }
+function isAdmin(){ return !!(state.profile && (state.profile.role === 'admin' || state.profile.is_admin === true)); }
+async function loadAdmin(){
+  if (!state.profile) await loadProfile();
+  if (!isAdmin()){ state.view='profile'; return; }
+  const [{data:items},{data:reports},{data:users}] = await Promise.all([
+    sb.from('items').select('*').order('created_at',{ascending:false}),
+    sb.from('reports').select('*').order('created_at',{ascending:false}),
+    sb.from('profiles').select('*').order('created_at',{ascending:false})
+  ]);
+  state.adminItems = items || []; state.adminReports = reports || []; state.adminUsers = users || [];
+}
 async function handleSaveName(){
   const name = document.getElementById('p-name').value.trim();
   const uid = state.session.user.id;
@@ -493,8 +510,9 @@ async function handleSaveName(){
 }
 async function loadBrowse(){
   const uid = state.session.user.id;
-  const { data } = await sb.from('items').select('*').eq('status','available').neq('owner_id', uid).order('created_at',{ascending:false});
-  state.browseItems = data || [];
+  const { data, error } = await sb.from('items').select('*').order('created_at',{ascending:false});
+  if (error){ alert('تعذّر تحميل المعروضات: '+error.message); return; }
+  state.browseItems = (data || []).filter(item => item.owner_id !== uid && (!item.status || item.status === 'available'));
 }
 async function loadMine(){
   const uid = state.session.user.id;
@@ -503,10 +521,9 @@ async function loadMine(){
   const myIds = state.myItems.map(i=>i.id);
   state.myMatches = [];
   state.directOffers = [];
-  if (!myIds.length) return;
 
   // ---- المطابقات التلقائية (محرك التوفيق) ----
-  const { data: myLinks } = await sb.from('match_items').select('match_id,item_id').in('item_id', myIds);
+  const { data: myLinks } = myIds.length ? await sb.from('match_items').select('match_id,item_id').in('item_id', myIds) : {data:[]};
   if (myLinks && myLinks.length){
     const matchIds = [...new Set(myLinks.map(m=>m.match_id))];
     const { data: allLinks } = await sb.from('match_items').select('match_id,item_id').in('match_id', matchIds);
@@ -530,7 +547,7 @@ async function loadMine(){
   // ---- العروض المباشرة (بدأتها أنا، أو موجَّهة لأحد أغراضي) ----
   const { data: myParticipant } = await sb.from('trade_offer_items').select('trade_offer_id, item_id').eq('offered_by', uid);
   const myOfferIds = [...new Set((myParticipant||[]).map(p=>p.trade_offer_id))];
-  const { data: targetingMe } = await sb.from('trade_offers').select('*').in('target_item_id', myIds);
+  const { data: targetingMe } = myIds.length ? await sb.from('trade_offers').select('*').in('target_item_id', myIds) : {data:[]};
   const offerMap = {};
   (targetingMe||[]).forEach(o => offerMap[o.id] = o);
   let initiatedOffers = [];
@@ -538,6 +555,8 @@ async function loadMine(){
     const { data: io } = await sb.from('trade_offers').select('*').in('id', myOfferIds).not('target_item_id','is', null);
     initiatedOffers = io || [];
   }
+  const { data: startedByMe } = await sb.from('trade_offers').select('*').eq('initiator_id', uid);
+  initiatedOffers.push(...(startedByMe || []));
   initiatedOffers.forEach(o => offerMap[o.id] = o);
 
   const directOfferRows = Object.values(offerMap);
@@ -601,7 +620,6 @@ function syncAddDraft(){
     title:document.getElementById('f-title').value,
     description:document.getElementById('f-desc').value,
     condition:document.getElementById('f-cond').value,
-    value:document.getElementById('f-value').value,
     wantsCategory:document.getElementById('f-wants-cat').value,
     wantsDescription:document.getElementById('f-wants-desc').value,
     acceptsPoints:document.getElementById('f-points').checked
@@ -619,17 +637,20 @@ async function handleAddItem(e){
     description: document.getElementById('f-desc').value.trim() || null,
     category_id: state.selectedCat,
     condition: document.getElementById('f-cond').value,
-    estimated_value: parseFloat(document.getElementById('f-value').value || '0'),
     wants_category_id: document.getElementById('f-wants-cat').value || null,
     wants_description: document.getElementById('f-wants-desc').value.trim() || null,
     accepts_points: document.getElementById('f-points').checked,
-    photos: state.newPhotoUrl ? [state.newPhotoUrl] : []
+    photos: state.newPhotoUrl ? [state.newPhotoUrl] : [],
+    status: 'available', visibility: 'public'
   };
   if (!payload.title || !payload.condition){ alert('أكمل العنوان والحالة'); return; }
-  const { error } = await sb.from('items').insert(payload);
+  const operation = state.editingItemId
+    ? sb.from('items').update(payload).eq('id', state.editingItemId).eq('owner_id', uid)
+    : sb.from('items').insert(payload);
+  const { error } = await operation;
   if (error){ alert('حدث خطأ: ' + error.message); return; }
-  state.newPhotoUrl = null; state.selectedCat = null;
-  state.addDraft = {title:'',description:'',condition:'good',value:'',wantsCategory:'',wantsDescription:'',acceptsPoints:true};
+  state.newPhotoUrl = null; state.selectedCat = null; state.editingItemId = null;
+  state.addDraft = {title:'',description:'',condition:'good',wantsCategory:'',wantsDescription:'',acceptsPoints:true};
   await goTo('mine');
 }
 
@@ -640,7 +661,6 @@ async function handleQuickOfferItem(e){
   const title = document.getElementById('q-title').value.trim();
   const categoryId = document.getElementById('q-category').value;
   const condition = document.getElementById('q-condition').value;
-  const value = Math.max(0, Number(document.getElementById('q-value').value || 0));
   if (!title || !categoryId){ alert('أدخل اسم سلعتك واختر فئتها'); return; }
   state.loading = true; render();
   const payload = {
@@ -649,12 +669,11 @@ async function handleQuickOfferItem(e){
     description: document.getElementById('q-description').value.trim() || null,
     category_id: categoryId,
     condition,
-    estimated_value: value,
     wants_category_id: target.category_id,
     wants_item_id: target.id,
     wants_description: `مبادلة مباشرة مع ${target.title}`,
     accepts_points: true,
-    photos: []
+    photos: [], status:'available', visibility:'public'
   };
   const { data, error } = await sb.from('items').insert(payload).select().single();
   if (error){ state.loading=false; alert('تعذّر إضافة سلعتك: '+error.message); render(); return; }
@@ -674,7 +693,7 @@ async function openDealGeneric({ offer, matchId, targetItemId, myItem, otherItem
   state.loading = true; render();
   const uid = state.session.user.id;
   if (!offer){
-    const payload = { status:'negotiating' };
+    const payload = { status:'negotiating', initiator_id:uid, target_owner_id:otherItem?.owner_id || null };
     if (matchId) payload.match_id = matchId;
     if (targetItemId) payload.target_item_id = targetItemId;
     const { data: created, error } = await sb.from('trade_offers').insert(payload).select().single();
@@ -702,15 +721,15 @@ async function loadDeal(offerId, matchCtx){
     myItem = (items||[]).find(i=>i.owner_id===uid) || myItem;
     otherItem = (items||[]).find(i=>i.owner_id!==uid) || otherItem;
   }
-  const otherOwnerId = otherItem ? otherItem.owner_id : null;
+  const otherOwnerId = offer.initiator_id === uid ? (offer.target_owner_id || otherItem?.owner_id) : (offer.initiator_id || otherItem?.owner_id);
   let otherRating = null;
   if (otherOwnerId){ const { data: r } = await sb.from('user_ratings').select('*').eq('user_id', otherOwnerId).maybeSingle(); otherRating = r; }
-  const iJoined = (parts||[]).some(p=>p.offered_by===uid);
-  const theyJoined = (parts||[]).some(p=>p.offered_by===otherOwnerId);
+  const iJoined = [offer.initiator_id,offer.target_owner_id].includes(uid) || (parts||[]).some(p=>p.offered_by===uid);
+  const theyJoined = !!otherOwnerId && ([offer.initiator_id,offer.target_owner_id].includes(otherOwnerId) || (parts||[]).some(p=>p.offered_by===otherOwnerId));
   const iConfirmed = (confirms||[]).some(c=>c.user_id===uid);
   const theyConfirmed = (confirms||[]).some(c=>c.user_id===otherOwnerId);
   const myHold = (await sb.from('points_ledger').select('id').eq('related_trade_offer_id', offerId).eq('transaction_type','hold').eq('user_id', uid)).data;
-  state.activeDeal = { offer, myItem, otherItem, otherOwnerId, otherRating, iJoined, theyJoined, iConfirmed, theyConfirmed, iHeldPoints: !!(myHold && myHold.length) };
+  state.activeDeal = { offer, myItem, otherItem, otherOwnerId, otherRating, iJoined, theyJoined, isTargetOwner:offer.target_owner_id===uid, iConfirmed, theyConfirmed, iHeldPoints: !!(myHold && myHold.length) };
   const { data: msgs } = await sb.from('messages').select('*').eq('trade_offer_id', offerId).order('created_at',{ascending:true});
   state.dealMessages = msgs || [];
   subscribeToDeal(offerId);
@@ -752,6 +771,12 @@ async function handleUpdateTerms(e){
 async function handleAgree(){
   const { error } = await sb.from('trade_offers').update({ status:'agreed', agreed_at: new Date().toISOString() }).eq('id', state.activeDeal.offer.id);
   if (error){ alert('خطأ: '+error.message); return; }
+  await loadDeal(state.activeDeal.offer.id); render();
+}
+async function handleRejectOffer(){
+  if (!state.activeDeal?.isTargetOwner || !confirm('هل تريد رفض هذا العرض؟')) return;
+  const {error} = await sb.from('trade_offers').update({status:'rejected', rejected_at:new Date().toISOString()}).eq('id',state.activeDeal.offer.id);
+  if (error){ alert('تعذّر رفض العرض: '+error.message); return; }
   await loadDeal(state.activeDeal.offer.id); render();
 }
 async function handleHoldPoints(){
@@ -808,11 +833,38 @@ function closeItemDetail(){
   state.view = state.prevView || 'browse';
   render();
 }
+function editItem(id){
+  const item = (state.myItems||[]).find(row=>row.id===id);
+  if (!item) return;
+  state.editingItemId = id;
+  state.selectedCat = item.category_id;
+  state.newPhotoUrl = item.photos && item.photos[0] ? item.photos[0] : null;
+  state.addDraft = {title:item.title||'', description:item.description||'', condition:item.condition||'good', wantsCategory:item.wants_category_id||'', wantsDescription:item.wants_description||'', acceptsPoints:item.accepts_points!==false};
+  state.viewingItem = null; state.view='add'; render();
+}
+async function deleteItem(id, fromAdmin=false){
+  const item = [...(state.myItems||[]), ...(state.adminItems||[])].find(row=>row.id===id);
+  const allowed = item && (item.owner_id===state.session.user.id || (fromAdmin && isAdmin()));
+  if (!allowed || !confirm('هل تريد حذف هذا الإعلان نهائياً؟')) return;
+  const query = sb.from('items').delete().eq('id',id);
+  if (!fromAdmin) query.eq('owner_id',state.session.user.id);
+  const {error} = await query;
+  if (error){ alert('تعذّر حذف الإعلان: '+error.message); return; }
+  if (state.view==='admin') await loadAdmin(); else await loadMine();
+  state.viewingItem=null; state.view=fromAdmin?'admin':'mine'; render();
+}
 async function startOfferPicker(){
   state.offerPicking = true; render();
   if (!state.myItems.length) await loadMine();
   render();
 }
+async function startListingChat(){
+  const target = state.viewingItem;
+  if (!target) return;
+  await openDealGeneric({offer:null, targetItemId:target.id, myItem:null, otherItem:target});
+}
+function setBrowseCategory(id){ state.browseCategory=id; render(); }
+function applyBrowseSearch(){ state.browseSearch=(document.getElementById('browse-search')?.value||'').trim(); render(); }
 function toggleQuickOffer(){ state.quickOfferOpen = !state.quickOfferOpen; render(); }
 async function confirmDirectOffer(myItemId){
   const myItem = state.myItems.find(i=>i.id===myItemId);
@@ -915,10 +967,10 @@ function attachHowItStandaloneEvents(){
 }
 
 function renderShell(){
-  const titles = {dashboard:'الرئيسية', browse:'تصفح الأغراض', add:'أضف غرضاً', mine:'أغراضي ومطابقاتي', wallet:'محفظة النقاط', deal:'تفاصيل الصفقة', howit:'كيف يعمل بادلني', profile:'حسابي', 'item-detail':'تفاصيل الغرض'};
+  const titles = {dashboard:'الرئيسية', browse:'تصفح الأغراض', add:state.editingItemId?'تعديل الإعلان':'أضف غرضاً', mine:'أغراضي ومطابقاتي', wallet:'محفظة النقاط', deal:'تفاصيل الصفقة', howit:'كيف يعمل بادلني', profile:'حسابي', admin:'إدارة التطبيق', 'item-detail':'تفاصيل الغرض'};
   const pendingCount = state.myMatches ? state.myMatches.filter(m=>m.status==='suggested').length : 0;
-  const showBack = state.view==='deal' || state.view==='howit' || state.view==='profile' || state.view==='item-detail';
-  const backId = state.view==='deal' ? 'back-btn' : state.view==='profile' ? 'profile-back' : state.view==='item-detail' ? 'item-detail-back' : 'howit-back2';
+  const showBack = state.view==='deal' || state.view==='howit' || state.view==='profile' || state.view==='admin' || state.view==='item-detail';
+  const backId = state.view==='deal' ? 'back-btn' : state.view==='profile' ? 'profile-back' : state.view==='admin' ? 'admin-back' : state.view==='item-detail' ? 'item-detail-back' : 'howit-back2';
   const unreadCount = (state.notifications||[]).filter(n=>!n.is_read).length;
   return `
     <header class="topbar">
@@ -958,6 +1010,7 @@ function renderView(){
   if (state.view==='deal') return renderDeal();
   if (state.view==='howit') return howItStepsHtml();
   if (state.view==='profile') return renderProfile();
+  if (state.view==='admin') return renderAdmin();
   if (state.view==='item-detail') return renderItemDetail();
 }
 
@@ -1061,8 +1114,18 @@ function renderProfile(){
     `).join('');
   }
 
-  html += `<button class="btn danger" id="logout-btn" style="margin-top:24px;">تسجيل الخروج</button>`;
+  if (isAdmin()) html += `<button class="btn admin-entry" id="admin-open" style="margin-top:20px;">${icon('badge',18,'#fff')} لوحة إدارة التطبيق</button>`;
+  html += `<button class="btn danger" id="logout-btn" style="margin-top:12px;">تسجيل الخروج</button>`;
   return html;
+}
+
+function renderAdmin(){
+  if (!isAdmin()) return '<div class="empty">هذه الصفحة مخصصة لمشرف التطبيق</div>';
+  return `<div class="admin-summary"><div><b>${state.adminUsers.length}</b><span>مستخدم</span></div><div><b>${state.adminItems.length}</b><span>إعلان</span></div><div><b>${state.adminReports.length}</b><span>بلاغ</span></div></div>
+    <h2 class="section-title">${icon('flag',18)} البلاغات الحديثة</h2>
+    ${state.adminReports.length ? state.adminReports.slice(0,20).map(report=>`<div class="admin-report"><b>${escapeHtml(report.reason||'بلاغ')}</b><small>${new Date(report.created_at).toLocaleString('ar-OM')}</small>${report.reported_item_id?`<button onclick="deleteItem('${report.reported_item_id}',true)">حذف الإعلان المُبلّغ عنه</button>`:''}</div>`).join('') : '<div class="empty compact-empty">لا توجد بلاغات</div>'}
+    <h2 class="section-title">${icon('box',18)} إدارة كل المعروضات</h2>
+    <div class="admin-items">${state.adminItems.length ? state.adminItems.map(item=>`<div class="admin-item">${itemPhoto(item)}<div><b>${escapeHtml(item.title)}</b><small>${catName(item.category_id)||'بدون فئة'} · ${(!item.status||item.status==='available')?'متاح':STATUS_LABEL[item.status]||item.status}</small></div><button onclick="deleteItem('${item.id}',true)">${icon('close',16)} حذف</button></div>`).join('') : '<div class="empty">لا توجد معروضات</div>'}</div>`;
 }
 
 function renderItemDetail(){
@@ -1073,7 +1136,7 @@ function renderItemDetail(){
     ${it.photos && it.photos.length ? `<img src="${it.photos[0]}" style="width:100%; height:240px; object-fit:cover; border-radius:16px; margin-bottom:16px; cursor:zoom-in;" onclick="openLightbox('${it.photos[0].replace(/'/g,"\\'")}')">` : `<div class="photo-ph" style="height:200px; border-radius:16px; margin-bottom:16px; font-size:52px;">${catEmoji(it.category_id)}</div>`}
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
       <div class="cat">${catEmoji(it.category_id)} ${catName(it.category_id)||''}</div>
-      <span class="value-tag" style="position:static;">${it.estimated_value} ر.ع</span>
+      <span class="barter-badge">للمبادلة</span>
     </div>
     <h2 style="font-size:21px; color:var(--navy); margin:4px 0 10px;">${escapeHtml(it.title)}</h2>
     <span class="cond" style="margin-bottom:14px;">${COND_LABEL[it.condition]||it.condition}</span>
@@ -1082,9 +1145,9 @@ function renderItemDetail(){
   `;
 
   if (isMine){
-    html += `<div class="empty">هذا أحد أغراضك المنشورة</div>`;
+    html += `<div class="owner-actions"><button class="btn ghost" onclick="editItem('${it.id}')">${icon('edit',17)} تعديل الإعلان</button><button class="btn danger" onclick="deleteItem('${it.id}')">${icon('close',17)} حذف الإعلان</button></div>`;
   } else if (!state.offerPicking){
-    html += `<button class="btn gold" id="start-offer-btn">${icon('swap',18,'#3D2278')} تقديم عرض مبادلة</button>`;
+    html += `<div class="listing-actions"><button class="btn gold" id="start-offer-btn">${icon('swap',18,'#3D2278')} تقديم عرض مبادلة</button><button class="btn ghost" type="button" onclick="startListingChat()">${icon('chat',18)} تفاوض مع صاحب الغرض</button></div>`;
   } else {
     const myAvailable = (state.myItems||[]).filter(i=>i.status==='available');
     html += `<div class="offer-picker-head"><div><h2 class="section-title">قدّم عرضك بالبدل</h2><p>اختر سلعة منشورة لديك أو أضف سلعة جديدة لهذا العرض مباشرة.</p></div></div>`;
@@ -1107,7 +1170,6 @@ function renderItemDetail(){
           <div class="field"><label>الفئة</label><select id="q-category" required><option value="">اختر الفئة</option>${state.categories.map(c=>`<option value="${c.id}">${c.name_ar}</option>`).join('')}</select></div>
           <div class="field"><label>الحالة</label><select id="q-condition"><option value="new">جديد</option><option value="like_new">كالجديد</option><option value="good" selected>جيد</option><option value="fair">مقبول</option></select></div>
         </div>
-        <div class="field"><label>القيمة التقديرية (ر.ع)</label><input id="q-value" type="number" min="0" step="0.1" placeholder="0.0"></div>
         <div class="field"><label>وصف مختصر (اختياري)</label><textarea id="q-description" maxlength="300" placeholder="اذكر أهم التفاصيل والحالة"></textarea></div>
         <button class="btn gold" type="submit">${icon('swap',18,'#fff')} نشر السلعة وإرسال العرض</button>
       </form>`;
@@ -1128,11 +1190,14 @@ function itemPhoto(it){
   return `<div class="photo-ph">${catEmoji(it.category_id)}</div>`;
 }
 function renderBrowse(){
-  if (!state.browseItems.length) return `<div class="empty">${icon('search',40)}<br>لا توجد أغراض متاحة من مستخدمين آخرين بعد<br>جرّب إضافة غرض بحساب ثانٍ لاختبار التوفيق</div>`;
-  return `<div class="browse-grid">${state.browseItems.map(it=>`
+  const q = state.browseSearch.toLowerCase();
+  const visible = state.browseItems.filter(item => (state.browseCategory==='all' || item.category_id===state.browseCategory) && (!q || `${item.title||''} ${item.description||''}`.toLowerCase().includes(q)));
+  const filters = `<div class="browse-tools"><div class="browse-search"><input id="browse-search" value="${escapeHtml(state.browseSearch)}" placeholder="ابحث عن غرض..."><button onclick="applyBrowseSearch()">${icon('search',19)}</button></div><div class="category-filter"><button class="${state.browseCategory==='all'?'active':''}" onclick="setBrowseCategory('all')">الكل</button>${state.categories.map(c=>`<button class="${state.browseCategory===c.id?'active':''}" onclick="setBrowseCategory('${c.id}')">${catEmoji(c.id)} ${c.name_ar}</button>`).join('')}</div></div>`;
+  if (!visible.length) return `${filters}<div class="empty">${icon('search',40)}<br>لا توجد معروضات مطابقة حالياً</div>`;
+  return `${filters}<div class="browse-grid">${visible.map(it=>`
     <div class="item item-tap" onclick="openItemDetailById('${it.id}')">
       ${itemPhoto(it)}
-      <span class="value-tag">${it.estimated_value} ر.ع</span>
+      <span class="barter-badge card-badge">للمبادلة</span>
       <div class="body">
         <div class="cat">${catEmoji(it.category_id)} ${catName(it.category_id)||''}</div>
         <h3>${escapeHtml(it.title)}</h3>
@@ -1163,7 +1228,6 @@ function renderAddForm(){
       <div class="field"><label>الحالة</label><select id="f-cond">
         <option value="new" ${d.condition==='new'?'selected':''}>جديد</option><option value="like_new" ${d.condition==='like_new'?'selected':''}>كالجديد</option><option value="good" ${d.condition==='good'?'selected':''}>جيد</option><option value="fair" ${d.condition==='fair'?'selected':''}>مقبول</option>
       </select></div>
-      <div class="field"><label>القيمة التقديرية (ر.ع)</label><input id="f-value" type="number" step="0.1" value="${escapeHtml(d.value)}" placeholder="0.0"></div>
     </div>
     <div class="form-section">
       <div class="sec-label">${icon('swap',15,'#D946B8')} ماذا تريد بالمقابل؟</div>
@@ -1171,7 +1235,7 @@ function renderAddForm(){
       <div class="field"><label>وصف حر (اختياري)</label><textarea id="f-wants-desc" placeholder="مثال: أي سماعة لاسلكية بحالة جيدة">${escapeHtml(d.wantsDescription)}</textarea></div>
       <div class="check-row"><input type="checkbox" id="f-points" ${d.acceptsPoints?'checked':''} style="width:auto;"> أوافق على استلام نقاط بدل غرض مباشر</div>
     </div>
-    <button class="btn" type="submit">${icon('plus',18,'#fff')} نشر الغرض</button>
+    <button class="btn" type="submit">${icon(state.editingItemId?'check':'plus',18,'#fff')} ${state.editingItemId?'حفظ التعديلات':'نشر الغرض'}</button>
   </form>`;
 }
 
@@ -1195,10 +1259,11 @@ function renderMine(){
   html += `<h2 class="section-title" style="margin-top:26px;">${icon('box',18,'#3D2278')} أغراضي المنشورة (${state.myItems.length})</h2>`;
   if (!state.myItems.length) html += `<div class="empty">لا يوجد غرض مضاف بعد</div>`;
   else html += state.myItems.map(it=>`
-    <div class="item item-tap" onclick="openItemDetailById('${it.id}')">${itemPhoto(it)}<span class="value-tag">${it.estimated_value} ر.ع</span>
+    <div class="item item-tap" onclick="openItemDetailById('${it.id}')">${itemPhoto(it)}<span class="barter-badge card-badge">للمبادلة</span>
       <div class="body"><div class="cat">${catEmoji(it.category_id)} ${catName(it.category_id)||''}</div><h3>${escapeHtml(it.title)}</h3>
       <div class="wants">${icon('swap',15,'#5A3A9E')} طلبك بالمقابل: ${it.wants_category_id?catName(it.wants_category_id):escapeHtml(it.wants_description||'مفتوح للعروض')}</div>
-      <span class="cond">${COND_LABEL[it.condition]||it.condition} · ${it.status==='available'?'متاح':STATUS_LABEL[it.status]||it.status}</span></div>
+      <span class="cond">${COND_LABEL[it.condition]||it.condition} · ${(!it.status||it.status==='available')?'متاح':STATUS_LABEL[it.status]||it.status}</span>
+      <div class="inline-owner-actions"><button onclick="event.stopPropagation();editItem('${it.id}')">${icon('edit',15)} تعديل</button><button class="danger-link" onclick="event.stopPropagation();deleteItem('${it.id}')">${icon('close',15)} حذف</button></div></div>
     </div>`).join('');
   return html;
 }
@@ -1270,7 +1335,7 @@ function renderDeal(){
         <button class="btn sm ghost" type="submit" style="width:100%;">تحديث الشروط</button>
       </form>
     </div>
-    <button class="btn gold" onclick="handleAgree()" style="margin-bottom:12px;">${icon('check',18,'#3D2278')} اتفقنا - ننتقل للتسليم</button>`;
+    ${d.isTargetOwner ? `<div class="decision-actions"><button class="btn gold" onclick="handleAgree()">${icon('check',18,'#3D2278')} قبول العرض</button><button class="btn danger" onclick="handleRejectOffer()">رفض العرض</button></div><p class="decision-note">يمكنك تعديل فرق النقاط أولاً ثم قبول العرض، أو القبول مباشرة دون نقاط.</p>` : `<div class="empty compact-empty">عرضك قيد التفاوض — انتظر قبول صاحب الغرض أو تابع المحادثة معه</div>`}`;
   } else if (offer.status === 'agreed'){
     if (offer.points_amount>0 && offer.points_payer_id===state.session.user.id && !d.iHeldPoints){
       html += `<div class="confirm-box"><p>يوجد فرق ${offer.points_amount} نقطة عليك دفعها - يُحجز المبلغ الآن ويُحرَّر تلقائياً عند إتمام المبادلة</p>
@@ -1287,8 +1352,8 @@ function renderDeal(){
     <div class="rate-stars">${[1,2,3,4,5].map(n=>`<span class="${n<=state.myRating?'on':''}" onclick="setRatingStars(${n})">★</span>`).join('')}</div>
     <textarea id="rate-comment" placeholder="تعليق (اختياري)" style="margin-bottom:12px;"></textarea>
     <button class="btn gold" onclick="handleSubmitRating()">إرسال التقييم</button>`;
-  } else if (offer.status === 'cancelled'){
-    html += `<div class="empty">تم إلغاء هذه الصفقة</div>`;
+  } else if (offer.status === 'cancelled' || offer.status === 'rejected'){
+    html += `<div class="empty">${offer.status==='rejected'?'رفض صاحب الغرض هذا العرض':'تم إلغاء هذه الصفقة'}</div>`;
   }
 
   if (d.theyJoined && ['negotiating','agreed'].includes(offer.status)){
@@ -1313,6 +1378,8 @@ function attachShellEvents(){
   const notificationClose = document.getElementById('notification-close'); if (notificationClose) notificationClose.addEventListener('click', toggleNotifications);
   const enableNotificationBtn = document.getElementById('enable-notifications'); if (enableNotificationBtn) enableNotificationBtn.addEventListener('click', enableNotifications);
   const profileBack = document.getElementById('profile-back'); if (profileBack) profileBack.addEventListener('click', closeProfile);
+  const adminBack = document.getElementById('admin-back'); if (adminBack) adminBack.addEventListener('click', ()=>{ state.view='profile'; render(); });
+  const adminOpen = document.getElementById('admin-open'); if (adminOpen) adminOpen.addEventListener('click', async()=>{ state.view='admin'; render(); await loadAdmin(); render(); });
   const itemDetailBack = document.getElementById('item-detail-back'); if (itemDetailBack) itemDetailBack.addEventListener('click', closeItemDetail);
   const startOfferBtn = document.getElementById('start-offer-btn'); if (startOfferBtn) startOfferBtn.addEventListener('click', startOfferPicker);
   const logoutBtn = document.getElementById('logout-btn'); if (logoutBtn) logoutBtn.addEventListener('click', handleSignOut);

@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "deploy": "wrangler deploy",
-    "check": "wrangler deploy --dry-run"
+    "check": "wrangler deploy --dry-run",
+    "test": "node tests/multi-user.test.js"
   },
   "devDependencies": {
     "wrangler": "^4.38.0"

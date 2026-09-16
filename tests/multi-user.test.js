@@ -74,15 +74,17 @@ function createClient() {
 
   const sellerItemResult = await seller.from('items').insert({
     owner_id: sellerId, title: 'هاتف للاختبار', category_id: 'electronics', condition: 'good',
-    estimated_value: 100, wants_category_id: 'games', status: 'available', photos: []
+    wants_category_id: 'games', photos: []
   }).select().single();
   const sellerItem = sellerItemResult.data;
 
   const buyerItemResult = await buyer.from('items').insert({
     owner_id: buyerId, title: 'جهاز ألعاب للاختبار', category_id: 'games', condition: 'like_new',
-    estimated_value: 95, wants_category_id: 'electronics', status: 'available', photos: []
+    wants_category_id: 'electronics', photos: []
   }).select().single();
   const buyerItem = buyerItemResult.data;
+  assert.equal(sellerItem.status, 'available', 'New listings default to public availability');
+  assert.equal(buyerItem.status, 'available');
 
   const visibleToBuyer = await buyer.from('items').select('*').eq('status', 'available').neq('owner_id', buyerId);
   assert.ok(visibleToBuyer.data.some(item => item.id === sellerItem.id), 'Published item must be visible to another user');
@@ -111,5 +113,20 @@ function createClient() {
   assert.equal(messages.data.length, 1);
   assert.equal(messages.data[0].content, 'هل يناسبك عرض المبادلة؟');
 
-  console.log('✓ multi-user publishing, visibility, offer, participation, and messaging flow passed');
+  const chatOnly = await buyer.from('trade_offers').insert({
+    status: 'negotiating', target_item_id: sellerItem.id,
+    initiator_id: buyerId, target_owner_id: sellerId
+  }).select().single();
+  await buyer.from('messages').insert({ trade_offer_id: chatOnly.data.id, sender_id: buyerId, content: 'أرغب بالتفاوض قبل اختيار سلعتي' });
+  const messageAlerts = await seller.from('notifications').select('*').eq('user_id', sellerId).eq('type', 'new_message');
+  assert.ok(messageAlerts.data.some(row => row.related_id === chatOnly.data.id), 'Listing chat notifies the owner');
+
+  await buyer.from('items').delete().eq('id', buyerItem.id).eq('owner_id', buyerId);
+  const afterDelete = await seller.from('items').select('*').eq('id', buyerItem.id);
+  assert.equal(afterDelete.data.length, 0, 'Owners can delete their own listings');
+
+  const sellerProfile = await seller.from('profiles').select('*').eq('id', sellerId).single();
+  assert.equal(sellerProfile.data.role, 'admin', 'The first account becomes the initial app administrator');
+
+  console.log('✓ multi-user marketplace, chat, notifications, deletion, and admin bootstrap passed');
 })().catch(error => { console.error(error); process.exitCode = 1; });
