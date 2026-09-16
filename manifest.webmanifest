@@ -1,0 +1,13 @@
+{
+  "name": "بادلني — منصة المبادلة",
+  "short_name": "بادلني",
+  "description": "بادل أغراضك مع مستخدمين آخرين بسهولة وأمان",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f4fb",
+  "theme_color": "#3d2278",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
