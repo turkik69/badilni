@@ -1,4 +1,4 @@
-const CACHE = 'badilni-v3.5';
+const CACHE = 'badilni-v4.0';
 const ASSETS = ['./', './index.html', './firebase-store.js', './push-config.js', './push.js', './theme-v3.css', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 try {

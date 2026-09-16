@@ -66,6 +66,13 @@
     return `u_${(await sha256(phone)).slice(0, 24)}`;
   }
 
+  async function ensureInitialAdmin(uid) {
+    const profiles = toArray(await get('profiles'));
+    if (profiles.some(profile => profile.role === 'admin' || profile.is_admin === true)) return;
+    const oldest = profiles.sort((a, b) => String(a.created_at || '').localeCompare(String(b.created_at || '')))[0];
+    if (oldest && oldest.id === uid) await patch(`profiles/${uid}`, { role: 'admin', updated_at: now() });
+  }
+
   function saveSession(session) {
     if (session) localStorage.setItem(SESSION_KEY, JSON.stringify(session));
     else localStorage.removeItem(SESSION_KEY);
@@ -99,6 +106,10 @@
         match_type: 'direct', status: 'suggested', item_ids: { a: itemId, b: candidate.id },
         owner_ids: { a: item.owner_id, b: candidate.owner_id }, created_at: now()
       });
+      await Promise.all([
+        push('match_items', { match_id: matchId, item_id: itemId, created_at: now() }),
+        push('match_items', { match_id: matchId, item_id: candidate.id, created_at: now() })
+      ]);
       await Promise.all([
         createNotification(item.owner_id, 'match_found', matchId, 'وجدنا لك مطابقة!', `قد يناسبك تبديل «${item.title}» مع «${candidate.title}»`),
         createNotification(candidate.owner_id, 'match_found', matchId, 'وجدنا لك مطابقة!', `قد يناسبك تبديل «${candidate.title}» مع «${item.title}»`)
@@ -166,6 +177,7 @@
     single() { this.one = true; return this; }
     insert(payload) { this.mode = 'insert'; this.payload = payload; return this; }
     update(payload) { this.mode = 'update'; this.payload = payload; return this; }
+    delete() { this.mode = 'delete'; return this; }
     upsert(payload) { this.mode = 'upsert'; this.payload = payload; return this; }
     then(resolve, reject) { this.execute().then(resolve, reject); }
     async execute() {
@@ -176,6 +188,8 @@
         if (this.mode === 'update') {
           await Promise.all(filtered.map(row => patch(`${this.table}/${row.id}`, { ...this.payload, updated_at: now() })));
           filtered = filtered.map(row => ({ ...row, ...this.payload }));
+        } else if (this.mode === 'delete') {
+          await Promise.all(filtered.map(row => remove(`${this.table}/${row.id}`)));
         } else if (this.mode === 'upsert') {
           return await this.executeUpsert(rows);
         }
@@ -193,6 +207,7 @@
       const created = [];
       for (const raw of list) {
         const row = { ...raw, created_at: raw.created_at || now(), updated_at: now() };
+        if (this.table === 'items' && !row.status) row.status = 'available';
         let id = row.id;
         delete row.id;
         if (id) await put(`${this.table}/${id}`, row);
@@ -205,6 +220,11 @@
           if (targetItem && targetItem.owner_id) {
             await createNotification(targetItem.owner_id, 'direct_offer', id, 'وصلك عرض مبادلة جديد', `هناك مستخدم يرغب في مبادلة «${targetItem.title}»`);
           }
+        }
+        if (this.table === 'messages' && saved.trade_offer_id && saved.sender_id) {
+          const offer = await get(`trade_offers/${saved.trade_offer_id}`);
+          const recipient = offer && (offer.initiator_id === saved.sender_id ? offer.target_owner_id : offer.initiator_id);
+          if (recipient) await createNotification(recipient, 'new_message', saved.trade_offer_id, 'رسالة تفاوض جديدة', String(saved.content || '').slice(0, 120));
         }
       }
       return { data: this.one ? created[0] : created, error: null };
@@ -226,7 +246,8 @@
     const offerId = args && args.p_trade_offer_id;
     const offer = await get(`trade_offers/${offerId}`);
     const parts = toArray(await get('trade_offer_items')).filter(row => row.trade_offer_id === offerId);
-    if (!offer || !parts.some(row => row.offered_by === uid)) return { error: new Error('غير مصرح لك بهذه العملية') };
+    const explicitParticipant = offer && [offer.initiator_id, offer.target_owner_id].includes(uid);
+    if (!offer || (!explicitParticipant && !parts.some(row => row.offered_by === uid))) return { error: new Error('غير مصرح لك بهذه العملية') };
     try {
       if (name === 'hold_trade_points') {
         const amount = Number(offer.points_amount || 0);
@@ -243,10 +264,10 @@
         if (offer.status !== 'agreed') throw new Error('الصفقة ليست جاهزة للتأكيد');
         await put(`trade_confirmations/${offerId}_${uid}`, { trade_offer_id: offerId, user_id: uid, created_at: now() });
         const confirms = toArray(await get('trade_confirmations')).filter(row => row.trade_offer_id === offerId);
-        const participants = [...new Set(parts.map(row => row.offered_by))];
+        const participants = [...new Set([...parts.map(row => row.offered_by), offer.initiator_id, offer.target_owner_id].filter(Boolean))];
         if (participants.every(id => confirms.some(confirm => confirm.user_id === id))) {
           await patch(`trade_offers/${offerId}`, { status: 'completed', completed_at: now() });
-          await Promise.all(parts.map(row => patch(`items/${row.item_id}`, { status: 'completed' })));
+          await Promise.all(parts.filter(row => row.item_id).map(row => patch(`items/${row.item_id}`, { status: 'completed' })));
           if (Number(offer.points_amount || 0) > 0 && offer.points_payer_id) {
             const recipient = participants.find(id => id !== offer.points_payer_id);
             await push('points_ledger', { user_id: recipient, amount: Number(offer.points_amount), transaction_type: 'trade_earn', related_trade_offer_id: offerId, created_at: now() });
@@ -256,7 +277,7 @@
       if (name === 'cancel_trade_offer') {
         if (['completed', 'cancelled'].includes(offer.status)) throw new Error('لا يمكن إلغاء هذه الصفقة');
         await patch(`trade_offers/${offerId}`, { status: 'cancelled', cancelled_at: now() });
-        await Promise.all(parts.map(row => patch(`items/${row.item_id}`, { status: 'available' })));
+        await Promise.all(parts.filter(row => row.item_id).map(row => patch(`items/${row.item_id}`, { status: 'available' })));
         const ledger = toArray(await get('points_ledger')).filter(row => row.related_trade_offer_id === offerId && row.transaction_type === 'hold');
         await Promise.all(ledger.map(row => push('points_ledger', { user_id: row.user_id, amount: -Number(row.amount), transaction_type: 'release', related_trade_offer_id: offerId, created_at: now() })));
       }
@@ -284,6 +305,7 @@
             await put(`profiles/${uid}`, profile);
             await push('points_ledger', { user_id: uid, amount: 100, transaction_type: 'signup_bonus', created_at: now() });
           }
+          await ensureInitialAdmin(uid);
           const session = { user: { id: uid, phone: normalizedPhone }, created_at: now() };
           saveSession(session);
           return { data: { session }, error: null };
