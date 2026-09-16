@@ -313,6 +313,7 @@ let state = {
   browseItems:[],
   myItems:[], myMatches:[], directOffers:[],
   viewingItem:null, offerPicking:false, lightboxUrl:null,
+  quickOfferOpen:false,
   balance:0, ledger:[],
   newPhotoUrl:null, uploading:false, selectedCat:null,
   activeDeal:null, dealMessages:[], dealChannel:null, myRating:0,
@@ -554,6 +555,36 @@ async function handleAddItem(e){
   await goTo('mine');
 }
 
+async function handleQuickOfferItem(e){
+  e.preventDefault();
+  const target = state.viewingItem;
+  if (!target){ alert('تعذّر تحديد الغرض المطلوب'); return; }
+  const title = document.getElementById('q-title').value.trim();
+  const categoryId = document.getElementById('q-category').value;
+  const condition = document.getElementById('q-condition').value;
+  const value = Math.max(0, Number(document.getElementById('q-value').value || 0));
+  if (!title || !categoryId){ alert('أدخل اسم سلعتك واختر فئتها'); return; }
+  state.loading = true; render();
+  const payload = {
+    owner_id: state.session.user.id,
+    title,
+    description: document.getElementById('q-description').value.trim() || null,
+    category_id: categoryId,
+    condition,
+    estimated_value: value,
+    wants_category_id: target.category_id,
+    wants_item_id: target.id,
+    wants_description: `مبادلة مباشرة مع ${target.title}`,
+    accepts_points: true,
+    photos: []
+  };
+  const { data, error } = await sb.from('items').insert(payload).select().single();
+  if (error){ state.loading=false; alert('تعذّر إضافة سلعتك: '+error.message); render(); return; }
+  state.myItems.unshift(data);
+  state.quickOfferOpen = false;
+  await openDealGeneric({ offer:null, targetItemId:target.id, myItem:data, otherItem:target });
+}
+
 /* ================= MATCHES / DEAL ================= */
 async function handleAcceptMatch(matchId){ await sb.from('matches').update({status:'accepted'}).eq('id',matchId); await loadMine(); render(); }
 async function handleDismissMatch(matchId){ await sb.from('matches').update({status:'dismissed'}).eq('id',matchId); await loadMine(); render(); }
@@ -690,11 +721,12 @@ function openItemDetail(item){
   state.prevView = state.view;
   state.viewingItem = item;
   state.offerPicking = false;
+  state.quickOfferOpen = false;
   state.view = 'item-detail';
   render();
 }
 function closeItemDetail(){
-  state.viewingItem = null; state.offerPicking = false;
+  state.viewingItem = null; state.offerPicking = false; state.quickOfferOpen = false;
   state.view = state.prevView || 'browse';
   render();
 }
@@ -703,6 +735,7 @@ async function startOfferPicker(){
   if (!state.myItems.length) await loadMine();
   render();
 }
+function toggleQuickOffer(){ state.quickOfferOpen = !state.quickOfferOpen; render(); }
 async function confirmDirectOffer(myItemId){
   const myItem = state.myItems.find(i=>i.id===myItemId);
   if (!myItem) return;
@@ -965,9 +998,9 @@ function renderItemDetail(){
     html += `<button class="btn gold" id="start-offer-btn">${icon('swap',18,'#3D2278')} تقديم عرض مبادلة</button>`;
   } else {
     const myAvailable = (state.myItems||[]).filter(i=>i.status==='available');
-      html += `<h2 class="section-title">اختر الغرض الذي تريد عرضه</h2>`;
+    html += `<div class="offer-picker-head"><div><h2 class="section-title">قدّم عرضك بالبدل</h2><p>اختر سلعة منشورة لديك أو أضف سلعة جديدة لهذا العرض مباشرة.</p></div></div>`;
     if (!myAvailable.length){
-      html += `<div class="empty">ليس لديك أغراض متاحة بعد - أضيفي غرضاً أولاً من تبويب "أضف"</div>`;
+      html += `<div class="empty compact-empty">ليس لديك أغراض متاحة للعرض بعد</div>`;
     } else {
       html += myAvailable.map(mi => `
         <div class="item" style="cursor:pointer; border-right-color:var(--gold);" onclick="confirmDirectOffer('${mi.id}')">
@@ -975,6 +1008,20 @@ function renderItemDetail(){
           <div class="body"><div class="cat">${catEmoji(mi.category_id)} ${catName(mi.category_id)||''}</div><h3>${escapeHtml(mi.title)}</h3></div>
         </div>
       `).join('');
+    }
+    html += `<button class="btn ghost quick-offer-toggle" type="button" onclick="toggleQuickOffer()">${icon('plus',18,'#37256d')} ${state.quickOfferOpen?'إغلاق نموذج السلعة':'إضافة سلعة جديدة وتقديمها'}</button>`;
+    if (state.quickOfferOpen){
+      html += `<form id="quick-offer-form" class="quick-offer-form">
+        <div class="quick-offer-title"><span>${icon('box',18,'#e65f69')}</span><div><b>سلعتك المقترحة</b><small>ستُنشر في حسابك وتُرسل فورًا كعرض لصاحب الغرض</small></div></div>
+        <div class="field"><label>اسم السلعة</label><input id="q-title" required maxlength="80" placeholder="مثال: سماعة لاسلكية بحالة ممتازة"></div>
+        <div class="quick-offer-grid">
+          <div class="field"><label>الفئة</label><select id="q-category" required><option value="">اختر الفئة</option>${state.categories.map(c=>`<option value="${c.id}">${c.name_ar}</option>`).join('')}</select></div>
+          <div class="field"><label>الحالة</label><select id="q-condition"><option value="new">جديد</option><option value="like_new">كالجديد</option><option value="good" selected>جيد</option><option value="fair">مقبول</option></select></div>
+        </div>
+        <div class="field"><label>القيمة التقديرية (ر.ع)</label><input id="q-value" type="number" min="0" step="0.1" placeholder="0.0"></div>
+        <div class="field"><label>وصف مختصر (اختياري)</label><textarea id="q-description" maxlength="300" placeholder="اذكر أهم التفاصيل والحالة"></textarea></div>
+        <button class="btn gold" type="submit">${icon('swap',18,'#fff')} نشر السلعة وإرسال العرض</button>
+      </form>`;
     }
   }
   return html;
@@ -1181,6 +1228,7 @@ function attachShellEvents(){
   const dashAddBtn = document.getElementById('dash-add-btn'); if (dashAddBtn) dashAddBtn.addEventListener('click', ()=>goTo('add'));
   const dashBrowseBtn = document.getElementById('dash-browse-btn'); if (dashBrowseBtn) dashBrowseBtn.addEventListener('click', ()=>goTo('browse'));
   const addForm = document.getElementById('add-form'); if (addForm) addForm.addEventListener('submit', handleAddItem);
+  const quickOfferForm = document.getElementById('quick-offer-form'); if (quickOfferForm) quickOfferForm.addEventListener('submit', handleQuickOfferItem);
   const photoBox = document.getElementById('photo-upload-box');
   if (photoBox) photoBox.addEventListener('click', ()=>document.getElementById('photo-input').click());
   const photoInput = document.getElementById('photo-input'); if (photoInput) photoInput.addEventListener('change', handlePhotoSelect);
@@ -1193,6 +1241,13 @@ function escapeHtml(s){ const d=document.createElement('div'); d.textContent = s
 
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 init();
+
+document.addEventListener('visibilitychange', ()=>{
+  if (document.visibilityState==='visible' && state.session && !state.loading){ loadAllForCurrentTab().then(render).catch(()=>{}); }
+});
+window.addEventListener('online', ()=>{
+  if (state.session && !state.loading){ loadAllForCurrentTab().then(render).catch(()=>{}); }
+});
 </script>
 </body>
 </html>

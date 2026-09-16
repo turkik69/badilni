@@ -79,6 +79,14 @@ h2.section-title{font-size:18px;font-weight:800;letter-spacing:-.35px;color:var(
 .item.item-tap{transition:transform .2s ease,box-shadow .2s ease;}
 .item.item-tap:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
 
+.offer-picker-head{margin:26px 0 14px;padding:16px 18px;border-radius:18px;background:linear-gradient(135deg,#f3edf9,#fff3ef);}
+.offer-picker-head h2.section-title{margin:0 0 4px;}.offer-picker-head p{margin:0;color:var(--muted);font-size:12.5px;line-height:1.7;}
+.compact-empty{padding:20px 12px;border:1px dashed #d8cee1;border-radius:16px;margin-bottom:12px;}
+.quick-offer-toggle{margin-top:14px;}
+.quick-offer-form{margin-top:14px;padding:20px;border-radius:20px;background:var(--paper);box-shadow:var(--shadow-sm);border:1px solid rgba(55,37,109,.07);}
+.quick-offer-title{display:flex;align-items:center;gap:10px;margin-bottom:18px;}.quick-offer-title>span{width:42px;height:42px;border-radius:13px;background:#fff0ec;display:flex;align-items:center;justify-content:center;}.quick-offer-title div{display:flex;flex-direction:column;}.quick-offer-title b{color:var(--navy-deep);font-size:15px;}.quick-offer-title small{color:var(--muted);font-size:11px;margin-top:2px;}
+.quick-offer-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
 .pulse-card,.form-section,.terms-box,.intro-card,.profile-stats,.review-row{border:0;border-radius:20px;background:var(--paper);box-shadow:var(--shadow-sm);}
 .pulse-card{padding:20px;}
 .pulse-row .pbar-wrap{height:10px;background:#eee8e1;}
@@ -150,5 +158,6 @@ nav.tabbar button.active .tab-ic-wrap{transform:translateY(-2px) scale(1.08);}
 @media (min-width:1080px){.browse-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
 
 @media (max-width:380px){main{padding-inline:14px}.stat-grid{gap:9px}.stat-card{padding:13px;min-height:122px}.auth-form-panel{padding-inline:20px}.cat-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:430px){.quick-offer-grid{grid-template-columns:1fr;gap:0}}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
