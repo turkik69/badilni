@@ -249,6 +249,8 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="stylesheet" href="theme-v3.css">
+<script src="push-config.js"></script>
+<script src="push.js"></script>
 </head>
 <body>
 <div id="frame"></div>
@@ -326,6 +328,7 @@ let state = {
 };
 
 const frame = document.getElementById('frame');
+window.getBadilniPushUser = () => state.session?.user || null;
 
 async function init(){
   frame.innerHTML = `<div class="splash">${brandMark(84)}<div class="word">بادلني</div></div>`;
@@ -336,7 +339,7 @@ async function init(){
   await loadCategories();
   state.booting = false;
   render();
-  if (state.session){ await Promise.all([loadAllForCurrentTab(), loadNotifications()]); startNotificationPolling(); }
+  if (state.session){ await Promise.all([loadAllForCurrentTab(), loadNotifications()]); startNotificationPolling(); window.badilniPush?.refresh(); }
   render();
 }
 
@@ -369,10 +372,17 @@ function isEditingForm(){
 }
 async function enableNotifications(){
   if (!('Notification' in window)){ alert('هذا المتصفح لا يدعم إشعارات الجهاز'); return; }
-  const permission = await Notification.requestPermission();
-  state.notificationPermission = permission;
-  if (permission==='granted') await loadNotifications(true);
-  else render();
+  try{
+    if (!window.badilniPush) throw new Error('UNAVAILABLE');
+    await window.badilniPush.enable();
+    state.notificationPermission = Notification.permission;
+    await loadNotifications(true); render();
+    alert('تم تفعيل الإشعارات المباشرة حتى عند إغلاق التطبيق');
+  }catch(error){
+    const code=error?.message||'';
+    const message=code==='IOS_INSTALL_REQUIRED'?'ثبّت التطبيق على الشاشة الرئيسية أولاً، ثم افتحه وفعّل الإشعارات من داخله':code==='PERMISSION_DENIED'?'تم رفض إذن الإشعارات. اسمح بها من إعدادات الجهاز أو المتصفح':code==='UNSUPPORTED'?'هذا الجهاز أو المتصفح لا يدعم الإشعارات المباشرة':'تعذّر تسجيل الجهاز للإشعارات المباشرة حالياً';
+    alert(message); render();
+  }
 }
 async function showDeviceNotification(row){
   const options = { body:row.body || 'لديك تحديث جديد في بادلني', icon:'./icon.svg', badge:'./icon.svg', tag:`badilni-${row.id}`, data:{url:'./?open=mine'} };
@@ -424,7 +434,7 @@ async function handleVerifyOtp(e){
   if (error){ state.authMsg = {type:'err', text:error.message || 'رمز الدخول غير صحيح'}; render(); return; }
   state.session = data.session;
   render();
-  if (state.session){ await Promise.all([loadAllForCurrentTab(), loadNotifications()]); startNotificationPolling(); render(); }
+  if (state.session){ await Promise.all([loadAllForCurrentTab(), loadNotifications()]); startNotificationPolling(); window.badilniPush?.refresh(); render(); }
 }
 function backToPhoneStep(){ state.authStep = 'phone'; state.authMsg = null; render(); }
 async function handleSignOut(){ await sb.auth.signOut(); state.session = null; state.view = 'dashboard'; state.authStep='phone'; if(notificationTimer) clearInterval(notificationTimer); render(); }
