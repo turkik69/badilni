@@ -42,9 +42,11 @@
     const url = form
       ? `https://securetoken.googleapis.com/v1/${endpoint}?key=${FIREBASE_API_KEY}`
       : `https://identitytoolkit.googleapis.com/v1/${endpoint}?key=${FIREBASE_API_KEY}`;
+    const headers = { 'Content-Type': form ? 'application/x-www-form-urlencoded' : 'application/json' };
+    if (endpoint === 'accounts:sendOobCode') headers['X-Firebase-Locale'] = 'ar';
     const response = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': form ? 'application/x-www-form-urlencoded' : 'application/json' },
+      headers,
       body: form ? new URLSearchParams(body) : JSON.stringify(body)
     });
     const data = await response.json().catch(() => ({}));
