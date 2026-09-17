@@ -3,11 +3,22 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "build:web": "node scripts/build-web.mjs",
+    "native:sync": "npm run build:web && cap sync",
+    "native:android": "npm run native:sync && cap open android",
+    "native:ios": "npm run native:sync && cap open ios",
     "deploy": "wrangler deploy",
     "check": "wrangler deploy --dry-run",
-    "test": "node tests/multi-user.test.js"
+    "test": "node tests/multi-user.test.js && node tests/security-contract.test.js"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.0",
     "wrangler": "^4.38.0"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/core": "^8.5.0",
+    "@capacitor/ios": "^8.5.0",
+    "@capacitor/push-notifications": "^8.0.0"
   }
 }

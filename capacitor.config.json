@@ -1,0 +1,17 @@
+{
+  "appId": "com.byyassmin.badilni",
+  "appName": "بادلني",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": false
+  },
+  "ios": {
+    "contentInset": "automatic",
+    "preferredContentMode": "mobile"
+  },
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true
+  }
+}

@@ -1,5 +1,5 @@
-const CACHE = 'badilni-v4.0';
-const ASSETS = ['./', './index.html', './firebase-store.js', './push-config.js', './push.js', './theme-v3.css', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
+const CACHE = 'badilni-v5.0';
+const ASSETS = ['./', './index.html', './secure-store.js', './push-config.js', './push.js', './theme-v3.css', './privacy.html', './terms.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 try {
   importScripts('https://www.gstatic.com/firebasejs/11.10.0/firebase-app-compat.js');
