@@ -334,6 +334,14 @@ let state = {
   pulseOffered:[], pulseRequested:[],
 };
 
+// Keep recently loaded views warm so moving between tabs feels immediate.
+// Data is refreshed quietly after the cache window instead of replacing the
+// whole screen with a loader on every tap.
+const VIEW_CACHE_MS = 45 * 1000;
+const viewLoadedAt = new Map();
+function isViewFresh(view){ return Date.now() - (viewLoadedAt.get(view) || 0) < VIEW_CACHE_MS; }
+function markViewFresh(view){ viewLoadedAt.set(view, Date.now()); }
+
 const frame = document.getElementById('frame');
 window.getBadilniPushUser = () => state.session?.user || null;
 
@@ -418,7 +426,7 @@ async function openNotification(id){
   await sb.from('notifications').update({is_read:true}).eq('id',id);
   state.notificationOpen=false;
   await loadNotifications(false);
-  await goTo('mine');
+  await goTo('mine', {force:true});
 }
 function toggleNotifications(){ state.notificationOpen=!state.notificationOpen; render(); }
 
@@ -475,15 +483,21 @@ async function handleDeleteAccount(){
 }
 
 /* ================= LOADING ================= */
-async function loadAllForCurrentTab(){
-  state.loading = true; render();
-  if (state.view === 'dashboard') await loadDashboard();
-  else if (state.view === 'browse') await loadBrowse();
-  else if (state.view === 'mine') await loadMine();
-  else if (state.view === 'wallet') await loadWallet();
-  else if (state.view === 'profile') await loadProfile();
-  else if (state.view === 'admin') await loadAdmin();
-  state.loading = false;
+async function loadAllForCurrentTab({view=state.view, force=false, showLoader=false}={}){
+  if (!force && isViewFresh(view)) return;
+  if (showLoader && state.view === view){ state.loading = true; render(); }
+  if (view === 'dashboard') await loadDashboard();
+  else if (view === 'browse') await loadBrowse();
+  else if (view === 'mine') await loadMine();
+  else if (view === 'wallet') await loadWallet();
+  else if (view === 'profile') await loadProfile();
+  else if (view === 'admin') await loadAdmin();
+  markViewFresh(view);
+  if (view === 'dashboard'){
+    markViewFresh('mine');
+    markViewFresh('wallet');
+  }
+  if (state.view === view) state.loading = false;
 }
 async function loadDashboard(){
   await Promise.all([loadMine(), loadWallet(), loadMarketPulse()]);
@@ -681,7 +695,7 @@ async function handleAddItem(e){
   if (error){ alert('حدث خطأ: ' + error.message); return; }
   state.newPhotoUrl = null; state.selectedCat = null; state.editingItemId = null;
   state.addDraft = {title:'',description:'',condition:'good',wantsCategory:'',wantsDescription:'',acceptsPoints:true};
-  await goTo('mine');
+  await goTo('mine', {force:true});
 }
 
 async function handleQuickOfferItem(e){
@@ -914,7 +928,17 @@ async function joinDirectOffer(directOfferEntry){
 }
 
 /* ================= NAV ================= */
-async function goTo(view){ state.view=view; render(); await loadAllForCurrentTab(); render(); }
+async function goTo(view, {force=false}={}){
+  if (!force && state.view === view && isViewFresh(view)) return;
+  state.view = view;
+  state.loading = false;
+  state.notificationOpen = false;
+  render();
+  // Let the selected tab paint first, then refresh stale data in the background.
+  await new Promise(resolve => requestAnimationFrame(()=>resolve()));
+  await loadAllForCurrentTab({view, force});
+  if (state.view === view) render();
+}
 
 /* ================= RENDER ================= */
 function render(){
@@ -1204,7 +1228,7 @@ function renderItemDetail(){
   const isMine = it.owner_id === state.session.user.id;
   const detailPhoto = safeImageUrl(it.photos && it.photos[0]);
   let html = `
-    ${detailPhoto ? `<img src="${detailPhoto}" style="width:100%; height:240px; object-fit:cover; border-radius:16px; margin-bottom:16px; cursor:zoom-in;" onclick="openLightbox(this.src)">` : `<div class="photo-ph" style="height:200px; border-radius:16px; margin-bottom:16px; font-size:52px;">${catEmoji(it.category_id)}</div>`}
+    ${detailPhoto ? `<img class="detail-photo" src="${detailPhoto}" decoding="async" onclick="openLightbox(this.src)" alt="${escapeHtml(it.title||'صورة الغرض')}">` : `<div class="detail-photo-ph">${catEmoji(it.category_id)}</div>`}
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
       <div class="cat">${catEmoji(it.category_id)} ${catName(it.category_id)||''}</div>
       <span class="barter-badge">للمبادلة</span>
@@ -1256,7 +1280,7 @@ function openItemDetailById(id){
 function itemPhoto(it){
   const url=safeImageUrl(it.photos && it.photos[0]);
   if (url){
-    return `<img class="photo" src="${url}" onclick="event.stopPropagation(); openLightbox(this.src)">`;
+    return `<img class="photo" src="${url}" loading="lazy" decoding="async" fetchpriority="low" alt="${escapeHtml(it.title||'صورة الغرض')}" onclick="event.stopPropagation(); openLightbox(this.src)">`;
   }
   return `<div class="photo-ph">${catEmoji(it.category_id)}</div>`;
 }
@@ -1478,10 +1502,10 @@ if ('serviceWorker' in navigator) window.addEventListener('load', () => navigato
 init();
 
 document.addEventListener('visibilitychange', ()=>{
-  if (document.visibilityState==='visible' && state.session && !state.loading && !isEditingForm()){ Promise.all([loadAllForCurrentTab(),loadNotifications(true)]).then(render).catch(()=>{}); }
+  if (document.visibilityState==='visible' && state.session && !state.loading && !isEditingForm()){ Promise.all([loadAllForCurrentTab({force:true}),loadNotifications(true)]).then(render).catch(()=>{}); }
 });
 window.addEventListener('online', ()=>{
-  if (state.session && !state.loading && !isEditingForm()){ loadAllForCurrentTab().then(render).catch(()=>{}); }
+  if (state.session && !state.loading && !isEditingForm()){ loadAllForCurrentTab({force:true}).then(render).catch(()=>{}); }
 });
 </script>
 </body>
