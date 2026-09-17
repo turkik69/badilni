@@ -1,7 +1,6 @@
 // Badilni background push registration via Firebase Cloud Messaging.
 (function(){
   const CDN='https://www.gstatic.com/firebasejs/11.10.0';
-  const TOKEN_PATH='badilniPushTokens';
   let modulesPromise=null, messaging=null, registration=null, foregroundBound=false;
 
   function config(){ return window.BADILNI_PUSH_CONFIG || {}; }
@@ -35,11 +34,12 @@
   }
   async function save(token){
     const user=currentUser(); if(!user) throw new Error('LOGIN_REQUIRED');
-    const key=await hash(token), cfg=config();
+    const key=await hash(token);
     const record={token,userId:user.id,enabled:true,app:'badilni',platform:/iPhone|iPad|iPod/i.test(navigator.userAgent)?'ios-webapp':'web',updatedAt:Date.now()};
-    const response=await fetch(`${cfg.databaseURL}/${TOKEN_PATH}/${key}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(record)});
-    if(!response.ok) throw new Error('TOKEN_SAVE_FAILED');
+    if(!window.sb?.registerPushToken) throw new Error('TOKEN_SAVE_FAILED');
+    await window.sb.registerPushToken(record);
     localStorage.setItem('badilni_push_token_key',key);
+    localStorage.setItem('badilni_push_token',token);
     localStorage.setItem('badilni_push_enabled','1');
   }
   async function enable(){
@@ -63,9 +63,10 @@
     }catch(_){ return false; }
   }
   async function disable(){
-    const key=localStorage.getItem('badilni_push_token_key'), cfg=config();
-    if(key) await fetch(`${cfg.databaseURL}/${TOKEN_PATH}/${key}.json`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({enabled:false,updatedAt:Date.now()})}).catch(()=>{});
+    const token=localStorage.getItem('badilni_push_token');
+    if(token&&window.sb?.registerPushToken) await window.sb.registerPushToken({token,enabled:false,platform:/iPhone|iPad|iPod/i.test(navigator.userAgent)?'ios-webapp':'web'}).catch(()=>{});
     localStorage.removeItem('badilni_push_enabled');
+    localStorage.removeItem('badilni_push_token');
   }
   window.badilniPush={enable,refresh,disable,supported};
 })();

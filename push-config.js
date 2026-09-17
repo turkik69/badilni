@@ -7,5 +7,6 @@ window.BADILNI_PUSH_CONFIG = {
   storageBucket: 'world-cup-2026-d3091.firebasestorage.app',
   messagingSenderId: '830204361101',
   appId: '1:830204361101:web:f3a23c0fa41bb809d365c4',
+  apiURL: 'https://badilni.turki-k69.workers.dev/api',
   vapidKey: ['BJ0U0e4v5iNhSHtKFRgqRF5MX9','-9hWgV-cS2Drc75c9MCb0--JvP5','LmqU4_JJn6RoIRwalaHnT-T46PE19XUaZM'].join('')
 };
