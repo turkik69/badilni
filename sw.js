@@ -1,4 +1,4 @@
-const CACHE = 'badilni-v5.0';
+const CACHE = 'badilni-v5.1-ui-performance';
 const ASSETS = ['./', './index.html', './secure-store.js', './push-config.js', './push.js', './theme-v3.css', './privacy.html', './terms.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 try {
