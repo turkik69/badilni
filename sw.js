@@ -1,4 +1,4 @@
-const CACHE = 'badilni-v5.1-ui-performance';
+const CACHE = 'badilni-v5.2-installed-refresh';
 const ASSETS = ['./', './index.html', './secure-store.js', './push-config.js', './push.js', './theme-v3.css', './privacy.html', './terms.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 try {
@@ -17,11 +17,13 @@ try {
 
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())));
 self.addEventListener('activate', event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim())));
+self.addEventListener('message', event => { if (event.data?.type === 'SKIP_WAITING') self.skipWaiting(); });
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
-  event.respondWith(fetch(event.request).then(response => {
+  const freshRequest = new Request(event.request, {cache:'no-store'});
+  event.respondWith(fetch(freshRequest).then(response => {
     const copy = response.clone();
-    caches.open(CACHE).then(cache => cache.put(event.request, copy));
+    if (response.ok && new URL(event.request.url).origin === self.location.origin) caches.open(CACHE).then(cache => cache.put(event.request, copy));
     return response;
   }).catch(() => caches.match(event.request).then(cached => cached || caches.match('./index.html'))));
 });
