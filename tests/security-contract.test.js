@@ -27,6 +27,10 @@ function adapter(fetchImpl) {
   assert.strictEqual(rules.rules['.write'], false, 'Firebase writes must default-deny');
   assert(!index.includes('src="firebase-store.js"'), 'legacy unauthenticated adapter must not load');
   assert(index.includes('src="secure-store.js"'), 'secure adapter must load');
+  assert(index.includes("['verifyEmail','resetPassword','recoverEmail']"), 'app must handle Firebase email actions on the Badilni domain');
+  assert(secureStore.includes("continueUrl: 'https://byyassmin.com/badilni/'"), 'email actions must return to the branded Badilni domain');
+  assert(secureStore.includes("accounts:resetPassword"), 'app must securely process password reset action codes');
+  assert(secureStore.includes("accounts:update"), 'app must securely process email verification action codes');
   assert(!push.includes('databaseURL}/${TOKEN_PATH}'), 'push token must not write directly to Firebase');
   assert(worker.includes('accounts:lookup'), 'worker must verify Firebase ID tokens');
   assert(worker.includes('emailVerified'), 'worker must reject unverified email users');

@@ -317,6 +317,7 @@ function brandMark(size=64){
 
 let state = {
   session:null, view:'dashboard', prevView:'dashboard', authMode:'login', authBusy:false, loading:false, authMsg:null, booting:true,
+  authAction:null,
   categories:[], catMap:{},
   browseItems:[],
   myItems:[], myMatches:[], directOffers:[],
@@ -339,6 +340,22 @@ window.getBadilniPushUser = () => state.session?.user || null;
 async function init(){
   frame.innerHTML = `<div class="splash">${brandMark(84)}<div class="word">بادلني</div></div>`;
   await sb.__seed();
+  const actionParams = new URLSearchParams(window.location.search);
+  const actionMode = actionParams.get('mode');
+  const actionCode = actionParams.get('oobCode');
+  if (['verifyEmail','resetPassword','recoverEmail'].includes(actionMode) && actionCode){
+    state.authAction = { mode:actionMode, code:actionCode, status:'loading', message:'جارٍ التحقق من الرابط...', email:'' };
+    if (actionMode === 'resetPassword'){
+      const {data,error} = await sb.auth.checkPasswordResetCode(actionCode);
+      state.authAction.status = error ? 'error' : 'ready';
+      state.authAction.message = error ? error.message : 'أدخل كلمة مرور جديدة لحسابك.';
+      state.authAction.email = data?.email || '';
+    } else {
+      const {error} = await sb.auth.applyEmailAction(actionCode);
+      state.authAction.status = error ? 'error' : 'success';
+      state.authAction.message = error ? error.message : actionMode === 'verifyEmail' ? 'تم تأكيد بريدك الإلكتروني بنجاح.' : 'تم تأمين بريدك الإلكتروني بنجاح.';
+    }
+  }
   const { data } = await sb.auth.getSession();
   state.session = data.session;
   sb.auth.onAuthStateChange((_e, session) => { state.session = session; });
@@ -902,11 +919,43 @@ async function goTo(view){ state.view=view; render(); await loadAllForCurrentTab
 /* ================= RENDER ================= */
 function render(){
   if (state.booting) return;
+  if (state.authAction){ frame.innerHTML = renderAuthAction(); attachAuthActionEvents(); return; }
   if (!state.session && state.view !== 'howit'){ frame.innerHTML = renderAuth(); attachAuthEvents(); return; }
   if (!state.session && state.view === 'howit'){ frame.innerHTML = renderHowItStandalone(); attachHowItStandaloneEvents(); return; }
   frame.innerHTML = renderShell();
   attachShellEvents();
   renderLightbox();
+}
+
+function clearAuthAction(){
+  state.authAction=null;
+  history.replaceState({}, document.title, `${location.pathname}${location.hash}`);
+  state.authMode='login'; state.authMsg=null; render();
+}
+function renderAuthAction(){
+  const action=state.authAction;
+  const reset=action.mode==='resetPassword' && action.status==='ready';
+  const good=action.status==='success';
+  return `<div class="auth-wrap"><div class="auth-brand-panel"><div class="auth-logo">${brandMark(76)}</div><span class="auth-kicker">بادلني · حساب آمن</span><h1>${reset?'تعيين كلمة مرور جديدة':good?'تم بنجاح':'رابط الحساب'}</h1><p class="tag">${escapeHtml(action.message||'')}</p></div><div class="auth-form-panel">
+    ${reset?`<form id="action-reset-form"><div class="field"><label>البريد الإلكتروني</label><input value="${escapeHtml(action.email)}" disabled dir="ltr" style="text-align:left;"></div><div class="field"><label>كلمة المرور الجديدة</label><input id="action-new-password" type="password" minlength="8" autocomplete="new-password" required placeholder="8 أحرف على الأقل" dir="ltr" style="text-align:left;"></div><div class="field"><label>تأكيد كلمة المرور</label><input id="action-confirm-password" type="password" minlength="8" autocomplete="new-password" required dir="ltr" style="text-align:left;"></div>${action.formError?`<div class="msg err">${escapeHtml(action.formError)}</div>`:''}<button class="btn gold" type="submit" ${action.busy?'disabled':''}>${action.busy?'جارٍ الحفظ...':'حفظ كلمة المرور'}</button></form>`:`<div class="msg ${action.status==='error'?'err':'ok'}">${escapeHtml(action.message||'')}</div><button class="btn gold" id="action-back" style="margin-top:16px;">العودة إلى بادلني</button>`}
+  </div></div>`;
+}
+function attachAuthActionEvents(){
+  const back=document.getElementById('action-back'); if(back)back.addEventListener('click',clearAuthAction);
+  const form=document.getElementById('action-reset-form'); if(form)form.addEventListener('submit',handleActionPasswordReset);
+}
+async function handleActionPasswordReset(e){
+  e.preventDefault();
+  const password=document.getElementById('action-new-password').value;
+  const confirmation=document.getElementById('action-confirm-password').value;
+  if(password!==confirmation){state.authAction.formError='كلمتا المرور غير متطابقتين';render();return;}
+  state.authAction.formError='';
+  state.authAction.busy=true; render();
+  const {error}=await sb.auth.confirmPasswordReset(state.authAction.code,password);
+  state.authAction.busy=false;
+  if(error){state.authAction.status='ready';state.authAction.formError=error.message;}
+  else{state.authAction.status='success';state.authAction.message='تم تغيير كلمة المرور بنجاح. يمكنك تسجيل الدخول الآن.';}
+  render();
 }
 function renderLightbox(){
   const existing = document.getElementById('lightbox-el');

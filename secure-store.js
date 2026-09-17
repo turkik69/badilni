@@ -33,7 +33,10 @@
       TOO_MANY_ATTEMPTS_TRY_LATER: 'محاولات كثيرة، حاول لاحقاً',
       WEAK_PASSWORD: 'استخدم كلمة مرور من 8 أحرف على الأقل',
       INVALID_EMAIL: 'أدخل بريداً إلكترونياً صحيحاً',
-      EMAIL_NOT_VERIFIED: 'تحقق من بريدك الإلكتروني أولاً'
+      EMAIL_NOT_VERIFIED: 'تحقق من بريدك الإلكتروني أولاً',
+      INVALID_OOB_CODE: 'الرابط غير صالح أو انتهت صلاحيته',
+      EXPIRED_OOB_CODE: 'انتهت صلاحية الرابط، اطلب رسالة جديدة',
+      PASSWORD_LOGIN_DISABLED: 'تسجيل الدخول بكلمة المرور غير متاح حالياً'
     };
     return new Error(map[code] || 'تعذّر إكمال تسجيل الدخول');
   }
@@ -155,7 +158,7 @@
           const pendingProfile = { birth_date: birthDate, terms_version: '2026-09', accepted_at: now() };
           localStorage.setItem(PENDING_PROFILE_KEY, JSON.stringify(pendingProfile));
           await firebaseAuth('accounts:update', { idToken: result.idToken, displayName: `badilni:${birthDate}:2026-09`, returnSecureToken: false });
-          await firebaseAuth('accounts:sendOobCode', { requestType: 'VERIFY_EMAIL', idToken: result.idToken });
+          await firebaseAuth('accounts:sendOobCode', { requestType: 'VERIFY_EMAIL', idToken: result.idToken, continueUrl: 'https://byyassmin.com/badilni/' });
           return { data: { needsVerification: true }, error: null };
         } catch (error) { return { data: null, error }; }
       },
@@ -165,7 +168,7 @@
           const lookup = await firebaseAuth('accounts:lookup', { idToken: result.idToken });
           const user = lookup.users && lookup.users[0];
           if (!user?.emailVerified) {
-            await firebaseAuth('accounts:sendOobCode', { requestType: 'VERIFY_EMAIL', idToken: result.idToken }).catch(() => {});
+            await firebaseAuth('accounts:sendOobCode', { requestType: 'VERIFY_EMAIL', idToken: result.idToken, continueUrl: 'https://byyassmin.com/badilni/' }).catch(() => {});
             throw authError('EMAIL_NOT_VERIFIED');
           }
           const session = sessionFromAuth({ ...result, email: user.email, localId: user.localId });
@@ -181,8 +184,30 @@
         } catch (error) { return { data: { session: null }, error }; }
       },
       async sendPasswordReset(email) {
-        try { await firebaseAuth('accounts:sendOobCode', { requestType: 'PASSWORD_RESET', email: email.trim().toLowerCase() }); return { error: null }; }
+        try { await firebaseAuth('accounts:sendOobCode', { requestType: 'PASSWORD_RESET', email: email.trim().toLowerCase(), continueUrl: 'https://byyassmin.com/badilni/' }); return { error: null }; }
         catch (error) { return { error }; }
+      },
+      async applyEmailAction(oobCode) {
+        try {
+          if (!oobCode) throw new Error('الرابط غير مكتمل');
+          const data = await firebaseAuth('accounts:update', { oobCode, returnSecureToken: false });
+          return { data, error: null };
+        } catch (error) { return { data: null, error }; }
+      },
+      async checkPasswordResetCode(oobCode) {
+        try {
+          if (!oobCode) throw new Error('الرابط غير مكتمل');
+          const data = await firebaseAuth('accounts:resetPassword', { oobCode });
+          return { data, error: null };
+        } catch (error) { return { data: null, error }; }
+      },
+      async confirmPasswordReset(oobCode, newPassword) {
+        try {
+          if (!oobCode) throw new Error('الرابط غير مكتمل');
+          if (!newPassword || newPassword.length < 8) throw new Error('استخدم كلمة مرور من 8 أحرف على الأقل');
+          const data = await firebaseAuth('accounts:resetPassword', { oobCode, newPassword });
+          return { data, error: null };
+        } catch (error) { return { data: null, error }; }
       },
       async signOut() { saveSession(null); return { error: null }; },
       async deleteAccount() { try { await api('delete-account'); saveSession(null); return { error: null }; } catch (error) { return { error }; } }
