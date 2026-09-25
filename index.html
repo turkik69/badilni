@@ -247,11 +247,11 @@
   .intro-card{background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:20px;}
   .intro-card p{font-size:13.5px; color:var(--ink); line-height:1.85; margin:0;}
 </style>
-<link rel="manifest" href="manifest.webmanifest?v=5.4.1">
+<link rel="manifest" href="manifest.webmanifest?v=5.4.2">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<link rel="stylesheet" href="theme-v3.css?v=5.4.1">
-<script src="push.js?v=5.4.1"></script>
+<link rel="stylesheet" href="theme-v3.css?v=5.4.2">
+<script src="push.js?v=5.4.2"></script>
 </head>
 <body>
 <div id="frame"></div>
@@ -1215,7 +1215,7 @@ function renderDashboard(){
       <button class="btn ghost" id="dash-browse-btn">${icon('search',18,'#7A6E94')} تصفح</button>
     </div>
   `;
-  html += `<section class="market-entry"><div class="market-entry-head"><b>اكتشف ما يمكن مبادلته</b><span>اختر القسم وابدأ التصفح</span></div><div class="market-entry-grid">${state.categories.filter(c=>['vehicles','electronics','books','games'].includes(c.id)).sort((a,b)=>['vehicles','electronics','books','games'].indexOf(a.id)-['vehicles','electronics','books','games'].indexOf(b.id)).map(c=>`<button type="button" onclick="state.browseCategory='${c.id}';state.browseSubtype='all';state.browseMake='all';goTo('browse')"><span class="market-entry-icon">${categoryMark(c.id)}</span><b>${escapeHtml(c.name_ar)}</b><small>عرض وتبادل</small></button>`).join('')}</div></section>`;
+  html += `<section class="market-entry"><div class="market-entry-head"><b>اكتشف ما يمكن مبادلته</b><span>اختر القسم وابدأ التصفح</span></div><div class="market-entry-grid">${state.categories.map(c=>`<button type="button" class="category-theme category-theme-${c.icon}" onclick="state.browseCategory='${c.id}';state.browseSubtype='all';state.browseMake='all';goTo('browse')"><span class="market-entry-icon">${categoryMark(c.id)}</span><b>${escapeHtml(c.name_ar)}</b><small>تصفح المعروضات</small></button>`).join('')}</div></section>`;
   const suggested = (state.myMatches||[]).filter(m=>m.status==='suggested').slice(0,2);
   html += `<div class="dash-section-head"><h2 class="section-title" style="margin:0;">${icon('swap',18,'#3D2278')} أحدث المطابقات</h2>${(state.myMatches||[]).length ? `<span class="see-all" onclick="goTo('mine')">عرض الكل</span>` : ''}</div>`;
   if (!suggested.length){
@@ -1380,7 +1380,7 @@ function renderBrowse(){
   const subtypes=CATEGORY_SUBTYPES[state.browseCategory]||[];
   const subfilter=subtypes.length?`<div class="category-filter subcategory-filter"><button class="${state.browseSubtype==='all'?'active':''}" onclick="setBrowseSubtype('all')">كل الأنواع</button>${subtypes.map((s,i)=>`<button class="${state.browseSubtype===s?'active':''}" onclick="setBrowseSubtype(CATEGORY_SUBTYPES['${state.browseCategory}'][${i}])">${s}</button>`).join('')}</div>`:'';
   const makefilter=state.browseCategory==='vehicles'?`<div class="brand-grid browse-brands"><button class="brand-choice ${state.browseMake==='all'?'selected':''}" onclick="setBrowseMake('all')">جميع الشركات</button>${CAR_BRANDS.filter(([k])=>k!=='other').map(([k,label])=>`<button class="brand-choice ${state.browseMake===k?'selected':''}" onclick="setBrowseMake('${k}')">${brandMarkFor(k)}<span>${label}</span></button>`).join('')}</div>`:'';
-  const filters = `<div class="browse-tools"><div class="browse-search"><input id="browse-search" value="${escapeHtml(state.browseSearch)}" placeholder="ابحث عن غرض أو موديل..."><button onclick="applyBrowseSearch()">${icon('search',19)}</button></div><div class="category-filter"><button class="${state.browseCategory==='all'?'active':''}" onclick="setBrowseCategory('all')">الكل</button>${state.categories.map(c=>`<button class="${state.browseCategory===c.id?'active':''}" onclick="setBrowseCategory('${c.id}')">${categoryMark(c.id)} ${escapeHtml(c.name_ar)}</button>`).join('')}</div>${subfilter}${makefilter}</div>`;
+  const filters = `<div class="browse-tools"><div class="browse-search"><input id="browse-search" value="${escapeHtml(state.browseSearch)}" placeholder="ابحث عن غرض أو موديل..."><button onclick="applyBrowseSearch()">${icon('search',19)}</button></div><div class="category-tiles"><button class="category-theme category-theme-all ${state.browseCategory==='all'?'active':''}" onclick="setBrowseCategory('all')"><span class="category-tile-icon">${icon('box',25)}</span><b>كل الفئات</b></button>${state.categories.map(c=>`<button class="category-theme category-theme-${c.icon} ${state.browseCategory===c.id?'active':''}" onclick="setBrowseCategory('${c.id}')"><span class="category-tile-icon">${categoryMark(c.id)}</span><b>${escapeHtml(c.name_ar)}</b></button>`).join('')}</div>${subfilter}${makefilter}</div>`;
   if (!visible.length) return `${filters}<div class="empty">${icon('search',40)}<br>لا توجد معروضات مطابقة حالياً</div>`;
   return `${filters}<div class="browse-grid">${visible.map(it=>`
     <div class="item item-tap" onclick="openItemDetailById('${it.id}')">
@@ -1399,7 +1399,7 @@ function renderBrowse(){
 
 function renderAddForm(){
   const d = state.addDraft;
-  const catChips = state.categories.map(c=>`<button type="button" class="cat-chip ${state.selectedCat===c.id?'sel':''}" onclick="selectCat('${c.id}')"><span class="em">${categoryMark(c.id)}</span>${escapeHtml(c.name_ar)}</button>`).join('');
+  const catChips = state.categories.map(c=>`<button type="button" class="cat-chip category-theme category-theme-${c.icon} ${state.selectedCat===c.id?'sel':''}" onclick="selectCat('${c.id}')"><span class="em">${categoryMark(c.id)}</span>${escapeHtml(c.name_ar)}</button>`).join('');
   const wantsOptions = state.categories.map(c=>`<option value="${c.id}" ${d.wantsCategory===c.id?'selected':''}>${CAT_EMOJI[c.icon]||''} ${c.name_ar}</option>`).join('');
   const details=d.details||{};
   const subtypeChoices=CATEGORY_SUBTYPES[state.selectedCat]||[];
@@ -1606,7 +1606,7 @@ function escapeHtml(s){ const d=document.createElement('div'); d.textContent = s
 
 if ('serviceWorker' in navigator) window.addEventListener('load', async () => {
   try {
-    const reg = await navigator.serviceWorker.register('./sw.js?v=5.4.1', {scope:'./', updateViaCache:'none'});
+    const reg = await navigator.serviceWorker.register('./sw.js?v=5.4.2', {scope:'./', updateViaCache:'none'});
     await reg.update();
     const activateUpdate = worker => {
       if (worker && worker.state === 'installed' && navigator.serviceWorker.controller) worker.postMessage({type:'SKIP_WAITING'});
@@ -1618,7 +1618,7 @@ if ('serviceWorker' in navigator) window.addEventListener('load', async () => {
       if (worker) worker.addEventListener('statechange', () => activateUpdate(worker));
     });
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      const key='badilni-pwa-reloaded-5.4.1';
+      const key='badilni-pwa-reloaded-5.4.2';
       if (!sessionStorage.getItem(key)){ sessionStorage.setItem(key,'1'); location.reload(); }
     });
   } catch (_) {}
