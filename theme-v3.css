@@ -229,4 +229,5 @@ main[class^="view-"]{animation:viewEnter .16s ease-out;}
 .cat-grid .cat-chip{min-width:0;min-height:104px;padding:14px 8px;border:1px solid var(--category-border);border-radius:17px;background:var(--category-tint);color:var(--category-color);font-size:13px;line-height:1.4}
 .cat-grid .cat-chip .em,.cat-grid .cat-chip.sel .em{display:grid;place-items:center;width:44px;height:44px;margin:0;border-radius:13px;background:#fff;color:var(--category-color)}
 .cat-grid .cat-chip .em svg{width:26px;height:26px}
+.selected-make-label{display:block;margin:-7px 0 12px;color:var(--navy);font-size:12px;font-weight:700}
 @media (min-width:760px){.market-entry-grid,.category-tiles{grid-template-columns:repeat(4,minmax(0,1fr))}.cat-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}

@@ -247,11 +247,11 @@
   .intro-card{background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:20px;}
   .intro-card p{font-size:13.5px; color:var(--ink); line-height:1.85; margin:0;}
 </style>
-<link rel="manifest" href="manifest.webmanifest?v=5.4.3">
+<link rel="manifest" href="manifest.webmanifest?v=5.4.4">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<link rel="stylesheet" href="theme-v3.css?v=5.4.3">
-<script src="push.js?v=5.4.3"></script>
+<link rel="stylesheet" href="theme-v3.css?v=5.4.4">
+<script src="push.js?v=5.4.4"></script>
 </head>
 <body>
 <div id="frame"></div>
@@ -730,7 +730,9 @@ function syncAddDraft(){
       partName:document.getElementById('f-part-name')?.value||'',
       yearFrom:document.getElementById('f-year-from')?.value||'',
       yearTo:document.getElementById('f-year-to')?.value||'',
-      make:document.getElementById('f-make')?.value||'',
+      // The make picker uses logo buttons, so there is no f-make input to read.
+      // Keep the selected button's value while other form fields change.
+      make:document.getElementById('f-make')?.value ?? state.addDraft.details.make ?? '',
       model:document.getElementById('f-model')?.value||'',
       year:document.getElementById('f-year')?.value||'',
       mileage:document.getElementById('f-mileage')?.value||'',
@@ -772,8 +774,13 @@ async function handleAddItem(e){
   if (state.selectedCat==='vehicles' && payload.item_details.subtype===VEHICLE_PARTS_SUBTYPE && !VEHICLE_PART_TYPES.includes(payload.item_details.partType)){
     alert('اختر نوع القطعة أو الإكسسوار'); return;
   }
-  if (state.selectedCat==='vehicles' && payload.item_details.subtype!==VEHICLE_PARTS_SUBTYPE && (!payload.item_details.make || !payload.item_details.model || !payload.item_details.year)){
-    alert('اختر الشركة وأدخل الموديل وسنة الصنع'); return;
+  if (state.selectedCat==='vehicles' && payload.item_details.subtype!==VEHICLE_PARTS_SUBTYPE){
+    if (!payload.item_details.make){
+      document.getElementById('vehicle-make-picker')?.scrollIntoView({behavior:'smooth',block:'center'});
+      alert('اختر شركة المركبة من الشعارات الظاهرة في النموذج'); return;
+    }
+    if (!payload.item_details.model){ document.getElementById('f-model')?.focus(); alert('أدخل موديل المركبة'); return; }
+    if (!payload.item_details.year){ document.getElementById('f-year')?.focus(); alert('أدخل سنة صنع المركبة'); return; }
   }
   if (state.selectedCat==='vehicles' && payload.item_details.subtype===VEHICLE_PARTS_SUBTYPE && payload.item_details.yearFrom && payload.item_details.yearTo && Number(payload.item_details.yearFrom)>Number(payload.item_details.yearTo)){
     alert('سنة بداية التوافق يجب أن تسبق سنة نهايته'); return;
@@ -1412,7 +1419,7 @@ function renderAddForm(){
   const subtypeChoices=CATEGORY_SUBTYPES[state.selectedCat]||[];
   let subtypeForm=subtypeChoices.length?`<div class="field"><label>التصنيف الداخلي</label><select id="f-subtype" required><option value="">اختر النوع</option>${subtypeChoices.map(s=>`<option value="${s}" ${details.subtype===s?'selected':''}>${s}</option>`).join('')}</select></div>`:'';
   if(state.selectedCat==='vehicles'&&details.subtype===VEHICLE_PARTS_SUBTYPE)subtypeForm+=`<div class="field"><label>نوع القطعة أو الإكسسوار</label><select id="f-part-type" required><option value="">اختر النوع</option>${VEHICLE_PART_TYPES.map(v=>`<option value="${v}" ${details.partType===v?'selected':''}>${v}</option>`).join('')}</select></div><div class="field"><label>اسم القطعة أو الإكسسوار</label><input id="f-part-name" value="${escapeHtml(details.partName||'')}" maxlength="80" required placeholder="مثال: جنوط، شاشة، مصابيح"></div><div class="field"><label>الشركة المتوافقة (اختياري)</label><div class="brand-grid"><button type="button" class="brand-choice ${!details.make?'selected':''}" onclick="selectCarMake('')"><span class="brand-initial">الكل</span><span>جميع الشركات</span></button>${CAR_BRANDS.map(([key,label])=>`<button type="button" class="brand-choice ${details.make===key?'selected':''}" onclick="selectCarMake('${key}')">${brandMarkFor(key)}<span>${label}</span></button>`).join('')}</div></div><div class="field"><label>الموديل المتوافق (اختياري)</label><input id="f-model" value="${escapeHtml(details.model||'')}" maxlength="80" placeholder="مثال: كامري"></div><div class="vehicle-form-grid"><div class="field"><label>من سنة (اختياري)</label><input id="f-year-from" type="number" inputmode="numeric" min="1950" max="${new Date().getFullYear()+1}" value="${escapeHtml(details.yearFrom||'')}"></div><div class="field"><label>إلى سنة (اختياري)</label><input id="f-year-to" type="number" inputmode="numeric" min="1950" max="${new Date().getFullYear()+1}" value="${escapeHtml(details.yearTo||'')}"></div></div><div class="field"><label>المدينة أو الولاية</label><input id="f-location" value="${escapeHtml(details.location||'')}" maxlength="80" placeholder="مثال: مسقط، بركاء"></div>`;
-  if(state.selectedCat==='vehicles'&&details.subtype!==VEHICLE_PARTS_SUBTYPE)subtypeForm+=`<div class="field"><label>شركة المركبة</label><div class="brand-grid">${CAR_BRANDS.map(([key,label])=>`<button type="button" class="brand-choice ${details.make===key?'selected':''}" onclick="selectCarMake('${key}')">${brandMarkFor(key)}<span>${label}</span></button>`).join('')}</div></div>
+  if(state.selectedCat==='vehicles'&&details.subtype!==VEHICLE_PARTS_SUBTYPE)subtypeForm+=`<div class="field" id="vehicle-make-picker"><label>شركة المركبة (مطلوب)</label><div class="brand-grid">${CAR_BRANDS.map(([key,label])=>`<button type="button" class="brand-choice ${details.make===key?'selected':''}" aria-pressed="${details.make===key}" onclick="selectCarMake('${key}')">${brandMarkFor(key)}<span>${label}</span></button>`).join('')}</div>${details.make?`<small class="selected-make-label">الشركة المختارة: ${escapeHtml(CAR_BRANDS.find(([key])=>key===details.make)?.[1]||details.make)}</small>`:'<small class="selected-make-label">اختر شعار الشركة قبل نشر الإعلان</small>'}</div>
     <div class="vehicle-form-grid"><div class="field"><label>الموديل</label><input id="f-model" value="${escapeHtml(details.model||'')}" maxlength="80" required placeholder="مثال: لاندكروزر"></div><div class="field"><label>سنة الصنع</label><input id="f-year" type="number" inputmode="numeric" min="1950" max="${new Date().getFullYear()+1}" value="${escapeHtml(details.year||'')}" required placeholder="2022"></div><div class="field"><label>المسافة المقطوعة (كم)</label><input id="f-mileage" type="number" inputmode="numeric" min="0" max="2000000" value="${escapeHtml(details.mileage||'')}" placeholder="اختياري"></div><div class="field"><label>ناقل الحركة</label><select id="f-transmission"><option value="">حدد النوع</option>${['أوتوماتيك','يدوي'].map(v=>`<option value="${v}" ${details.transmission===v?'selected':''}>${v}</option>`).join('')}</select></div></div><div class="field"><label>المدينة أو الولاية</label><input id="f-location" value="${escapeHtml(details.location||'')}" maxlength="80" placeholder="مثال: مسقط، بركاء"></div>`;
   if(state.selectedCat==='electronics')subtypeForm+=`<div class="field"><label>الشركة المصنعة</label><input id="f-brand" value="${escapeHtml(details.brand||'')}" maxlength="40" placeholder="مثال: Apple أو Samsung"></div><div class="field"><label>الموديل</label><input id="f-model" value="${escapeHtml(details.model||'')}" maxlength="80"></div>`;
   if(state.selectedCat==='books')subtypeForm+=`<div class="field"><label>المؤلف</label><input id="f-author" value="${escapeHtml(details.author||'')}" maxlength="80"></div>`;
@@ -1613,7 +1620,7 @@ function escapeHtml(s){ const d=document.createElement('div'); d.textContent = s
 
 if ('serviceWorker' in navigator) window.addEventListener('load', async () => {
   try {
-    const reg = await navigator.serviceWorker.register('./sw.js?v=5.4.3', {scope:'./', updateViaCache:'none'});
+    const reg = await navigator.serviceWorker.register('./sw.js?v=5.4.4', {scope:'./', updateViaCache:'none'});
     await reg.update();
     const activateUpdate = worker => {
       if (worker && worker.state === 'installed' && navigator.serviceWorker.controller) worker.postMessage({type:'SKIP_WAITING'});
@@ -1625,7 +1632,7 @@ if ('serviceWorker' in navigator) window.addEventListener('load', async () => {
       if (worker) worker.addEventListener('statechange', () => activateUpdate(worker));
     });
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      const key='badilni-pwa-reloaded-5.4.3';
+      const key='badilni-pwa-reloaded-5.4.4';
       if (!sessionStorage.getItem(key)){ sessionStorage.setItem(key,'1'); location.reload(); }
     });
   } catch (_) {}
