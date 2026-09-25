@@ -1,5 +1,5 @@
-const CACHE = 'badilni-v5.3.2-ios-bars';
-const ASSETS = ['./', './index.html', './secure-store.js', './push-config.js', './push.js', './theme-v3.css', './privacy.html', './terms.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
+const CACHE = 'badilni-v5.4-catalogs';
+const ASSETS = ['./', './index.html', './secure-store.js', './push-config.js', './push.js', './theme-v3.css', './privacy.html', './terms.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './brand-logos/toyota.svg', './brand-logos/nissan.svg', './brand-logos/hyundai.svg', './brand-logos/kia.svg', './brand-logos/honda.svg', './brand-logos/bmw.svg', './brand-logos/ford.svg', './brand-logos/mitsubishi.svg', './brand-logos/chevrolet.svg', './brand-logos/tesla.svg', './brand-logos/mazda.svg', './brand-logos/suzuki.svg', './brand-logos/volkswagen.svg', './brand-logos/audi.svg', './brand-logos/porsche.svg', './brand-logos/jeep.svg', './brand-logos/mg.svg'];
 
 try {
   importScripts('https://www.gstatic.com/firebasejs/11.10.0/firebase-app-compat.js');
