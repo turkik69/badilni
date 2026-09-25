@@ -9,7 +9,7 @@
     "native:ios": "npm run native:sync && cap open ios",
     "deploy": "wrangler deploy",
     "check": "wrangler deploy --dry-run",
-    "test": "node tests/multi-user.test.js && node tests/security-contract.test.js && node tests/listing-form.test.js"
+    "test": "node tests/multi-user.test.js && node tests/security-contract.test.js"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.0",

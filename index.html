@@ -247,11 +247,11 @@
   .intro-card{background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:20px;}
   .intro-card p{font-size:13.5px; color:var(--ink); line-height:1.85; margin:0;}
 </style>
-<link rel="manifest" href="manifest.webmanifest?v=5.4.4">
+<link rel="manifest" href="manifest.webmanifest?v=5.4.5">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<link rel="stylesheet" href="theme-v3.css?v=5.4.4">
-<script src="push.js?v=5.4.4"></script>
+<link rel="stylesheet" href="theme-v3.css?v=5.4.5">
+<script src="push.js?v=5.4.5"></script>
 </head>
 <body>
 <div id="frame"></div>
@@ -282,44 +282,23 @@ function tabIcon(name){
   return `<span class="nav-icon nav-icon-${name}">${icon(iconName,23,'currentColor')}</span>`;
 }
 
-const CAT_EMOJI = {smartphone:'📱', gamepad:'🎮', book:'📚', car:'🚙', home:'🏠', sports:'⚽', other:'✦'};
-const VEHICLE_PARTS_SUBTYPE = 'قطع واكسسوارات مركبات';
-const VEHICLE_PART_TYPES = ['محرك وميكانيكا','هيكل وخارجية','داخلية وتجهيزات','كهرباء وإضاءة','إطارات وجنوط','صوتيات وشاشات','اكسسوارات أخرى'];
+const CAT_EMOJI = {smartphone:'📱', gamepad:'🎮', book:'📚', home:'🏠', sports:'⚽', other:'✦'};
 const CATEGORY_SUBTYPES = {
-  vehicles:['سيارات','دفع رباعي','بيك أب','دراجات نارية','مركبات تجارية',VEHICLE_PARTS_SUBTYPE],
   electronics:['هواتف','حواسيب','أجهزة لوحية','تصوير','صوتيات','ساعات ذكية','أجهزة منزلية'],
   books:['روايات','كتب أكاديمية','تطوير الذات','أطفال','كتب دينية','لغات','أخرى'],
   games:['أجهزة ألعاب','ألعاب بلايستيشن','ألعاب إكس بوكس','ألعاب نينتندو','إكسسوارات','ألعاب لوحية']
 };
-const CAR_BRANDS = [
-  ['toyota','تويوتا'],['nissan','نيسان'],['hyundai','هيونداي'],['kia','كيا'],
-  ['honda','هوندا'],['lexus','لكزس'],['mitsubishi','ميتسوبيشي'],['ford','فورد'],
-  ['chevrolet','شيفروليه'],['gmc','جي إم سي'],['jeep','جيب'],['bmw','بي إم دبليو'],
-  ['mercedes','مرسيدس'],['landrover','لاند روفر'],['mazda','مازدا'],['suzuki','سوزوكي'],
-  ['volkswagen','فولكس فاجن'],['audi','أودي'],['porsche','بورشه'],['tesla','تسلا'],
-  ['byd','بي واي دي'],['mg','إم جي'],['geely','جيلي'],['other','شركة أخرى']
-];
-const CAR_LOGOS = new Set(['toyota','nissan','hyundai','kia','honda','bmw','ford','mitsubishi','chevrolet','tesla','mazda','suzuki','volkswagen','audi','porsche','jeep','mg']);
-function brandMarkFor(make){
-  const brand=CAR_BRANDS.find(([key])=>key===make);
-  if(!brand) return '';
-  return CAR_LOGOS.has(make) ? `<img src="brand-logos/${make}.svg" width="32" height="32" alt="" loading="lazy">` : `<span class="brand-initial">${escapeHtml(brand[1].slice(0,2))}</span>`;
-}
 function categoryMark(id){
   const key=state.catMap[id]?.icon;
-  const known={car:'car',smartphone:'phone',gamepad:'gamepad',book:'book',home:'home',sports:'ball'};
+  const known={smartphone:'phone',gamepad:'gamepad',book:'book',home:'home',sports:'ball'};
   return known[key]?icon(known[key],24,'currentColor'):icon('box',24,'currentColor');
 }
 function typeSummary(item){
   const d=item.item_details||{};
-  if(item.category_id==='vehicles'&&d.subtype===VEHICLE_PARTS_SUBTYPE) return [d.partType||d.subtype,d.partName,CAR_BRANDS.find(([k])=>k===d.make)?.[1],d.model].filter(Boolean).join(' · ');
-  if(item.category_id==='vehicles') return [CAR_BRANDS.find(([k])=>k===d.make)?.[1],d.model,d.year].filter(Boolean).join(' · ');
   return [d.subtype,d.brand,d.model,d.author,d.platform].filter(Boolean).join(' · ');
 }
 function wantedLabel(item){
-  const d=item.item_details||{};
-  const preferred=CAR_BRANDS.find(([key])=>key===d.wantedMake)?.[1];
-  return [catName(item.wants_category_id),d.wantedSubtype,preferred,d.wantedModel,item.wants_description].filter(Boolean).join(' · ')||'مفتوح للعروض';
+  return [catName(item.wants_category_id),item.wants_description].filter(Boolean).join(' · ')||'مفتوح للعروض';
 }
 const COND_LABEL = {new:'جديد', like_new:'كالجديد', good:'جيد', fair:'مقبول'};
 const STATUS_LABEL = {suggested:'مطابقة جديدة', accepted:'مقبولة', dismissed:'متجاهَلة', negotiating:'قيد التفاوض', agreed:'تم الاتفاق', completed:'مكتملة', cancelled:'ملغاة', rejected:'مرفوضة'};
@@ -329,7 +308,6 @@ function icon(name, size=20, color='currentColor'){
     search:'<circle cx="10" cy="10" r="6"/><line x1="20" y1="20" x2="14.6" y2="14.6"/>',
     plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
     box:'<path d="M3 7.5l9-4 9 4-9 4-9-4z"/><path d="M3 7.5v9l9 4 9-4v-9"/><line x1="12" y1="11.5" x2="12" y2="20.5"/>',
-    car:'<path d="M4 15l1.6-6a2 2 0 0 1 1.9-1.5h9a2 2 0 0 1 1.9 1.5l1.6 6M4 15h16v4H4z"/><circle cx="7.5" cy="16.5" r=".8"/><circle cx="16.5" cy="16.5" r=".8"/><path d="M7 7.5l1.1-2h7.8l1.1 2"/>',
     phone:'<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 19h2"/>',
     gamepad:'<path d="M7 8h10c2 0 3 1 3.5 3l1 5c.5 2-1 3-2.5 2l-3-2H8l-3 2c-1.5 1-3-.1-2.5-2l1-5C4 9 5 8 7 8z"/><path d="M7 11v4M5 13h4"/><circle cx="16.5" cy="12" r=".6"/><circle cx="18.5" cy="14" r=".6"/>',
     book:'<path d="M12 5c-3-2-6-2-9-1v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1z"/><path d="M12 5v15"/>',
@@ -380,7 +358,7 @@ let state = {
   balance:0, ledger:[],
   newPhotoUrl:null, uploading:false, selectedCat:null,
   addDraft:{title:'',description:'',condition:'good',wantsCategory:'',wantsDescription:'',acceptsPoints:true,details:{}},
-  editingItemId:null, browseCategory:'all', browseSubtype:'all', browsePartType:'all', browseMake:'all', browseSearch:'',
+  editingItemId:null, browseCategory:'all', browseSubtype:'all', browseSearch:'',
   activeDeal:null, dealMessages:[], dealChannel:null, myRating:0,
   profile:null, profileRating:null, completedCount:0, myItemsCount:0, recentReviews:[], editingName:false,
   adminItems:[], adminReports:[], adminUsers:[],
@@ -487,7 +465,7 @@ function toggleNotifications(){ state.notificationOpen=!state.notificationOpen; 
 async function loadCategories(){
   const { data, error } = await sb.from('categories').select('*').eq('is_active', true);
   if (!error && data){
-    state.categories = data.some(c=>c.id==='vehicles') ? data : [...data,{id:'vehicles',name_ar:'مركبات',name_en:'Vehicles',icon:'car',is_active:true}];
+    state.categories = data.filter(c=>c.id!=='vehicles');
     state.catMap = Object.fromEntries(state.categories.map(c => [c.id, c]));
   }
 }
@@ -726,29 +704,14 @@ function syncAddDraft(){
     acceptsPoints:document.getElementById('f-points').checked,
     details:{...state.addDraft.details,
       subtype:document.getElementById('f-subtype')?.value||'',
-      partType:document.getElementById('f-part-type')?.value||'',
-      partName:document.getElementById('f-part-name')?.value||'',
-      yearFrom:document.getElementById('f-year-from')?.value||'',
-      yearTo:document.getElementById('f-year-to')?.value||'',
-      // The make picker uses logo buttons, so there is no f-make input to read.
-      // Keep the selected button's value while other form fields change.
-      make:document.getElementById('f-make')?.value ?? state.addDraft.details.make ?? '',
       model:document.getElementById('f-model')?.value||'',
-      year:document.getElementById('f-year')?.value||'',
-      mileage:document.getElementById('f-mileage')?.value||'',
-      transmission:document.getElementById('f-transmission')?.value||'',
-      location:document.getElementById('f-location')?.value||'',
       brand:document.getElementById('f-brand')?.value||'',
       author:document.getElementById('f-author')?.value||'',
-      platform:document.getElementById('f-platform')?.value||'',
-      wantedMake:document.getElementById('f-wanted-make')?.value||'',
-      wantedSubtype:document.getElementById('f-wanted-subtype')?.value||'',
-      wantedModel:document.getElementById('f-wanted-model')?.value||''}
+      platform:document.getElementById('f-platform')?.value||''}
   };
 }
 function selectCat(id){ syncAddDraft(); state.selectedCat = id; state.addDraft.details={}; render(); }
 function selectListingSubtype(){ syncAddDraft(); render(); }
-function selectCarMake(id){ syncAddDraft(); state.addDraft.details.make=id; render(); }
 async function handleAddItem(e){
   e.preventDefault();
   syncAddDraft();
@@ -768,23 +731,6 @@ async function handleAddItem(e){
     status: 'available', visibility: 'public'
   };
   if (!payload.title || !payload.condition){ alert('أكمل العنوان والحالة'); return; }
-  if (state.selectedCat==='vehicles' && payload.item_details.subtype===VEHICLE_PARTS_SUBTYPE && !payload.item_details.partName.trim()){
-    alert('اكتب اسم القطعة أو الإكسسوار'); return;
-  }
-  if (state.selectedCat==='vehicles' && payload.item_details.subtype===VEHICLE_PARTS_SUBTYPE && !VEHICLE_PART_TYPES.includes(payload.item_details.partType)){
-    alert('اختر نوع القطعة أو الإكسسوار'); return;
-  }
-  if (state.selectedCat==='vehicles' && payload.item_details.subtype!==VEHICLE_PARTS_SUBTYPE){
-    if (!payload.item_details.make){
-      document.getElementById('vehicle-make-picker')?.scrollIntoView({behavior:'smooth',block:'center'});
-      alert('اختر شركة المركبة من الشعارات الظاهرة في النموذج'); return;
-    }
-    if (!payload.item_details.model){ document.getElementById('f-model')?.focus(); alert('أدخل موديل المركبة'); return; }
-    if (!payload.item_details.year){ document.getElementById('f-year')?.focus(); alert('أدخل سنة صنع المركبة'); return; }
-  }
-  if (state.selectedCat==='vehicles' && payload.item_details.subtype===VEHICLE_PARTS_SUBTYPE && payload.item_details.yearFrom && payload.item_details.yearTo && Number(payload.item_details.yearFrom)>Number(payload.item_details.yearTo)){
-    alert('سنة بداية التوافق يجب أن تسبق سنة نهايته'); return;
-  }
   const operation = state.editingItemId
     ? sb.from('items').update(payload).eq('id', state.editingItemId).eq('owner_id', uid)
     : sb.from('items').insert(payload);
@@ -1012,10 +958,8 @@ async function startListingChat(){
   if (!target) return;
   await openDealGeneric({offer:null, targetItemId:target.id, myItem:null, otherItem:target});
 }
-function setBrowseCategory(id){ state.browseCategory=id; state.browseSubtype='all'; state.browsePartType='all'; state.browseMake='all'; render(); }
-function setBrowseSubtype(value){ state.browseSubtype=value; state.browsePartType='all'; render(); }
-function setBrowsePartType(value){ state.browsePartType=value; render(); }
-function setBrowseMake(value){ state.browseMake=value; render(); }
+function setBrowseCategory(id){ state.browseCategory=id; state.browseSubtype='all'; render(); }
+function setBrowseSubtype(value){ state.browseSubtype=value; render(); }
 function applyBrowseSearch(){ state.browseSearch=(document.getElementById('browse-search')?.value||'').trim(); render(); }
 function toggleQuickOffer(){ state.quickOfferOpen = !state.quickOfferOpen; render(); }
 async function confirmDirectOffer(myItemId){
@@ -1228,7 +1172,7 @@ function renderDashboard(){
       <button class="btn ghost" id="dash-browse-btn">${icon('search',18,'#7A6E94')} تصفح</button>
     </div>
   `;
-  html += `<section class="market-entry"><div class="market-entry-head"><b>اكتشف ما يمكن مبادلته</b><span>اختر القسم وابدأ التصفح</span></div><div class="market-entry-grid">${state.categories.map(c=>`<button type="button" class="category-theme category-theme-${c.icon}" onclick="state.browseCategory='${c.id}';state.browseSubtype='all';state.browsePartType='all';state.browseMake='all';goTo('browse')"><span class="market-entry-icon">${categoryMark(c.id)}</span><b>${escapeHtml(c.name_ar)}</b><small>تصفح المعروضات</small></button>`).join('')}</div></section>`;
+  html += `<section class="market-entry"><div class="market-entry-head"><b>اكتشف ما يمكن مبادلته</b><span>اختر القسم وابدأ التصفح</span></div><div class="market-entry-grid">${state.categories.map(c=>`<button type="button" class="category-theme category-theme-${c.icon}" onclick="state.browseCategory='${c.id}';state.browseSubtype='all';goTo('browse')"><span class="market-entry-icon">${categoryMark(c.id)}</span><b>${escapeHtml(c.name_ar)}</b><small>تصفح المعروضات</small></button>`).join('')}</div></section>`;
   const suggested = (state.myMatches||[]).filter(m=>m.status==='suggested').slice(0,2);
   html += `<div class="dash-section-head"><h2 class="section-title" style="margin:0;">${icon('swap',18,'#3D2278')} أحدث المطابقات</h2>${(state.myMatches||[]).length ? `<span class="see-all" onclick="goTo('mine')">عرض الكل</span>` : ''}</div>`;
   if (!suggested.length){
@@ -1335,8 +1279,7 @@ function renderItemDetail(){
       <span class="barter-badge">للمبادلة</span>
     </div>
     <h2 style="font-size:21px; color:var(--navy); margin:4px 0 10px;">${escapeHtml(it.title)}</h2>
-    ${typeSummary(it)?`<div class="listing-specs">${it.category_id==='vehicles'?brandMarkFor(it.item_details?.make):categoryMark(it.category_id)}<b>${escapeHtml(typeSummary(it))}</b></div>`:''}
-    ${it.category_id==='vehicles'&&it.item_details?`<div class="vehicle-facts">${(it.item_details.subtype===VEHICLE_PARTS_SUBTYPE?[['نوع القطعة',it.item_details.partType],['القطعة',it.item_details.partName],['الشركة المتوافقة',CAR_BRANDS.find(([k])=>k===it.item_details.make)?.[1]],['الموديل المتوافق',it.item_details.model],['سنوات التوافق',[it.item_details.yearFrom,it.item_details.yearTo].filter(Boolean).join('–')],['الموقع',it.item_details.location]]:[['المسافة',it.item_details.mileage?`${it.item_details.mileage} كم`:null],['ناقل الحركة',it.item_details.transmission],['الموقع',it.item_details.location],['التبادل المفضل',CAR_BRANDS.find(([k])=>k===it.item_details.wantedMake)?.[1]]]).filter(([,v])=>v).map(([k,v])=>`<span><small>${k}</small><b>${escapeHtml(v)}</b></span>`).join('')}</div>`:''}
+    ${typeSummary(it)?`<div class="listing-specs">${categoryMark(it.category_id)}<b>${escapeHtml(typeSummary(it))}</b></div>`:''}
     <span class="cond" style="margin-bottom:14px;">${COND_LABEL[it.condition]||it.condition}</span>
     ${it.description ? `<p style="font-size:14px; color:var(--ink); line-height:1.8; margin:14px 0;">${escapeHtml(it.description)}</p>` : ''}
     <div class="wants" style="margin:14px 0 22px;">${icon('swap',16,'#5A3A9E')} يريد صاحبه بالمقابل: ${escapeHtml(wantedLabel(it))}</div>
@@ -1365,7 +1308,7 @@ function renderItemDetail(){
         <div class="quick-offer-title"><span>${icon('box',18,'#e65f69')}</span><div><b>سلعتك المقترحة</b><small>ستُنشر في حسابك وتُرسل فورًا كعرض لصاحب الغرض</small></div></div>
         <div class="field"><label>اسم السلعة</label><input id="q-title" required maxlength="80" placeholder="مثال: سماعة لاسلكية بحالة ممتازة"></div>
         <div class="quick-offer-grid">
-          <div class="field"><label>الفئة</label><select id="q-category" required><option value="">اختر الفئة</option>${state.categories.filter(c=>c.id!=='vehicles').map(c=>`<option value="${c.id}">${c.name_ar}</option>`).join('')}</select></div>
+          <div class="field"><label>الفئة</label><select id="q-category" required><option value="">اختر الفئة</option>${state.categories.map(c=>`<option value="${c.id}">${c.name_ar}</option>`).join('')}</select></div>
           <div class="field"><label>الحالة</label><select id="q-condition"><option value="new">جديد</option><option value="like_new">كالجديد</option><option value="good" selected>جيد</option><option value="fair">مقبول</option></select></div>
         </div>
         <div class="field"><label>وصف مختصر (اختياري)</label><textarea id="q-description" maxlength="300" placeholder="اذكر أهم التفاصيل والحالة"></textarea></div>
@@ -1389,12 +1332,10 @@ function itemPhoto(it){
 }
 function renderBrowse(){
   const q = state.browseSearch.toLowerCase();
-  const visible = state.browseItems.filter(item => (state.browseCategory==='all' || item.category_id===state.browseCategory) && (state.browseSubtype==='all'||item.item_details?.subtype===state.browseSubtype) && (state.browsePartType==='all'||item.item_details?.partType===state.browsePartType) && (state.browseMake==='all'||item.item_details?.make===state.browseMake) && (!q || `${item.title||''} ${item.description||''} ${typeSummary(item)}`.toLowerCase().includes(q)));
+  const visible = state.browseItems.filter(item => (state.browseCategory==='all' || item.category_id===state.browseCategory) && (state.browseSubtype==='all'||item.item_details?.subtype===state.browseSubtype) && (!q || `${item.title||''} ${item.description||''} ${typeSummary(item)}`.toLowerCase().includes(q)));
   const subtypes=CATEGORY_SUBTYPES[state.browseCategory]||[];
   const subfilter=subtypes.length?`<div class="category-filter subcategory-filter"><button class="${state.browseSubtype==='all'?'active':''}" onclick="setBrowseSubtype('all')">كل الأنواع</button>${subtypes.map((s,i)=>`<button class="${state.browseSubtype===s?'active':''}" onclick="setBrowseSubtype(CATEGORY_SUBTYPES['${state.browseCategory}'][${i}])">${s}</button>`).join('')}</div>`:'';
-  const partfilter=state.browseCategory==='vehicles'&&state.browseSubtype===VEHICLE_PARTS_SUBTYPE?`<div class="category-filter part-filter"><button class="${state.browsePartType==='all'?'active':''}" onclick="setBrowsePartType('all')">كل القطع</button>${VEHICLE_PART_TYPES.map((s,i)=>`<button class="${state.browsePartType===s?'active':''}" onclick="setBrowsePartType(VEHICLE_PART_TYPES[${i}])">${s}</button>`).join('')}</div>`:'';
-  const makefilter=state.browseCategory==='vehicles'?`<div class="brand-grid browse-brands"><button class="brand-choice ${state.browseMake==='all'?'selected':''}" onclick="setBrowseMake('all')">جميع الشركات</button>${CAR_BRANDS.filter(([k])=>k!=='other').map(([k,label])=>`<button class="brand-choice ${state.browseMake===k?'selected':''}" onclick="setBrowseMake('${k}')">${brandMarkFor(k)}<span>${label}</span></button>`).join('')}</div>`:'';
-  const filters = `<div class="browse-tools"><div class="browse-search"><input id="browse-search" value="${escapeHtml(state.browseSearch)}" placeholder="ابحث عن غرض أو موديل..."><button onclick="applyBrowseSearch()">${icon('search',19)}</button></div><div class="category-tiles"><button class="category-theme category-theme-all ${state.browseCategory==='all'?'active':''}" onclick="setBrowseCategory('all')"><span class="category-tile-icon">${icon('box',25)}</span><b>كل الفئات</b></button>${state.categories.map(c=>`<button class="category-theme category-theme-${c.icon} ${state.browseCategory===c.id?'active':''}" onclick="setBrowseCategory('${c.id}')"><span class="category-tile-icon">${categoryMark(c.id)}</span><b>${escapeHtml(c.name_ar)}</b></button>`).join('')}</div>${subfilter}${partfilter}${makefilter}</div>`;
+  const filters = `<div class="browse-tools"><div class="browse-search"><input id="browse-search" value="${escapeHtml(state.browseSearch)}" placeholder="ابحث عن غرض أو موديل..."><button onclick="applyBrowseSearch()">${icon('search',19)}</button></div><div class="category-tiles"><button class="category-theme category-theme-all ${state.browseCategory==='all'?'active':''}" onclick="setBrowseCategory('all')"><span class="category-tile-icon">${icon('box',25)}</span><b>كل الفئات</b></button>${state.categories.map(c=>`<button class="category-theme category-theme-${c.icon} ${state.browseCategory===c.id?'active':''}" onclick="setBrowseCategory('${c.id}')"><span class="category-tile-icon">${categoryMark(c.id)}</span><b>${escapeHtml(c.name_ar)}</b></button>`).join('')}</div>${subfilter}</div>`;
   if (!visible.length) return `${filters}<div class="empty">${icon('search',40)}<br>لا توجد معروضات مطابقة حالياً</div>`;
   return `${filters}<div class="browse-grid">${visible.map(it=>`
     <div class="item item-tap" onclick="openItemDetailById('${it.id}')">
@@ -1403,7 +1344,7 @@ function renderBrowse(){
       <div class="body">
         <div class="cat">${categoryMark(it.category_id)} ${catName(it.category_id)||''}</div>
         <h3>${escapeHtml(it.title)}</h3>
-        ${typeSummary(it)?`<div class="listing-specs">${it.category_id==='vehicles'?brandMarkFor(it.item_details?.make):''}<span>${escapeHtml(typeSummary(it))}</span></div>`:''}
+        ${typeSummary(it)?`<div class="listing-specs"><span>${escapeHtml(typeSummary(it))}</span></div>`:''}
         ${it.description?`<p class="desc">${escapeHtml(it.description)}</p>`:''}
         <div class="wants">${icon('swap',15,'#5A3A9E')} المطلوب بالمقابل: ${escapeHtml(wantedLabel(it))}</div>
         <span class="cond">${COND_LABEL[it.condition]||it.condition}</span>
@@ -1418,9 +1359,6 @@ function renderAddForm(){
   const details=d.details||{};
   const subtypeChoices=CATEGORY_SUBTYPES[state.selectedCat]||[];
   let subtypeForm=subtypeChoices.length?`<div class="field"><label>التصنيف الداخلي</label><select id="f-subtype" required><option value="">اختر النوع</option>${subtypeChoices.map(s=>`<option value="${s}" ${details.subtype===s?'selected':''}>${s}</option>`).join('')}</select></div>`:'';
-  if(state.selectedCat==='vehicles'&&details.subtype===VEHICLE_PARTS_SUBTYPE)subtypeForm+=`<div class="field"><label>نوع القطعة أو الإكسسوار</label><select id="f-part-type" required><option value="">اختر النوع</option>${VEHICLE_PART_TYPES.map(v=>`<option value="${v}" ${details.partType===v?'selected':''}>${v}</option>`).join('')}</select></div><div class="field"><label>اسم القطعة أو الإكسسوار</label><input id="f-part-name" value="${escapeHtml(details.partName||'')}" maxlength="80" required placeholder="مثال: جنوط، شاشة، مصابيح"></div><div class="field"><label>الشركة المتوافقة (اختياري)</label><div class="brand-grid"><button type="button" class="brand-choice ${!details.make?'selected':''}" onclick="selectCarMake('')"><span class="brand-initial">الكل</span><span>جميع الشركات</span></button>${CAR_BRANDS.map(([key,label])=>`<button type="button" class="brand-choice ${details.make===key?'selected':''}" onclick="selectCarMake('${key}')">${brandMarkFor(key)}<span>${label}</span></button>`).join('')}</div></div><div class="field"><label>الموديل المتوافق (اختياري)</label><input id="f-model" value="${escapeHtml(details.model||'')}" maxlength="80" placeholder="مثال: كامري"></div><div class="vehicle-form-grid"><div class="field"><label>من سنة (اختياري)</label><input id="f-year-from" type="number" inputmode="numeric" min="1950" max="${new Date().getFullYear()+1}" value="${escapeHtml(details.yearFrom||'')}"></div><div class="field"><label>إلى سنة (اختياري)</label><input id="f-year-to" type="number" inputmode="numeric" min="1950" max="${new Date().getFullYear()+1}" value="${escapeHtml(details.yearTo||'')}"></div></div><div class="field"><label>المدينة أو الولاية</label><input id="f-location" value="${escapeHtml(details.location||'')}" maxlength="80" placeholder="مثال: مسقط، بركاء"></div>`;
-  if(state.selectedCat==='vehicles'&&details.subtype!==VEHICLE_PARTS_SUBTYPE)subtypeForm+=`<div class="field" id="vehicle-make-picker"><label>شركة المركبة (مطلوب)</label><div class="brand-grid">${CAR_BRANDS.map(([key,label])=>`<button type="button" class="brand-choice ${details.make===key?'selected':''}" aria-pressed="${details.make===key}" onclick="selectCarMake('${key}')">${brandMarkFor(key)}<span>${label}</span></button>`).join('')}</div>${details.make?`<small class="selected-make-label">الشركة المختارة: ${escapeHtml(CAR_BRANDS.find(([key])=>key===details.make)?.[1]||details.make)}</small>`:'<small class="selected-make-label">اختر شعار الشركة قبل نشر الإعلان</small>'}</div>
-    <div class="vehicle-form-grid"><div class="field"><label>الموديل</label><input id="f-model" value="${escapeHtml(details.model||'')}" maxlength="80" required placeholder="مثال: لاندكروزر"></div><div class="field"><label>سنة الصنع</label><input id="f-year" type="number" inputmode="numeric" min="1950" max="${new Date().getFullYear()+1}" value="${escapeHtml(details.year||'')}" required placeholder="2022"></div><div class="field"><label>المسافة المقطوعة (كم)</label><input id="f-mileage" type="number" inputmode="numeric" min="0" max="2000000" value="${escapeHtml(details.mileage||'')}" placeholder="اختياري"></div><div class="field"><label>ناقل الحركة</label><select id="f-transmission"><option value="">حدد النوع</option>${['أوتوماتيك','يدوي'].map(v=>`<option value="${v}" ${details.transmission===v?'selected':''}>${v}</option>`).join('')}</select></div></div><div class="field"><label>المدينة أو الولاية</label><input id="f-location" value="${escapeHtml(details.location||'')}" maxlength="80" placeholder="مثال: مسقط، بركاء"></div>`;
   if(state.selectedCat==='electronics')subtypeForm+=`<div class="field"><label>الشركة المصنعة</label><input id="f-brand" value="${escapeHtml(details.brand||'')}" maxlength="40" placeholder="مثال: Apple أو Samsung"></div><div class="field"><label>الموديل</label><input id="f-model" value="${escapeHtml(details.model||'')}" maxlength="80"></div>`;
   if(state.selectedCat==='books')subtypeForm+=`<div class="field"><label>المؤلف</label><input id="f-author" value="${escapeHtml(details.author||'')}" maxlength="80"></div>`;
   if(state.selectedCat==='games')subtypeForm+=`<div class="field"><label>المنصة</label><select id="f-platform"><option value="">جميع المنصات</option>${['بلايستيشن','إكس بوكس','نينتندو','حاسوب','ألعاب لوحية'].map(v=>`<option value="${v}" ${details.platform===v?'selected':''}>${v}</option>`).join('')}</select></div>`;
@@ -1445,7 +1383,6 @@ function renderAddForm(){
     <div class="form-section">
       <div class="sec-label">${icon('swap',15,'#D946B8')} ماذا تريد بالمقابل؟</div>
       <div class="field"><label>فئة (اختياري)</label><select id="f-wants-cat"><option value="" ${!d.wantsCategory?'selected':''}>أي فئة</option>${wantsOptions}</select></div>
-      ${state.selectedCat==='vehicles'?`<div class="field"><label>نوع المركبة المطلوب (اختياري)</label><select id="f-wanted-subtype"><option value="">أي نوع</option>${CATEGORY_SUBTYPES.vehicles.map(v=>`<option value="${v}" ${details.wantedSubtype===v?'selected':''}>${v}</option>`).join('')}</select></div><div class="field"><label>الشركة التي تفضل المبادلة معها (اختياري)</label><select id="f-wanted-make"><option value="">أي شركة، ويمكن لأي مستخدم تقديم عرض</option>${CAR_BRANDS.map(([key,label])=>`<option value="${key}" ${details.wantedMake===key?'selected':''}>${label}</option>`).join('')}</select></div><div class="field"><label>الموديل المرغوب (اختياري)</label><input id="f-wanted-model" value="${escapeHtml(details.wantedModel||'')}" maxlength="80" placeholder="مثال: باترول أو أي موديل مناسب"></div>`:''}
       <div class="field"><label>وصف حر (اختياري)</label><textarea id="f-wants-desc" placeholder="مثال: أي سماعة لاسلكية بحالة جيدة">${escapeHtml(d.wantsDescription)}</textarea></div>
       <div class="check-row"><input type="checkbox" id="f-points" ${d.acceptsPoints?'checked':''} style="width:auto;"> أوافق على استلام نقاط بدل غرض مباشر</div>
     </div>
@@ -1620,7 +1557,7 @@ function escapeHtml(s){ const d=document.createElement('div'); d.textContent = s
 
 if ('serviceWorker' in navigator) window.addEventListener('load', async () => {
   try {
-    const reg = await navigator.serviceWorker.register('./sw.js?v=5.4.4', {scope:'./', updateViaCache:'none'});
+    const reg = await navigator.serviceWorker.register('./sw.js?v=5.4.5', {scope:'./', updateViaCache:'none'});
     await reg.update();
     const activateUpdate = worker => {
       if (worker && worker.state === 'installed' && navigator.serviceWorker.controller) worker.postMessage({type:'SKIP_WAITING'});
@@ -1632,7 +1569,7 @@ if ('serviceWorker' in navigator) window.addEventListener('load', async () => {
       if (worker) worker.addEventListener('statechange', () => activateUpdate(worker));
     });
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      const key='badilni-pwa-reloaded-5.4.4';
+      const key='badilni-pwa-reloaded-5.4.5';
       if (!sessionStorage.getItem(key)){ sessionStorage.setItem(key,'1'); location.reload(); }
     });
   } catch (_) {}
