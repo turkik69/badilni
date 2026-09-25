@@ -13,4 +13,5 @@ const assets = [
   'icon.svg', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-touch-icon.png'
 ];
 for (const asset of assets) cpSync(resolve(root, asset), resolve(output, asset));
+cpSync(resolve(root, 'brand-logos'), resolve(output, 'brand-logos'), { recursive: true });
 console.log(`Built ${assets.length} web assets in www/`);
