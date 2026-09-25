@@ -154,7 +154,7 @@ nav.tabbar button.active .tab-ic-wrap{transform:translateY(-2px) scale(1.08);}
    An opaque status bar keeps iOS from blurring the header controls. */
 @media (display-mode:standalone) and (max-width:759px){
   html,body{height:100dvh;min-height:100dvh;background:#25164f;}
-  body{position:fixed;inset:0;overflow:hidden;}
+  body{position:fixed;inset:0;overflow:hidden;background:#fffdfa;}
   #frame{height:100dvh;min-height:100dvh;background:var(--bg);}
   header.topbar{padding-top:16px;min-height:94px;}
   main{min-height:0;background:var(--bg);}
