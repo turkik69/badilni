@@ -38,6 +38,19 @@ function adapter(fetchImpl) {
   assert(worker.includes("count>150"), 'API must rate-limit authenticated users');
   assert(worker.includes("content-length')||0)>4500000"), 'API must limit request size');
 
+  const itemContext = {};
+  vm.runInNewContext(`${worker.slice(0, worker.indexOf('async function notify'))}\nthis.safeItem=safeItem;`, itemContext);
+  const listing = { title: 'كتاب', category_id: 'books', condition: 'good', contact_phone: '+968 9123 4567' };
+  const privateItem = itemContext.safeItem(listing, { uid: 'u1' });
+  assert.strictEqual(privateItem.contact_phone, null, 'phone must not be stored without explicit listing consent');
+  assert.strictEqual(privateItem.show_phone, false);
+  const publicItem = itemContext.safeItem({ ...listing, show_phone: true }, { uid: 'u1' });
+  assert.strictEqual(publicItem.contact_phone, '+96891234567', 'consented phone should be normalized');
+  assert.strictEqual(itemContext.safeItem({ ...listing, contact_phone: '91234567', show_phone: true }, { uid: 'u1' }).contact_phone, '+96891234567');
+  assert.throws(() => itemContext.safeItem({ ...listing, contact_phone: '123', show_phone: true }, { uid: 'u1' }), /رقم هاتف صحيح/);
+  assert.strictEqual(itemContext.safeItem({ ...publicItem, show_phone: false }, { uid: 'u1' }).contact_phone, null, 'turning off consent must remove an existing phone');
+  assert(index.includes('publicListingPhone(it)'), 'phone should only render through the consent-aware UI helper');
+
   let fetchCount = 0;
   const underage = adapter(async () => { fetchCount++; throw new Error('network should not be used'); });
   const future = new Date(); future.setUTCFullYear(future.getUTCFullYear() - 12);

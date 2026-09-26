@@ -250,7 +250,7 @@
 <link rel="manifest" href="manifest.webmanifest?v=5.4.6">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<link rel="stylesheet" href="theme-v3.css?v=5.4.6">
+<link rel="stylesheet" href="theme-v3.css?v=5.4.7">
 <script src="push.js?v=5.4.6"></script>
 </head>
 <body>
@@ -361,7 +361,7 @@ let state = {
   quickOfferOpen:false,
   balance:0, ledger:[],
   newPhotoUrl:null, uploading:false, selectedCat:null,
-  addDraft:{title:'',description:'',condition:'good',wantsCategory:'',wantsDescription:'',acceptsPoints:true,details:{}},
+  addDraft:{title:'',description:'',condition:'good',wantsCategory:'',wantsDescription:'',acceptsPoints:true,contactPhone:'',showPhone:false,details:{}},
   editingItemId:null, browseCategory:'all', browseSubtype:'all', browseSearch:'', browseSort:'newest', browseCondition:'all',
   activeDeal:null, dealMessages:[], dealChannel:null, myRating:0,
   profile:null, profileRating:null, completedCount:0, myItemsCount:0, recentReviews:[], editingName:false,
@@ -706,6 +706,8 @@ function syncAddDraft(){
     wantsCategory:document.getElementById('f-wants-cat').value,
     wantsDescription:document.getElementById('f-wants-desc').value,
     acceptsPoints:document.getElementById('f-points').checked,
+    contactPhone:document.getElementById('f-phone').value,
+    showPhone:document.getElementById('f-show-phone').checked,
     details:{...state.addDraft.details,
       subtype:document.getElementById('f-subtype')?.value||'',
       model:document.getElementById('f-model')?.value||'',
@@ -731,17 +733,22 @@ async function handleAddItem(e){
     wants_description: document.getElementById('f-wants-desc').value.trim() || null,
     item_details: state.selectedCat in CATEGORY_SUBTYPES ? state.addDraft.details : {},
     accepts_points: document.getElementById('f-points').checked,
+    contact_phone: state.addDraft.contactPhone.trim(),
+    show_phone: state.addDraft.showPhone,
     photos: state.newPhotoUrl ? [state.newPhotoUrl] : [],
     status: 'available', visibility: 'public'
   };
   if (!payload.title || !payload.condition){ alert('أكمل العنوان والحالة'); return; }
+  if (payload.show_phone && !normalizeListingPhone(payload.contact_phone)){
+    alert('أدخل رقم هاتف صحيحاً مع مفتاح الدولة مثل +968، أو ألغِ خيار إظهاره'); return;
+  }
   const operation = state.editingItemId
     ? sb.from('items').update(payload).eq('id', state.editingItemId).eq('owner_id', uid)
     : sb.from('items').insert(payload);
   const { error } = await operation;
   if (error){ alert('حدث خطأ: ' + error.message); return; }
   state.newPhotoUrl = null; state.selectedCat = null; state.editingItemId = null;
-  state.addDraft = {title:'',description:'',condition:'good',wantsCategory:'',wantsDescription:'',acceptsPoints:true,details:{}};
+  state.addDraft = {title:'',description:'',condition:'good',wantsCategory:'',wantsDescription:'',acceptsPoints:true,contactPhone:'',showPhone:false,details:{}};
   await goTo('mine', {force:true});
 }
 
@@ -938,7 +945,7 @@ function editItem(id){
   state.editingItemId = id;
   state.selectedCat = item.category_id;
   state.newPhotoUrl = item.photos && item.photos[0] ? item.photos[0] : null;
-  state.addDraft = {title:item.title||'', description:item.description||'', condition:item.condition||'good', wantsCategory:item.wants_category_id||'', wantsDescription:item.wants_description||'', acceptsPoints:item.accepts_points!==false,details:item.item_details||{}};
+  state.addDraft = {title:item.title||'', description:item.description||'', condition:item.condition||'good', wantsCategory:item.wants_category_id||'', wantsDescription:item.wants_description||'', acceptsPoints:item.accepts_points!==false,contactPhone:item.contact_phone||'',showPhone:item.show_phone===true,details:item.item_details||{}};
   state.viewingItem = null; state.view='add'; render();
 }
 async function deleteItem(id, fromAdmin=false){
@@ -1289,6 +1296,7 @@ function renderItemDetail(){
     <span class="cond" style="margin-bottom:14px;">${COND_LABEL[it.condition]||it.condition}</span>
     ${it.description ? `<p style="font-size:14px; color:var(--ink); line-height:1.8; margin:14px 0;">${escapeHtml(it.description)}</p>` : ''}
     <div class="wants" style="margin:14px 0 22px;">${icon('swap',16,'#5A3A9E')} يريد صاحبه بالمقابل: ${escapeHtml(wantedLabel(it))}</div>
+    ${publicListingPhone(it)?`<a class="listing-phone listing-phone-detail" href="tel:${publicListingPhone(it)}" dir="ltr">${icon('phone',18)} ${publicListingPhone(it)} · اتصال بصاحب الغرض</a>`:''}
   `;
 
   if (isMine){
@@ -1357,6 +1365,7 @@ function renderBrowse(){
         <h3>${escapeHtml(it.title)}</h3>
         ${typeSummary(it)?`<div class="listing-specs"><span>${escapeHtml(typeSummary(it))}</span></div>`:''}
         <div class="listing-info"><span class="cond">${COND_LABEL[it.condition]||'جيد'}</span><span class="wants">${icon('swap',16,'#5A3A9E')} مطلوب بالمقابل: ${escapeHtml(wantedLabel(it))}</span></div>
+        ${publicListingPhone(it)?`<a class="listing-phone" href="tel:${publicListingPhone(it)}" onclick="event.stopPropagation()" dir="ltr">${icon('phone',17)} ${publicListingPhone(it)} · اتصال</a>`:''}
         <div class="listing-card-actions"><button type="button" class="offer" onclick="event.stopPropagation();offerFromBrowse('${it.id}')">${icon('swap',18)} قدّم عرضاً</button><button type="button" class="message" onclick="event.stopPropagation();chatFromBrowse('${it.id}')">${icon('chat',18)} تفاوض</button></div>
       </div>
     </article>`).join('')}</div>`;
@@ -1395,6 +1404,12 @@ function renderAddForm(){
       <div class="field"><label>فئة (اختياري)</label><select id="f-wants-cat"><option value="" ${!d.wantsCategory?'selected':''}>أي فئة</option>${wantsOptions}</select></div>
       <div class="field"><label>وصف حر (اختياري)</label><textarea id="f-wants-desc" placeholder="مثال: أي سماعة لاسلكية بحالة جيدة">${escapeHtml(d.wantsDescription)}</textarea></div>
       <div class="check-row"><input type="checkbox" id="f-points" ${d.acceptsPoints?'checked':''} style="width:auto;"> أوافق على استلام نقاط بدل غرض مباشر</div>
+    </div>
+    <div class="form-section">
+      <div class="sec-label">${icon('phone',15,'#D946B8')} التواصل خارج التطبيق (اختياري)</div>
+      <div class="field"><label for="f-phone">رقم الهاتف مع مفتاح الدولة</label><input id="f-phone" type="tel" inputmode="tel" dir="ltr" autocomplete="tel" maxlength="24" value="${escapeHtml(d.contactPhone||'')}" placeholder="مثال: +968 9XXX XXXX"></div>
+      <label class="check-row phone-consent"><input type="checkbox" id="f-show-phone" ${d.showPhone?'checked':''}> أوافق على عرض رقمي في هذا الإعلان ليتواصل معي مستخدمو التطبيق</label>
+      <p class="phone-hint">إذا لم تفعّل الخيار فلن يُحفظ الرقم في الإعلان. يمكنك إخفاؤه لاحقاً بتعديل الإعلان.</p>
     </div>
     <button class="btn" type="submit">${icon(state.editingItemId?'check':'plus',18,'#fff')} ${state.editingItemId?'حفظ التعديلات':'نشر الغرض'}</button>
   </form>`;
@@ -1564,11 +1579,17 @@ function attachShellEvents(){
 }
 
 function safeImageUrl(value){const url=String(value||'');return /^data:image\/(jpeg|png|webp);base64,[a-z0-9+/=]+$/i.test(url)&&url.length<=900000?url:'';}
+function normalizeListingPhone(value){
+  const compact=String(value||'').trim().replace(/[\s().-]/g,'');
+  const phone=/^[79]\d{7}$/.test(compact)?`+968${compact}`:compact;
+  return /^\+[1-9]\d{7,14}$/.test(phone)?phone:'';
+}
+function publicListingPhone(item){return item?.show_phone===true?normalizeListingPhone(item.contact_phone):'';}
 function escapeHtml(s){ const d=document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
 
 if ('serviceWorker' in navigator) window.addEventListener('load', async () => {
   try {
-    const reg = await navigator.serviceWorker.register('./sw.js?v=5.4.6', {scope:'./', updateViaCache:'none'});
+    const reg = await navigator.serviceWorker.register('./sw.js?v=5.4.7', {scope:'./', updateViaCache:'none'});
     await reg.update();
     const activateUpdate = worker => {
       if (worker && worker.state === 'installed' && navigator.serviceWorker.controller) worker.postMessage({type:'SKIP_WAITING'});
