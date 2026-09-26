@@ -1,4 +1,4 @@
-const CACHE = 'badilni-v5.5.2-profile-nav';
+const CACHE = 'badilni-v5.6.0-teal-theme';
 const ASSETS = ['./', './index.html', './secure-store.js', './push-config.js', './push.js', './theme-v3.css', './category-products.webp', './privacy.html', './terms.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 try {
