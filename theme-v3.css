@@ -229,3 +229,50 @@ main[class^="view-"]{animation:viewEnter .16s ease-out;}
 .cat-grid .cat-chip .em,.cat-grid .cat-chip.sel .em{display:grid;place-items:center;width:44px;height:44px;margin:0;border-radius:13px;background:#fff;color:var(--category-color)}
 .cat-grid .cat-chip .em svg{width:26px;height:26px}
 @media (min-width:760px){.market-entry-grid,.category-tiles{grid-template-columns:repeat(4,minmax(0,1fr))}.cat-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Product imagery and readable barter cards, adapted from the supplied layouts. */
+.category-art{display:block;flex:none;width:110px;height:88px;margin-inline:auto;background-image:url('./category-products.webp');background-repeat:no-repeat;background-size:300% 200%;background-position:100% 100%}
+.category-art-smartphone{background-position:0 0}
+.category-art-book{background-position:50% 0}
+.category-art-gamepad{background-position:100% 0}
+.category-art-home{background-position:0 100%}
+.category-art-sports{background-position:50% 100%}
+.category-art-other{background-position:100% 100%}
+.category-art-all{display:grid;place-items:center;background-image:none;color:var(--navy);background-color:#f1edfa;border-radius:20px;width:88px;height:88px}
+.market-entry-grid button.category-theme,.category-tiles button.category-theme{background:#fff;border:1px solid var(--category-border);color:var(--ink);align-items:center;justify-content:center;text-align:center;box-shadow:0 6px 18px rgba(32,22,58,.06)}
+.market-entry-grid button.category-theme{min-height:174px;padding:12px 10px;gap:4px}
+.market-entry-grid b{font-size:14px;line-height:1.3;white-space:normal}
+.market-entry-grid small{font-size:10px;color:var(--category-color)}
+.category-tiles{gap:10px;margin:16px 0 12px}
+.category-tiles button.category-theme{min-height:146px;flex-direction:column;gap:7px;padding:12px 8px}
+.category-tiles b{font-size:14px;line-height:1.25}
+.category-tiles button.active{box-shadow:0 0 0 2px var(--category-color),0 8px 20px rgba(32,22,58,.12);outline:none}
+.cat-grid .cat-chip{min-height:116px;gap:4px}
+.cat-grid .cat-chip .category-art{width:88px;height:72px}
+.browse-search{margin-bottom:3px}
+.browse-search input{min-width:0}
+.browse-sortbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 4px;color:var(--navy-deep)}
+.browse-sortbar>span{font-size:13px;font-weight:800;margin-inline-end:auto}
+.browse-sortbar label{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700}
+.browse-sortbar select{width:auto;max-width:116px;min-height:40px;padding:6px 8px;border:1px solid #e3ddec;border-radius:10px;background:#fff;color:var(--navy);font:inherit}
+.browse-grid{display:grid;grid-template-columns:1fr;gap:14px}
+.browse-grid .item{margin:0;border:1px solid #e8e3ed;border-radius:20px;overflow:hidden}
+.listing-photo-wrap{position:relative;padding:10px 10px 0;background:#fff}
+.browse-grid .listing-photo-wrap .photo,.browse-grid .listing-photo-wrap .photo-ph{width:100%;height:clamp(170px,46vw,235px);border-radius:14px;object-fit:contain;background:#f7f5fa;padding:6px}
+.browse-grid .listing-photo-wrap .photo-ph{display:flex;align-items:center;justify-content:center;color:var(--navy)}
+.browse-grid .card-badge{top:20px;right:20px;left:auto;background:#fff;color:#147d74;border:1px solid #dceee9}
+.browse-grid .body{padding:12px 16px 16px}
+.listing-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.listing-meta .cat{margin:0;color:var(--navy);font-size:12px}
+.listing-meta small{color:var(--muted);font-size:11px;white-space:nowrap}
+.browse-grid .item h3{font-size:17px;line-height:1.5;margin:0 0 8px;color:var(--ink)}
+.listing-info{border-top:1px dashed #e2dbe9;padding-top:10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:9px}
+.browse-grid .listing-info .cond{margin:0;flex:none}
+.browse-grid .listing-info .wants{display:inline-flex;align-items:center;gap:5px;flex:1 1 185px;padding:0;background:none;color:var(--navy);font-size:12px;line-height:1.5}
+.listing-card-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+.listing-card-actions button{display:flex;justify-content:center;align-items:center;gap:6px;min-height:46px;border:0;border-radius:12px;font:inherit;font-size:13px;font-weight:800;cursor:pointer}
+.listing-card-actions .offer{background:var(--navy);color:#fff}
+.listing-card-actions .message{background:#f0ebf7;color:var(--navy)}
+.view-item-detail .detail-photo,.view-item-detail .detail-photo-ph{height:clamp(210px,40vh,330px);background:#f7f5fa}
+@media (min-width:760px){.browse-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.browse-grid .listing-photo-wrap .photo,.browse-grid .listing-photo-wrap .photo-ph{height:220px}}
+@media (min-width:1080px){.browse-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
