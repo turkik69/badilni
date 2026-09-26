@@ -9,7 +9,7 @@ mkdirSync(output, { recursive: true });
 
 const assets = [
   'index.html', 'secure-store.js', 'push-config.js', 'push.js', 'sw.js',
-  'theme-v3.css', 'privacy.html', 'terms.html', 'manifest.webmanifest',
+  'theme-v3.css', 'category-products.webp', 'privacy.html', 'terms.html', 'manifest.webmanifest',
   'icon.svg', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-touch-icon.png'
 ];
 for (const asset of assets) cpSync(resolve(root, asset), resolve(output, asset));
