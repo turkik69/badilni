@@ -247,11 +247,11 @@
   .intro-card{background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:20px;}
   .intro-card p{font-size:13.5px; color:var(--ink); line-height:1.85; margin:0;}
 </style>
-<link rel="manifest" href="manifest.webmanifest?v=5.4.6">
+<link rel="manifest" href="manifest.webmanifest?v=5.5.0">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<link rel="stylesheet" href="theme-v3.css?v=5.4.6">
-<script src="push.js?v=5.4.6"></script>
+<link rel="stylesheet" href="theme-v3.css?v=5.5.0">
+<script src="push.js?v=5.5.0"></script>
 </head>
 <body>
 <div id="frame"></div>
@@ -361,7 +361,7 @@ let state = {
   quickOfferOpen:false,
   balance:0, ledger:[],
   newPhotoUrl:null, uploading:false, selectedCat:null,
-  addDraft:{title:'',description:'',condition:'good',wantsCategory:'',wantsDescription:'',acceptsPoints:true,details:{}},
+  addDraft:{title:'',description:'',condition:'good',wantsCategory:'',wantsDescription:'',acceptsPoints:true,details:{}}, addStep:0, scrollPositions:{},
   editingItemId:null, browseCategory:'all', browseSubtype:'all', browseSearch:'', browseSort:'newest', browseCondition:'all',
   activeDeal:null, dealMessages:[], dealChannel:null, myRating:0,
   profile:null, profileRating:null, completedCount:0, myItemsCount:0, recentReviews:[], editingName:false,
@@ -535,6 +535,7 @@ async function loadAllForCurrentTab({view=state.view, force=false, showLoader=fa
   if (view === 'dashboard'){
     markViewFresh('mine');
     markViewFresh('wallet');
+    markViewFresh('browse');
   }
   if (state.view === view) state.loading = false;
 }
@@ -545,7 +546,8 @@ async function loadDashboard(){
   state.profileRating = r;
 }
 async function loadMarketPulse(){
-  const { data } = await sb.from('items').select('category_id, wants_category_id');
+  const { data } = await sb.from('items').select('*');
+  state.browseItems = (data||[]).filter(item=>item.owner_id!==state.session.user.id&&(!item.status||item.status==='available')&&item.category_id!=='vehicles');
   const offered = {}, requested = {};
   (data||[]).filter(item => !item.status || item.status === 'available').forEach(it=>{
     if (it.category_id) offered[it.category_id] = (offered[it.category_id]||0)+1;
@@ -699,48 +701,58 @@ async function handlePhotoSelect(e){
 function syncAddDraft(){
   const form = document.getElementById('add-form');
   if (!form) return;
+  const d=state.addDraft;
   state.addDraft = {
-    title:document.getElementById('f-title').value,
-    description:document.getElementById('f-desc').value,
-    condition:document.getElementById('f-cond').value,
-    wantsCategory:document.getElementById('f-wants-cat').value,
-    wantsDescription:document.getElementById('f-wants-desc').value,
-    acceptsPoints:document.getElementById('f-points').checked,
-    details:{...state.addDraft.details,
-      subtype:document.getElementById('f-subtype')?.value||'',
-      model:document.getElementById('f-model')?.value||'',
-      brand:document.getElementById('f-brand')?.value||'',
-      author:document.getElementById('f-author')?.value||'',
-      platform:document.getElementById('f-platform')?.value||''}
+    title:document.getElementById('f-title')?.value??d.title,
+    description:document.getElementById('f-desc')?.value??d.description,
+    condition:document.getElementById('f-cond')?.value??d.condition,
+    wantsCategory:document.getElementById('f-wants-cat')?.value??d.wantsCategory,
+    wantsDescription:document.getElementById('f-wants-desc')?.value??d.wantsDescription,
+    acceptsPoints:document.getElementById('f-points')?.checked??d.acceptsPoints,
+    details:{...d.details,
+      subtype:document.getElementById('f-subtype')?.value??d.details.subtype,
+      model:document.getElementById('f-model')?.value??d.details.model,
+      brand:document.getElementById('f-brand')?.value??d.details.brand,
+      author:document.getElementById('f-author')?.value??d.details.author,
+      platform:document.getElementById('f-platform')?.value??d.details.platform}
   };
 }
 function selectCat(id){ syncAddDraft(); state.selectedCat = id; state.addDraft.details={}; render(); }
 function selectListingSubtype(){ syncAddDraft(); render(); }
+function goAddStep(next){
+  syncAddDraft();
+  if(next>0&&!state.selectedCat){alert('اختر فئة الغرض أولاً');return;}
+  if(next>1&&(!state.addDraft.title.trim()||(CATEGORY_SUBTYPES[state.selectedCat]?.length&&!state.addDraft.details.subtype))){alert('أكمل عنوان الغرض والتصنيف الداخلي');return;}
+  state.addStep=Math.max(0,Math.min(3,next));
+  state.scrollPositions.add=0;render();
+}
 async function handleAddItem(e){
   e.preventDefault();
   syncAddDraft();
+  if(state.addStep!==3){goAddStep(state.addStep+1);return;}
   const uid = state.session.user.id;
   if (!state.selectedCat){ alert('اختر فئة الغرض'); return; }
+  const d=state.addDraft;
   const payload = {
     owner_id: uid,
-    title: document.getElementById('f-title').value.trim(),
-    description: document.getElementById('f-desc').value.trim() || null,
+    title: d.title.trim(),
+    description: d.description.trim() || null,
     category_id: state.selectedCat,
-    condition: document.getElementById('f-cond').value,
-    wants_category_id: document.getElementById('f-wants-cat').value || null,
-    wants_description: document.getElementById('f-wants-desc').value.trim() || null,
+    condition: d.condition,
+    wants_category_id: d.wantsCategory || null,
+    wants_description: d.wantsDescription.trim() || null,
     item_details: state.selectedCat in CATEGORY_SUBTYPES ? state.addDraft.details : {},
-    accepts_points: document.getElementById('f-points').checked,
+    accepts_points: d.acceptsPoints,
     photos: state.newPhotoUrl ? [state.newPhotoUrl] : [],
     status: 'available', visibility: 'public'
   };
-  if (!payload.title || !payload.condition){ alert('أكمل العنوان والحالة'); return; }
+  if (!payload.title || !payload.condition || (CATEGORY_SUBTYPES[state.selectedCat]?.length&&!d.details.subtype)){ alert('أكمل عنوان الغرض والتصنيف'); state.addStep=1;render();return; }
   const operation = state.editingItemId
     ? sb.from('items').update(payload).eq('id', state.editingItemId).eq('owner_id', uid)
     : sb.from('items').insert(payload);
   const { error } = await operation;
   if (error){ alert('حدث خطأ: ' + error.message); return; }
-  state.newPhotoUrl = null; state.selectedCat = null; state.editingItemId = null;
+  state.newPhotoUrl = null; state.selectedCat = null; state.editingItemId = null; state.addStep=0;
   state.addDraft = {title:'',description:'',condition:'good',wantsCategory:'',wantsDescription:'',acceptsPoints:true,details:{}};
   await goTo('mine', {force:true});
 }
@@ -936,6 +948,7 @@ function editItem(id){
   const item = (state.myItems||[]).find(row=>row.id===id);
   if (!item) return;
   state.editingItemId = id;
+  state.addStep = 0;
   state.selectedCat = item.category_id;
   state.newPhotoUrl = item.photos && item.photos[0] ? item.photos[0] : null;
   state.addDraft = {title:item.title||'', description:item.description||'', condition:item.condition||'good', wantsCategory:item.wants_category_id||'', wantsDescription:item.wants_description||'', acceptsPoints:item.accepts_points!==false,details:item.item_details||{}};
@@ -980,6 +993,8 @@ async function joinDirectOffer(directOfferEntry){
 /* ================= NAV ================= */
 async function goTo(view, {force=false}={}){
   if (!force && state.view === view && isViewFresh(view)) return;
+  const currentMain=frame.querySelector('main');
+  if(currentMain)state.scrollPositions[state.view]=currentMain.scrollTop;
   state.view = view;
   state.loading = false;
   state.notificationOpen = false;
@@ -993,10 +1008,15 @@ async function goTo(view, {force=false}={}){
 /* ================= RENDER ================= */
 function render(){
   if (state.booting) return;
+  const oldMain=frame.querySelector('main');
+  const oldView=oldMain?.className.match(/^view-(.+)$/)?.[1];
+  if(oldView)state.scrollPositions[oldView]=oldMain.scrollTop;
   if (state.authAction){ frame.innerHTML = renderAuthAction(); attachAuthActionEvents(); return; }
   if (!state.session && state.view !== 'howit'){ frame.innerHTML = renderAuth(); attachAuthEvents(); return; }
   if (!state.session && state.view === 'howit'){ frame.innerHTML = renderHowItStandalone(); attachHowItStandaloneEvents(); return; }
   frame.innerHTML = renderShell();
+  const newMain=frame.querySelector('main');
+  if(newMain)newMain.scrollTop=state.scrollPositions[state.view]||0;
   attachShellEvents();
   renderLightbox();
 }
@@ -1163,30 +1183,15 @@ function greeting(){ return new Date().getHours() < 12 ? 'صباح الخير' :
 function renderDashboard(){
   const activeItems = (state.myItems||[]).filter(i=>i.status==='available').length;
   const pendingMatches = (state.myMatches||[]).filter(m=>m.status==='suggested').length;
-  const ratingText = state.profileRating ? state.profileRating.rating_avg : '—';
+  const recent=(state.browseItems||[]).slice().sort((a,b)=>(Date.parse(b.created_at)||0)-(Date.parse(a.created_at)||0)).slice(0,4);
   let html = `
-    <div class="greet">${greeting()} 👋</div>
-    <div class="greet-sub">هذا ملخص حسابك في بادلني</div>
-    <div class="stat-grid">
-      <div class="stat-card"><span class="stat-ic">${tabIcon('box')}</span><div class="stat-num">${activeItems}</div><div class="stat-lbl">أغراض نشطة</div></div>
-      <div class="stat-card"><span class="stat-ic">${tabIcon('swap')}</span><div class="stat-num">${pendingMatches}</div><div class="stat-lbl">مطابقات جديدة</div></div>
-      <div class="stat-card"><span class="stat-ic">${tabIcon('wallet')}</span><div class="stat-num">${state.balance}</div><div class="stat-lbl">رصيد النقاط</div></div>
-      <div class="stat-card"><span class="stat-ic">${tabIcon('star')}</span><div class="stat-num">${ratingText}</div><div class="stat-lbl">تقييمك العام</div></div>
-    </div>
-    <div class="quick-actions">
-      <button class="btn gold" id="dash-add-btn">${icon('plus',18,'#3D2278')} أضف غرضاً</button>
-      <button class="btn ghost" id="dash-browse-btn">${icon('search',18,'#7A6E94')} تصفح</button>
-    </div>
+    <section class="market-hero"><span class="market-eyebrow">سوق المبادلة</span><h1>غرضك القادم قد يكون مقابل شيء تملكه.</h1><p>استكشف المعروضات، واختر ما يناسبك، ثم قدّم عرضك لصاحب الغرض.</p><div class="market-hero-actions"><button class="btn gold" id="dash-browse-btn">${icon('search',18)} استكشف المعروضات</button><button class="btn ghost" id="dash-add-btn">${icon('plus',18)} أضف غرضك</button></div></section>
   `;
-  html += `<section class="market-entry"><div class="market-entry-head"><b>اكتشف ما يمكن مبادلته</b><span>اختر القسم وابدأ التصفح</span></div><div class="market-entry-grid">${state.categories.map(c=>`<button type="button" class="category-theme category-theme-${c.icon}" onclick="setBrowseCategory('${c.id}');goTo('browse')">${categoryArtwork(c)}<b>${escapeHtml(c.name_ar)}</b><small>تصفح المعروضات</small></button>`).join('')}</div></section>`;
+  html += `<section class="market-entry"><div class="market-entry-head"><b>تصفح حسب القسم</b><span>اختر ما يهمك</span></div><div class="market-entry-grid">${state.categories.map(c=>`<button type="button" class="category-theme category-theme-${c.icon}" onclick="setBrowseCategory('${c.id}');goTo('browse')">${categoryArtwork(c)}<b>${escapeHtml(c.name_ar)}</b><small>عرض الأغراض</small></button>`).join('')}</div></section>`;
+  html += `<section class="home-listings"><div class="dash-section-head"><h2 class="section-title">وصل حديثاً للمبادلة</h2><button class="see-all" onclick="goTo('browse')">عرض الكل ${icon('back',15)}</button></div>${recent.length?`<div class="browse-grid">${recent.map(listingCardHtml).join('')}</div>`:`<div class="empty market-empty">لا توجد معروضات بعد. كن أول من يعرض غرضاً للمبادلة.</div>`}</section>`;
+  html += `<div class="market-account-note"><span>${icon('box',17)} ${activeItems} أغراض نشطة</span><span>${icon('swap',17)} ${pendingMatches} مطابقات جديدة</span><button onclick="goTo('mine')">إدارة أغراضي</button></div>`;
   const suggested = (state.myMatches||[]).filter(m=>m.status==='suggested').slice(0,2);
-  html += `<div class="dash-section-head"><h2 class="section-title" style="margin:0;">${icon('swap',18,'#3D2278')} أحدث المطابقات</h2>${(state.myMatches||[]).length ? `<span class="see-all" onclick="goTo('mine')">عرض الكل</span>` : ''}</div>`;
-  if (!suggested.length){
-    html += `<div class="empty" style="padding:24px 10px;">لا مطابقات جديدة حالياً</div>`;
-  } else {
-    html += suggested.map(m=>matchCardHtml(m)).join('');
-  }
-  html += renderMarketPulse();
+  if(suggested.length)html += `<div class="dash-section-head"><h2 class="section-title">مطابقات قد تناسبك</h2></div>${suggested.map(m=>matchCardHtml(m)).join('')}`;
   return html;
 }
 function renderMarketPulse(){
@@ -1279,16 +1284,10 @@ function renderItemDetail(){
   const isMine = it.owner_id === state.session.user.id;
   const detailPhoto = safeImageUrl(it.photos && it.photos[0]);
   let html = `
-    ${detailPhoto ? `<img class="detail-photo" src="${detailPhoto}" decoding="async" onclick="openLightbox(this.src)" alt="${escapeHtml(it.title||'صورة الغرض')}">` : `<div class="detail-photo-ph">${catEmoji(it.category_id)}</div>`}
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-      <div class="cat">${catEmoji(it.category_id)} ${catName(it.category_id)||''}</div>
-      <span class="barter-badge">للمبادلة</span>
-    </div>
-    <h2 style="font-size:21px; color:var(--navy); margin:4px 0 10px;">${escapeHtml(it.title)}</h2>
-    ${typeSummary(it)?`<div class="listing-specs">${categoryMark(it.category_id)}<b>${escapeHtml(typeSummary(it))}</b></div>`:''}
-    <span class="cond" style="margin-bottom:14px;">${COND_LABEL[it.condition]||it.condition}</span>
-    ${it.description ? `<p style="font-size:14px; color:var(--ink); line-height:1.8; margin:14px 0;">${escapeHtml(it.description)}</p>` : ''}
-    <div class="wants" style="margin:14px 0 22px;">${icon('swap',16,'#5A3A9E')} يريد صاحبه بالمقابل: ${escapeHtml(wantedLabel(it))}</div>
+    <div class="detail-gallery">${detailPhoto ? `<img class="detail-photo" src="${detailPhoto}" decoding="async" onclick="openLightbox(this.src)" alt="${escapeHtml(it.title||'صورة الغرض')}">` : `<div class="detail-photo-ph">${categoryMark(it.category_id)}</div>`}<span class="barter-badge">للمبادلة</span></div>
+    <div class="detail-summary"><div class="detail-kicker">${categoryMark(it.category_id)} ${escapeHtml(catName(it.category_id)||'غرض')} <span>· ${listingDate(it)}</span></div><h2>${escapeHtml(it.title)}</h2><span class="cond">${COND_LABEL[it.condition]||'جيد'}</span>${typeSummary(it)?`<div class="listing-specs">${escapeHtml(typeSummary(it))}</div>`:''}</div>
+    ${it.description ? `<section class="detail-section"><h3>تفاصيل الغرض</h3><p>${escapeHtml(it.description)}</p></section>` : ''}
+    <section class="detail-section detail-exchange"><h3>${icon('swap',19)} المطلوب بالمقابل</h3><p>${escapeHtml(wantedLabel(it))}</p><small>يمكنك تقديم عرض مبادلة من أي قسم، وصاحب الغرض يقرر قبوله.</small></section>
   `;
 
   if (isMine){
@@ -1342,6 +1341,18 @@ function itemPhoto(it){
   }
   return `<div class="photo-ph photo-category">${categoryMark(it.category_id)}</div>`;
 }
+function listingCardHtml(it){
+  return `<article class="item item-tap" onclick="openItemDetailById('${it.id}')">
+    <div class="listing-photo-wrap">${itemPhoto(it)}<span class="barter-badge card-badge">للمبادلة</span></div>
+    <div class="body">
+      <div class="listing-meta"><span class="cat">${categoryMark(it.category_id)} ${escapeHtml(catName(it.category_id)||'غرض')}</span><small>${listingDate(it)}</small></div>
+      <h3>${escapeHtml(it.title)}</h3>
+      ${typeSummary(it)?`<div class="listing-specs"><span>${escapeHtml(typeSummary(it))}</span></div>`:''}
+      <div class="listing-info"><span class="cond">${COND_LABEL[it.condition]||'جيد'}</span><span class="wants">${icon('swap',16,'#5A3A9E')} يفضّل بالمقابل: ${escapeHtml(wantedLabel(it))}</span></div>
+      <div class="listing-card-actions"><button type="button" class="offer" onclick="event.stopPropagation();offerFromBrowse('${it.id}')">${icon('swap',18)} قدّم مبادلة</button><button type="button" class="message" onclick="event.stopPropagation();chatFromBrowse('${it.id}')">${icon('chat',18)} دردشة</button></div>
+    </div>
+  </article>`;
+}
 function renderBrowse(){
   const q = state.browseSearch.toLowerCase();
   const visible = state.browseItems.filter(item => (state.browseCategory==='all' || item.category_id===state.browseCategory) && (state.browseSubtype==='all'||item.item_details?.subtype===state.browseSubtype) && (state.browseCondition==='all'||item.condition===state.browseCondition) && (!q || `${item.title||''} ${item.description||''} ${typeSummary(item)}`.toLowerCase().includes(q))).sort((a,b)=>state.browseSort==='oldest'?(Date.parse(a.created_at)||0)-(Date.parse(b.created_at)||0):(Date.parse(b.created_at)||0)-(Date.parse(a.created_at)||0));
@@ -1349,21 +1360,12 @@ function renderBrowse(){
   const subfilter=subtypes.length?`<div class="category-filter subcategory-filter"><button class="${state.browseSubtype==='all'?'active':''}" onclick="setBrowseSubtype('all')">كل الأنواع</button>${subtypes.map((s,i)=>`<button class="${state.browseSubtype===s?'active':''}" onclick="setBrowseSubtype(CATEGORY_SUBTYPES['${state.browseCategory}'][${i}])">${s}</button>`).join('')}</div>`:'';
   const filters = `<div class="browse-tools"><form class="browse-search" id="browse-search-form"><input id="browse-search" type="search" value="${escapeHtml(state.browseSearch)}" placeholder="ابحث عن غرض أو موديل..." aria-label="ابحث في المعروضات"><button type="submit" aria-label="بحث">${icon('search',19)}</button></form><div class="category-tiles"><button class="category-theme category-theme-all ${state.browseCategory==='all'?'active':''}" onclick="setBrowseCategory('all')"><span class="category-art category-art-all">${icon('box',30)}</span><b>كل الفئات</b></button>${state.categories.map(c=>`<button class="category-theme category-theme-${c.icon} ${state.browseCategory===c.id?'active':''}" onclick="setBrowseCategory('${c.id}')">${categoryArtwork(c)}<b>${escapeHtml(c.name_ar)}</b></button>`).join('')}</div>${subfilter}<div class="browse-sortbar"><span>${visible.length} غرض للمبادلة</span><label>الترتيب <select aria-label="ترتيب المعروضات" onchange="setBrowseSort(this.value)"><option value="newest" ${state.browseSort==='newest'?'selected':''}>الأحدث</option><option value="oldest" ${state.browseSort==='oldest'?'selected':''}>الأقدم</option></select></label><label>الحالة <select aria-label="تصفية حسب الحالة" onchange="setBrowseCondition(this.value)"><option value="all" ${state.browseCondition==='all'?'selected':''}>الكل</option>${Object.entries(COND_LABEL).map(([value,label])=>`<option value="${value}" ${state.browseCondition===value?'selected':''}>${label}</option>`).join('')}</select></label></div></div>`;
   if (!visible.length) return `${filters}<div class="empty">${icon('search',40)}<br>لا توجد معروضات مطابقة حالياً</div>`;
-  return `${filters}<div class="browse-grid">${visible.map(it=>`
-    <article class="item item-tap" onclick="openItemDetailById('${it.id}')">
-      <div class="listing-photo-wrap">${itemPhoto(it)}<span class="barter-badge card-badge">للمبادلة</span></div>
-      <div class="body">
-        <div class="listing-meta"><span class="cat">${categoryMark(it.category_id)} ${escapeHtml(catName(it.category_id)||'غرض')}</span><small>${listingDate(it)}</small></div>
-        <h3>${escapeHtml(it.title)}</h3>
-        ${typeSummary(it)?`<div class="listing-specs"><span>${escapeHtml(typeSummary(it))}</span></div>`:''}
-        <div class="listing-info"><span class="cond">${COND_LABEL[it.condition]||'جيد'}</span><span class="wants">${icon('swap',16,'#5A3A9E')} مطلوب بالمقابل: ${escapeHtml(wantedLabel(it))}</span></div>
-        <div class="listing-card-actions"><button type="button" class="offer" onclick="event.stopPropagation();offerFromBrowse('${it.id}')">${icon('swap',18)} قدّم عرضاً</button><button type="button" class="message" onclick="event.stopPropagation();chatFromBrowse('${it.id}')">${icon('chat',18)} تفاوض</button></div>
-      </div>
-    </article>`).join('')}</div>`;
+  return `${filters}<div class="browse-grid">${visible.map(listingCardHtml).join('')}</div>`;
 }
 
 function renderAddForm(){
   const d = state.addDraft;
+  const step=state.addStep;
   const catChips = state.categories.map(c=>`<button type="button" class="cat-chip category-theme category-theme-${c.icon} ${state.selectedCat===c.id?'sel':''}" onclick="selectCat('${c.id}')">${categoryArtwork(c)}${escapeHtml(c.name_ar)}</button>`).join('');
   const wantsOptions = state.categories.map(c=>`<option value="${c.id}" ${d.wantsCategory===c.id?'selected':''}>${CAT_EMOJI[c.icon]||''} ${c.name_ar}</option>`).join('');
   const details=d.details||{};
@@ -1372,32 +1374,20 @@ function renderAddForm(){
   if(state.selectedCat==='electronics')subtypeForm+=`<div class="field"><label>الشركة المصنعة</label><input id="f-brand" value="${escapeHtml(details.brand||'')}" maxlength="40" placeholder="مثال: Apple أو Samsung"></div><div class="field"><label>الموديل</label><input id="f-model" value="${escapeHtml(details.model||'')}" maxlength="80"></div>`;
   if(state.selectedCat==='books')subtypeForm+=`<div class="field"><label>المؤلف</label><input id="f-author" value="${escapeHtml(details.author||'')}" maxlength="80"></div>`;
   if(state.selectedCat==='games')subtypeForm+=`<div class="field"><label>المنصة</label><select id="f-platform"><option value="">جميع المنصات</option>${['بلايستيشن','إكس بوكس','نينتندو','حاسوب','ألعاب لوحية'].map(v=>`<option value="${v}" ${details.platform===v?'selected':''}>${v}</option>`).join('')}</select></div>`;
-  return `<form id="add-form">
-    <div class="form-section">
-      <div class="sec-label">${icon('camera',15,'#D946B8')} صورة الغرض</div>
-      <div class="photo-upload" id="photo-upload-box">
-        ${state.uploading ? 'جارٍ الرفع...' : state.newPhotoUrl ? `<img src="${state.newPhotoUrl}"><br>تم اختيار الصورة - اضغط لتغييرها` : `${icon('camera',26)}<br>اضغط لإضافة صورة`}
-      </div>
-      <input type="file" id="photo-input" accept="image/*" style="display:none">
-    </div>
-    <div class="form-section">
-      <div class="sec-label">${icon('box',15,'#D946B8')} تفاصيل الغرض</div>
-      <div class="field"><label>عنوان الغرض</label><input id="f-title" value="${escapeHtml(d.title)}" placeholder="مثال: ساعة ذكية Galaxy Watch"></div>
-      <div class="field"><label>وصف مختصر (اختياري)</label><textarea id="f-desc" placeholder="الحالة، تفاصيل إضافية...">${escapeHtml(d.description)}</textarea></div>
-      <div class="field"><label>الفئة</label><div class="cat-grid">${catChips}</div></div>
-      ${subtypeForm?`<div class="catalog-fields"><h3>${categoryMark(state.selectedCat)} تفاصيل ${catName(state.selectedCat)||'الغرض'}</h3>${subtypeForm}</div>`:''}
-      <div class="field"><label>الحالة</label><select id="f-cond">
-        <option value="new" ${d.condition==='new'?'selected':''}>جديد</option><option value="like_new" ${d.condition==='like_new'?'selected':''}>كالجديد</option><option value="good" ${d.condition==='good'?'selected':''}>جيد</option><option value="fair" ${d.condition==='fair'?'selected':''}>مقبول</option>
-      </select></div>
-    </div>
-    <div class="form-section">
-      <div class="sec-label">${icon('swap',15,'#D946B8')} ماذا تريد بالمقابل؟</div>
-      <div class="field"><label>فئة (اختياري)</label><select id="f-wants-cat"><option value="" ${!d.wantsCategory?'selected':''}>أي فئة</option>${wantsOptions}</select></div>
-      <div class="field"><label>وصف حر (اختياري)</label><textarea id="f-wants-desc" placeholder="مثال: أي سماعة لاسلكية بحالة جيدة">${escapeHtml(d.wantsDescription)}</textarea></div>
-      <div class="check-row"><input type="checkbox" id="f-points" ${d.acceptsPoints?'checked':''} style="width:auto;"> أوافق على استلام نقاط بدل غرض مباشر</div>
-    </div>
-    <button class="btn" type="submit">${icon(state.editingItemId?'check':'plus',18,'#fff')} ${state.editingItemId?'حفظ التعديلات':'نشر الغرض'}</button>
-  </form>`;
+  const steps=['القسم','الغرض','المبادلة','المراجعة'];
+  return `<div class="listing-form-head"><span>إعلان مبادلة ${state.editingItemId?'· تعديل':'جديد'}</span><h2>${['اختر قسم الغرض','عرّف الناس بغرضك','ماذا تقبل بالمقابل؟','راجع إعلانك قبل النشر'][step]}</h2><p>الصور والتفاصيل الواضحة تساعد الآخرين على تقديم عروض مناسبة.</p></div>
+    <div class="listing-progress" aria-label="تقدم نشر الإعلان">${steps.map((name,i)=>`<div class="${i===step?'current':i<step?'done':''}"><span>${i<step?icon('check',14):i+1}</span><b>${name}</b></div>`).join('')}</div>
+    <form id="add-form">
+      ${step===0?`<div class="form-section"><div class="sec-label">اختر القسم الأقرب لغرضك</div><div class="cat-grid">${catChips}</div><p class="form-tip">يمكنك تغييره قبل نشر الإعلان. لا يشترط أن يطابق القسم ما تريده بالمقابل.</p></div>`:''}
+      ${step===1?`<div class="form-section"><div class="sec-label">${icon('camera',17)} صورة الغرض</div><div class="photo-upload" id="photo-upload-box">${state.uploading?'جارٍ رفع الصورة...':state.newPhotoUrl?`<img src="${safeImageUrl(state.newPhotoUrl)}" alt="الصورة المختارة"><span>اضغط لتغيير الصورة</span>`:`${icon('camera',28)}<span>أضف صورة واضحة للغرض</span>`}</div><input type="file" id="photo-input" accept="image/*" style="display:none"></div>
+        <div class="form-section"><div class="sec-label">${icon('box',17)} معلومات الغرض</div><div class="field"><label for="f-title">عنوان الغرض</label><input id="f-title" required maxlength="100" value="${escapeHtml(d.title)}" placeholder="مثال: ساعة ذكية بحالة ممتازة"></div>
+        ${subtypeForm?`<div class="catalog-fields"><h3>${categoryMark(state.selectedCat)} ${escapeHtml(catName(state.selectedCat)||'تفاصيل الغرض')}</h3>${subtypeForm}</div>`:''}
+        <div class="field"><label for="f-cond">الحالة</label><select id="f-cond"><option value="new" ${d.condition==='new'?'selected':''}>جديد</option><option value="like_new" ${d.condition==='like_new'?'selected':''}>كالجديد</option><option value="good" ${d.condition==='good'?'selected':''}>جيد</option><option value="fair" ${d.condition==='fair'?'selected':''}>مقبول</option></select></div>
+        <div class="field"><label for="f-desc">وصف الغرض (اختياري)</label><textarea id="f-desc" maxlength="1000" placeholder="أهم المواصفات، ما يشمله الغرض، وأي ملاحظات على حالته">${escapeHtml(d.description)}</textarea></div></div>`:''}
+      ${step===2?`<div class="form-section"><div class="sec-label">${icon('swap',17)} ما الذي ترغب في مبادلته به؟</div><p class="form-tip">اختيارك يوضح رغبتك، ويمكنك استقبال عروض من أي فئة.</p><div class="field"><label for="f-wants-cat">فئة تفضلها (اختياري)</label><select id="f-wants-cat"><option value="" ${!d.wantsCategory?'selected':''}>مفتوح لجميع الفئات</option>${wantsOptions}</select></div><div class="field"><label for="f-wants-desc">تفاصيل ما تبحث عنه (اختياري)</label><textarea id="f-wants-desc" maxlength="500" placeholder="مثال: سماعة لاسلكية بحالة جيدة، أو أي عرض مناسب">${escapeHtml(d.wantsDescription)}</textarea></div><label class="check-row"><input type="checkbox" id="f-points" ${d.acceptsPoints?'checked':''}> أقبل التفاوض على فارق نقاط عند الحاجة</label></div>`:''}
+      ${step===3?`<div class="listing-preview"><div class="preview-label">معاينة الإعلان</div><div class="preview-image">${state.newPhotoUrl?`<img src="${safeImageUrl(state.newPhotoUrl)}" alt="صورة غرضك">`:categoryMark(state.selectedCat)}</div><div class="preview-body"><span class="barter-badge">للمبادلة</span><h3>${escapeHtml(d.title)}</h3><p>${escapeHtml(catName(state.selectedCat)||'غرض')} · ${COND_LABEL[d.condition]||'جيد'}</p>${typeSummary({item_details:d.details})?`<p>${escapeHtml(typeSummary({item_details:d.details}))}</p>`:''}${d.description?`<p>${escapeHtml(d.description)}</p>`:''}<div class="preview-wants">${icon('swap',16)} بالمقابل: ${escapeHtml([catName(d.wantsCategory),d.wantsDescription].filter(Boolean).join(' · ')||'مفتوح للعروض')}</div></div></div><p class="form-tip">إذا أردت تغيير شيء، ارجع إلى الخطوة السابقة. سينشر الإعلان عند الضغط على الزر أدناه.</p>`:''}
+      <div class="listing-form-actions">${step>0?`<button class="btn ghost" type="button" onclick="goAddStep(${step-1})">السابق</button>`:''}${step<3?`<button class="btn gold" type="button" onclick="goAddStep(${step+1})">متابعة ${icon('back',17)}</button>`:`<button class="btn gold" type="submit" ${state.uploading?'disabled':''}>${icon(state.editingItemId?'check':'plus',18)} ${state.editingItemId?'حفظ التعديلات':'نشر الغرض'}</button>`}</div>
+    </form>`;
 }
 
 function renderMine(){
@@ -1568,7 +1558,7 @@ function escapeHtml(s){ const d=document.createElement('div'); d.textContent = s
 
 if ('serviceWorker' in navigator) window.addEventListener('load', async () => {
   try {
-    const reg = await navigator.serviceWorker.register('./sw.js?v=5.4.6', {scope:'./', updateViaCache:'none'});
+    const reg = await navigator.serviceWorker.register('./sw.js?v=5.5.0', {scope:'./', updateViaCache:'none'});
     await reg.update();
     const activateUpdate = worker => {
       if (worker && worker.state === 'installed' && navigator.serviceWorker.controller) worker.postMessage({type:'SKIP_WAITING'});
@@ -1580,7 +1570,7 @@ if ('serviceWorker' in navigator) window.addEventListener('load', async () => {
       if (worker) worker.addEventListener('statechange', () => activateUpdate(worker));
     });
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      const key='badilni-pwa-reloaded-5.4.6';
+      const key='badilni-pwa-reloaded-5.5.0';
       if (!sessionStorage.getItem(key)){ sessionStorage.setItem(key,'1'); location.reload(); }
     });
   } catch (_) {}
