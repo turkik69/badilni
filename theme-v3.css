@@ -162,15 +162,21 @@ nav.tabbar button.active .nav-icon-search{background:linear-gradient(145deg,#5aa
 nav.tabbar button.active{color:var(--navy-deep);}
 nav.tabbar button.active .tab-ic-wrap{transform:translateY(-2px) scale(1.08);}
 
-/* Use the visible viewport; keep the status and home-indicator areas opaque. */
-@media (display-mode:standalone) and (max-width:759px){
-  html,body{height:100%;min-height:100%;}
-  html{background:#fffdfa;}
-  body{position:fixed;inset:0;overflow:hidden;background:linear-gradient(#0b4148 0 170px,#fffdfa 170px);}
-  #frame{height:100%;height:100dvh;min-height:0;background:#0b4148;}
-  header.topbar{padding-top:max(72px,calc(24px + env(safe-area-inset-top)));min-height:158px;}
-  main{min-height:0;flex:1;background:var(--bg);padding-bottom:24px;}
-  nav.tabbar{padding-bottom:max(14px,env(safe-area-inset-bottom));}
+/* iOS standalone can hide its display-mode media query and exclude the home
+   indicator from 100dvh. The root class and measured height cover both. */
+@media (max-width:759px){
+  html.installed-app,html.installed-app body{height:var(--installed-screen-height,100dvh);min-height:0;}
+  html.installed-app{background:#fffdfa;}
+  html.installed-app body{position:absolute;inset:0 auto auto 0;width:100%;overflow:hidden;background:linear-gradient(#0b4148 0 190px,#fffdfa 190px);}
+  html.installed-app #frame{height:var(--installed-screen-height,100dvh);min-height:0;background:#0b4148;}
+  html.installed-app header.topbar{padding-top:max(82px,calc(30px + env(safe-area-inset-top)));padding-bottom:26px;min-height:188px;}
+  html.installed-app header.topbar .screen-title{font-size:26px;}
+  html.installed-app header.topbar .brand{font-size:28px;}
+  html.installed-app header.topbar .icon-btn,html.installed-app header.topbar .back,html.installed-app header.topbar .avatar-btn{width:64px;height:64px;}
+  html.installed-app header.topbar .icon-btn svg,html.installed-app header.topbar .back svg{width:33px;height:33px;}
+  html.installed-app main{min-height:0;flex:1;background:var(--bg);padding-bottom:24px;}
+  html.installed-app nav.tabbar{padding-bottom:max(16px,env(safe-area-inset-bottom));}
+  html.installed-app nav.tabbar::after{content:"";position:absolute;top:calc(100% - 1px);left:-1px;right:-1px;height:110px;background:#fffdfa;pointer-events:none;}
 }
 
 main[class^="view-"]{animation:viewEnter .16s ease-out;}
