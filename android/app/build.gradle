@@ -1,5 +1,12 @@
 apply plugin: 'com.android.application'
 
+// The upload key lives outside source control. Never paste a key or password here.
+def uploadKeyPath = System.getenv('BADILNI_UPLOAD_KEYSTORE')
+def uploadKeyAlias = System.getenv('BADILNI_UPLOAD_ALIAS')
+def uploadStorePassword = System.getenv('BADILNI_UPLOAD_STORE_PASSWORD')
+def uploadKeyPassword = System.getenv('BADILNI_UPLOAD_KEY_PASSWORD')
+def hasUploadSigning = [uploadKeyPath, uploadKeyAlias, uploadStorePassword, uploadKeyPassword].every { it }
+
 android {
     namespace = "com.byyassmin.badilni"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -16,11 +23,29 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        if (hasUploadSigning) {
+            upload {
+                storeFile file(uploadKeyPath)
+                storePassword uploadStorePassword
+                keyAlias uploadKeyAlias
+                keyPassword uploadKeyPassword
+            }
+        }
+    }
     buildTypes {
         release {
+            if (hasUploadSigning) signingConfig signingConfigs.upload
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+}
+
+gradle.taskGraph.whenReady { graph ->
+    if (graph.allTasks.any { it.project == project && it.name in ['bundleRelease', 'assembleRelease'] }) {
+        if (!hasUploadSigning) throw new GradleException('Set BADILNI_UPLOAD_KEYSTORE, BADILNI_UPLOAD_ALIAS, BADILNI_UPLOAD_STORE_PASSWORD and BADILNI_UPLOAD_KEY_PASSWORD before a release build')
+        if (!file(uploadKeyPath).isFile()) throw new GradleException('Android upload keystore does not exist at BADILNI_UPLOAD_KEYSTORE')
     }
 }
 

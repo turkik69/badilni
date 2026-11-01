@@ -1,5 +1,5 @@
-const CACHE = 'badilni-v5.7.1-store-readiness';
-const ASSETS = ['./', './index.html', './secure-store.js', './push-config.js', './push.js', './theme-v3.css', './category-products.webp', './privacy.html', './terms.html', './delete-account.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
+const CACHE = 'badilni-v5.8.0-bilingual';
+const ASSETS = ['./', './index.html', './i18n.js', './secure-store.js', './push-config.js', './push.js', './theme-v3.css', './category-products.webp', './privacy.html', './privacy.en.html', './terms.html', './terms.en.html', './delete-account.html', './delete-account.en.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 try {
   importScripts('https://www.gstatic.com/firebasejs/11.10.0/firebase-app-compat.js');

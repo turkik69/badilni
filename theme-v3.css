@@ -545,3 +545,15 @@ nav.tabbar button.active .tab-ic-wrap{transform:none}
   .browse-grid .body{padding-inline:10px}
   .listing-card-actions .offer{font-size:9.5px}
 }
+
+/* Language picker and bidirectional layouts. User-entered fields keep their own text direction. */
+.language-picker{display:inline-flex;align-items:center;justify-content:center;gap:5px;border:1px solid #d8e5ea;border-radius:12px;background:#fff;color:#0a4f6a;padding:8px 11px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;min-height:36px;white-space:nowrap}
+.auth-form-panel>.language-picker{align-self:flex-start;margin-bottom:16px}
+header.topbar .topbar-language{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff;padding:5px 7px;font-size:11px;min-width:46px}
+html[dir="ltr"] header.topbar .screen-title,html[dir="ltr"] header.topbar .brand-row{direction:ltr}
+html[dir="ltr"] .field,html[dir="ltr"] .msg,html[dir="ltr"] .browse-grid .body,html[dir="ltr"] .browse-grid .item,html[dir="ltr"] .category-tiles button,html[dir="ltr"] .market-entry-grid button.category-theme,html[dir="ltr"] .notification-row{direction:ltr;text-align:left}
+html[dir="ltr"] .auth-wrap p.tag{text-align:left}
+@media (min-width:760px){html[dir="ltr"] .auth-wrap{text-align:left}html[dir="ltr"] .auth-brand-panel{align-items:flex-start}}
+@media (max-width:380px){header.topbar .topbar-language{font-size:10px;padding:4px;min-width:38px}header.topbar .zone{gap:5px}header.topbar .brand{font-size:20px}}
+
+.profile-legal-links{display:flex;flex-wrap:wrap;gap:18px;padding:18px 4px}.profile-legal-links a{color:#0a4f6a;font-weight:700;font-size:13px}

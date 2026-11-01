@@ -8,3 +8,8 @@ ios/App/App/GoogleService-Info.plist
 .expo/
 .DS_Store
 www/
+*.p8
+*.p12
+*.mobileprovision
+*.cer
+*.pfx

@@ -9,7 +9,7 @@
     "native:ios": "npm run native:sync && cap open ios",
     "deploy": "wrangler deploy",
     "check": "wrangler deploy --dry-run",
-    "test": "node tests/multi-user.test.js && node tests/security-contract.test.js && node tests/listing-flow.test.js && node tests/store-readiness.test.js",
+    "test": "node tests/multi-user.test.js && node tests/security-contract.test.js && node tests/listing-flow.test.js && node tests/store-readiness.test.js && node tests/i18n-release.test.js",
     "test:load": "node tests/load-1000-users.test.js",
     "test:store": "node tests/store-readiness.test.js",
     "test:native": "node tests/native-source.test.js",
