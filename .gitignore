@@ -1,6 +1,10 @@
 .env
 .env.local
 node_modules/
+android/app/google-services.json
+ios/App/App/GoogleService-Info.plist
+*.jks
+*.keystore
 .expo/
 .DS_Store
 www/
