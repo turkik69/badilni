@@ -13,3 +13,4 @@ www/
 *.mobileprovision
 *.cer
 *.pfx
+release/signing.env

@@ -13,7 +13,7 @@
    `scripts/create-android-upload-key.sh /secure/backup/badilni-upload.jks`
 
 2. احفظ كلمة مرور المفتاح في مدير كلمات مرور، واحفظ نسخة احتياطية من ملف `.jks` في مكان مختلف. لا ترسل أياً منهما في المحادثة أو إلى المستودع.
-3. عرّف المتغيرات `BADILNI_UPLOAD_KEYSTORE` بمسار الملف، و`BADILNI_UPLOAD_ALIAS=badilni-upload`، و`BADILNI_UPLOAD_STORE_PASSWORD` و`BADILNI_UPLOAD_KEY_PASSWORD` في بيئة بناء آمنة. يرفض Gradle بناء `bundleRelease` أو `assembleRelease` إذا غاب أي منها.
+3. يوجد قالب `release/signing.env.example`؛ انسخه إلى `release/signing.env` على جهاز بناء موثوق (الملف مستبعد من Git)، ثم عرّف المتغيرات `BADILNI_UPLOAD_KEYSTORE` بمسار الملف، و`BADILNI_UPLOAD_ALIAS=badilni-upload`، و`BADILNI_UPLOAD_STORE_PASSWORD` و`BADILNI_UPLOAD_KEY_PASSWORD` في بيئة بناء آمنة. يرفض Gradle بناء `bundleRelease` أو `assembleRelease` إذا غاب أي منها.
 4. نفذ `npm run native:sync` ثم `cd android && ./gradlew bundleRelease`. الناتج AAB في `android/app/build/outputs/bundle/release/`. ارفع AAB إلى مسار الاختبار الداخلي وفعّل Play App Signing. احتفظ بنفس مفتاح الرفع للإصدارات التالية.
 
 ## iPhone — التوقيع والإشعارات
