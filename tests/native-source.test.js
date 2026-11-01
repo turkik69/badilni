@@ -12,6 +12,7 @@ const androidGradle = read('android/app/build.gradle');
 const androidVariables = read('android/variables.gradle');
 const iosInfo = read('ios/App/App/Info.plist');
 const iosDelegate = read('ios/App/App/AppDelegate.swift');
+const iosProject = read('ios/App/App.xcodeproj/project.pbxproj');
 const push = read('push.js');
 
 function pngDimensions(file) {
@@ -33,6 +34,7 @@ assert.match(iosInfo, /<key>ITSAppUsesNonExemptEncryption<\/key>\s*<false\/>/);
 assert.doesNotMatch(iosInfo, /UIInterfaceOrientationLandscape/);
 assert.match(iosDelegate, /didRegisterForRemoteNotificationsWithDeviceToken/);
 assert.match(iosDelegate, /didFailToRegisterForRemoteNotificationsWithError/);
+assert.match(iosProject, /GoogleService-Info\.plist in Resources/);
 assert.ok(pkg.dependencies['@capacitor-firebase/messaging']?.startsWith('^8.'));
 assert.match(push, /Plugins\?\.FirebaseMessaging/);
 assert.match(push, /getToken\(\)/);
@@ -56,6 +58,17 @@ if (missingServices.length) {
   const list = missingServices.map(([file, label]) => `${label}: ${file}`).join('\n- ');
   if (process.env.REQUIRE_NATIVE_SERVICES === '1') throw new Error(`Native release credentials are missing:\n- ${list}`);
   console.warn(`⚠ Native source is valid; add the private Firebase platform files before signed builds:\n- ${list}`);
+}
+
+if (exists('android/app/google-services.json')) {
+  const config = JSON.parse(read('android/app/google-services.json'));
+  assert.equal(config.project_info.project_id, 'world-cup-2026-d3091');
+  assert.ok(config.client.some(client => client.client_info.android_client_info.package_name === capacitor.appId));
+}
+if (exists('ios/App/App/GoogleService-Info.plist')) {
+  const config = read('ios/App/App/GoogleService-Info.plist');
+  assert.match(config, /<key>BUNDLE_ID<\/key>\s*<string>com\.byyassmin\.badilni<\/string>/);
+  assert.match(config, /<key>PROJECT_ID<\/key>\s*<string>world-cup-2026-d3091<\/string>/);
 }
 
 console.log('✓ native Android/iOS source, identity, privacy flags, icons, and FCM bridge passed');
