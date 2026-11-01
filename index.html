@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover, user-scalable=no">
 <title>بادلني</title>
-<meta name="theme-color" content="#0b4148">
+<meta name="theme-color" content="#0a4f6a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -246,11 +246,11 @@
   .intro-card{background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:20px;}
   .intro-card p{font-size:13.5px; color:var(--ink); line-height:1.85; margin:0;}
 </style>
-<link rel="manifest" href="manifest.webmanifest?v=5.6.1">
+<link rel="manifest" href="manifest.webmanifest?v=5.7.0">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<link rel="stylesheet" href="theme-v3.css?v=5.6.1">
-<script src="push.js?v=5.6.1"></script>
+<link rel="stylesheet" href="theme-v3.css?v=5.7.0">
+<script src="push.js?v=5.7.0"></script>
 </head>
 <body>
 <div id="frame"></div>
@@ -1193,7 +1193,7 @@ function renderDashboard(){
   const pendingMatches = (state.myMatches||[]).filter(m=>m.status==='suggested').length;
   const recent=(state.browseItems||[]).slice().sort((a,b)=>(Date.parse(b.created_at)||0)-(Date.parse(a.created_at)||0)).slice(0,4);
   let html = `
-    <section class="market-hero"><span class="market-eyebrow">سوق المبادلة</span><h1>غرضك القادم قد يكون مقابل شيء تملكه.</h1><p>استكشف المعروضات، واختر ما يناسبك، ثم قدّم عرضك لصاحب الغرض.</p><div class="market-hero-actions"><button class="btn gold" id="dash-browse-btn">${icon('search',18)} استكشف المعروضات</button><button class="btn ghost" id="dash-add-btn">${icon('plus',18)} أضف غرضك</button></div></section>
+    <section class="market-hero"><div class="market-hero-copy"><span class="market-eyebrow">سوق المبادلة في عُمان</span><h1>بدّل ما لديك بما تحتاجه.</h1><p>اكتشف أغراضاً قريبة من اهتماماتك، وقدّم عرض مبادلة واضحاً لصاحب الغرض.</p></div><div class="market-hero-actions"><button class="btn gold" id="dash-browse-btn">${icon('search',18)} تصفح السوق</button><button class="btn ghost" id="dash-add-btn">${icon('plus',18)} اعرض غرضاً</button></div></section>
   `;
   html += `<section class="market-entry"><div class="market-entry-head"><b>تصفح حسب القسم</b><span>اختر ما يهمك</span></div><div class="market-entry-grid">${state.categories.map(c=>`<button type="button" class="category-theme category-theme-${c.icon}" onclick="setBrowseCategory('${c.id}');goTo('browse')">${categoryArtwork(c)}<b>${escapeHtml(c.name_ar)}</b><small>عرض الأغراض</small></button>`).join('')}</div></section>`;
   html += `<section class="home-listings"><div class="dash-section-head"><h2 class="section-title">وصل حديثاً للمبادلة</h2><button class="see-all" onclick="goTo('browse')">عرض الكل ${icon('back',15)}</button></div>${recent.length?`<div class="browse-grid">${recent.map(listingCardHtml).join('')}</div>`:`<div class="empty market-empty">لا توجد معروضات بعد. كن أول من يعرض غرضاً للمبادلة.</div>`}</section>`;
@@ -1387,7 +1387,7 @@ function renderBrowse(){
   const visible = state.browseItems.filter(item => (state.browseCategory==='all' || item.category_id===state.browseCategory) && (state.browseSubtype==='all'||item.item_details?.subtype===state.browseSubtype) && (state.browseCondition==='all'||item.condition===state.browseCondition) && (!q || `${item.title||''} ${item.description||''} ${typeSummary(item)}`.toLowerCase().includes(q))).sort((a,b)=>state.browseSort==='oldest'?(Date.parse(a.created_at)||0)-(Date.parse(b.created_at)||0):(Date.parse(b.created_at)||0)-(Date.parse(a.created_at)||0));
   const subtypes=CATEGORY_SUBTYPES[state.browseCategory]||[];
   const subfilter=subtypes.length?`<div class="category-filter subcategory-filter"><button class="${state.browseSubtype==='all'?'active':''}" onclick="setBrowseSubtype('all')">كل الأنواع</button>${subtypes.map((s,i)=>`<button class="${state.browseSubtype===s?'active':''}" onclick="setBrowseSubtype(CATEGORY_SUBTYPES['${state.browseCategory}'][${i}])">${s}</button>`).join('')}</div>`:'';
-  const filters = `<div class="browse-tools"><form class="browse-search" id="browse-search-form"><input id="browse-search" type="search" value="${escapeHtml(state.browseSearch)}" placeholder="ابحث عن غرض أو موديل..." aria-label="ابحث في المعروضات"><button type="submit" aria-label="بحث">${icon('search',19)}</button></form><div class="category-tiles"><button class="category-theme category-theme-all ${state.browseCategory==='all'?'active':''}" onclick="setBrowseCategory('all')"><span class="category-art category-art-all">${icon('box',30)}</span><b>كل الفئات</b></button>${state.categories.map(c=>`<button class="category-theme category-theme-${c.icon} ${state.browseCategory===c.id?'active':''}" onclick="setBrowseCategory('${c.id}')">${categoryArtwork(c)}<b>${escapeHtml(c.name_ar)}</b></button>`).join('')}</div>${subfilter}<div class="browse-sortbar"><span>${visible.length} غرض للمبادلة</span><label>الترتيب <select aria-label="ترتيب المعروضات" onchange="setBrowseSort(this.value)"><option value="newest" ${state.browseSort==='newest'?'selected':''}>الأحدث</option><option value="oldest" ${state.browseSort==='oldest'?'selected':''}>الأقدم</option></select></label><label>الحالة <select aria-label="تصفية حسب الحالة" onchange="setBrowseCondition(this.value)"><option value="all" ${state.browseCondition==='all'?'selected':''}>الكل</option>${Object.entries(COND_LABEL).map(([value,label])=>`<option value="${value}" ${state.browseCondition===value?'selected':''}>${label}</option>`).join('')}</select></label></div></div>`;
+  const filters = `<section class="browse-intro"><span>سوق بادلني</span><h2>ابحث عمّا يناسبك</h2><p>كل المعروضات للمبادلة، ويمكنك التفاوض مباشرة مع صاحب الغرض.</p></section><div class="browse-tools"><form class="browse-search" id="browse-search-form"><span>${icon('search',21)}</span><input id="browse-search" type="search" value="${escapeHtml(state.browseSearch)}" placeholder="ابحث عن غرض أو نوع أو موديل..." aria-label="ابحث في المعروضات"><button type="submit" aria-label="بحث">بحث</button></form><div class="category-tiles" aria-label="فئات السوق"><button class="category-theme category-theme-all ${state.browseCategory==='all'?'active':''}" onclick="setBrowseCategory('all')"><span class="category-art category-art-all">${icon('box',25)}</span><b>الكل</b></button>${state.categories.map(c=>`<button class="category-theme category-theme-${c.icon} ${state.browseCategory===c.id?'active':''}" onclick="setBrowseCategory('${c.id}')">${categoryArtwork(c)}<b>${escapeHtml(c.name_ar)}</b></button>`).join('')}</div>${subfilter}<div class="browse-sortbar"><span>${visible.length} غرض للمبادلة</span><label>الترتيب <select aria-label="ترتيب المعروضات" onchange="setBrowseSort(this.value)"><option value="newest" ${state.browseSort==='newest'?'selected':''}>الأحدث</option><option value="oldest" ${state.browseSort==='oldest'?'selected':''}>الأقدم</option></select></label><label>الحالة <select aria-label="تصفية حسب الحالة" onchange="setBrowseCondition(this.value)"><option value="all" ${state.browseCondition==='all'?'selected':''}>الكل</option>${Object.entries(COND_LABEL).map(([value,label])=>`<option value="${value}" ${state.browseCondition===value?'selected':''}>${label}</option>`).join('')}</select></label></div></div>`;
   if (!visible.length) return `${filters}<div class="empty">${icon('search',40)}<br>لا توجد معروضات مطابقة حالياً</div>`;
   return `${filters}<div class="browse-grid">${visible.map(listingCardHtml).join('')}</div>`;
 }
@@ -1587,7 +1587,7 @@ function escapeHtml(s){ const d=document.createElement('div'); d.textContent = s
 
 if ('serviceWorker' in navigator) window.addEventListener('load', async () => {
   try {
-    const reg = await navigator.serviceWorker.register('./sw.js?v=5.6.1', {scope:'./', updateViaCache:'none'});
+    const reg = await navigator.serviceWorker.register('./sw.js?v=5.7.0', {scope:'./', updateViaCache:'none'});
     await reg.update();
     const activateUpdate = worker => {
       if (worker && worker.state === 'installed' && navigator.serviceWorker.controller) worker.postMessage({type:'SKIP_WAITING'});
@@ -1599,7 +1599,7 @@ if ('serviceWorker' in navigator) window.addEventListener('load', async () => {
       if (worker) worker.addEventListener('statechange', () => activateUpdate(worker));
     });
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      const key='badilni-pwa-reloaded-5.6.1';
+      const key='badilni-pwa-reloaded-5.7.0';
       if (!sessionStorage.getItem(key)){ sessionStorage.setItem(key,'1'); location.reload(); }
     });
   } catch (_) {}
