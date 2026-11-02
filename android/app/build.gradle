@@ -1,0 +1,79 @@
+apply plugin: 'com.android.application'
+
+// The upload key lives outside source control. Never paste a key or password here.
+def uploadKeyPath = System.getenv('BADILNI_UPLOAD_KEYSTORE')
+def uploadKeyAlias = System.getenv('BADILNI_UPLOAD_ALIAS')
+def uploadStorePassword = System.getenv('BADILNI_UPLOAD_STORE_PASSWORD')
+def uploadKeyPassword = System.getenv('BADILNI_UPLOAD_KEY_PASSWORD')
+def hasUploadSigning = [uploadKeyPath, uploadKeyAlias, uploadStorePassword, uploadKeyPassword].every { it }
+
+android {
+    namespace = "com.byyassmin.badilni"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "com.byyassmin.badilni"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    signingConfigs {
+        if (hasUploadSigning) {
+            upload {
+                storeFile file(uploadKeyPath)
+                storePassword uploadStorePassword
+                keyAlias uploadKeyAlias
+                keyPassword uploadKeyPassword
+            }
+        }
+    }
+    buildTypes {
+        release {
+            if (hasUploadSigning) signingConfig signingConfigs.upload
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+gradle.taskGraph.whenReady { graph ->
+    if (graph.allTasks.any { it.project == project && it.name in ['bundleRelease', 'assembleRelease'] }) {
+        if (!hasUploadSigning) throw new GradleException('Set BADILNI_UPLOAD_KEYSTORE, BADILNI_UPLOAD_ALIAS, BADILNI_UPLOAD_STORE_PASSWORD and BADILNI_UPLOAD_KEY_PASSWORD before a release build')
+        if (!file(uploadKeyPath).isFile()) throw new GradleException('Android upload keystore does not exist at BADILNI_UPLOAD_KEYSTORE')
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}

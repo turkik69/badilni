@@ -4,21 +4,26 @@
   "private": true,
   "scripts": {
     "build:web": "node scripts/build-web.mjs",
-    "native:sync": "npm run build:web && cap sync",
+    "native:sync": "npm run build:web && cap sync && node scripts/relativize-ios-plugin-link.mjs",
     "native:android": "npm run native:sync && cap open android",
     "native:ios": "npm run native:sync && cap open ios",
     "deploy": "wrangler deploy",
     "check": "wrangler deploy --dry-run",
-    "test": "node tests/multi-user.test.js && node tests/security-contract.test.js && node tests/listing-flow.test.js"
+    "test": "node tests/multi-user.test.js && node tests/security-contract.test.js && node tests/listing-flow.test.js && node tests/store-readiness.test.js && node tests/i18n-release.test.js",
+    "test:load": "node tests/load-1000-users.test.js",
+    "test:store": "node tests/store-readiness.test.js",
+    "test:native": "node tests/native-source.test.js",
+    "native:release-check": "REQUIRE_NATIVE_SERVICES=1 node tests/native-source.test.js",
+    "release:check": "npm test && npm run test:native && npm run test:load && npm run build:web"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.0",
     "wrangler": "^4.38.0"
   },
   "dependencies": {
+    "@capacitor-firebase/messaging": "^8.6.0",
     "@capacitor/android": "^8.5.0",
     "@capacitor/core": "^8.5.0",
-    "@capacitor/ios": "^8.5.0",
-    "@capacitor/push-notifications": "^8.0.0"
+    "@capacitor/ios": "^8.5.0"
   }
 }

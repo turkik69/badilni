@@ -8,8 +8,8 @@ if (existsSync(output)) rmSync(output, { recursive: true });
 mkdirSync(output, { recursive: true });
 
 const assets = [
-  'index.html', 'secure-store.js', 'push-config.js', 'push.js', 'sw.js',
-  'theme-v3.css', 'category-products.webp', 'privacy.html', 'terms.html', 'manifest.webmanifest',
+  'index.html', 'i18n.js', 'secure-store.js', 'push-config.js', 'push.js', 'sw.js',
+  'theme-v3.css', 'category-products.webp', 'privacy.html', 'privacy.en.html', 'terms.html', 'terms.en.html', 'delete-account.html', 'delete-account.en.html', 'manifest.webmanifest',
   'icon.svg', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-touch-icon.png'
 ];
 for (const asset of assets) cpSync(resolve(root, asset), resolve(output, asset));

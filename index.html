@@ -14,8 +14,9 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%230E5A61'/%3E%3Cpath d='M10 16h16M22 12l4 4-4 4' stroke='%23E65F69' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M30 24H14M18 28l-4-4 4-4' stroke='%23FFD8CF' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="push-config.js"></script>
-<script src="secure-store.js"></script>
+<script src="i18n.js?v=5.8.0"></script>
+<script src="push-config.js?v=5.8.0"></script>
+<script src="secure-store.js?v=5.8.0"></script>
 <style>
   :root{
     --bg:#f7f3ec; --paper:#FFFFFF;
@@ -246,11 +247,11 @@
   .intro-card{background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:20px;}
   .intro-card p{font-size:13.5px; color:var(--ink); line-height:1.85; margin:0;}
 </style>
-<link rel="manifest" href="manifest.webmanifest?v=5.7.0">
+<link rel="manifest" href="manifest.webmanifest?v=5.8.0">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<link rel="stylesheet" href="theme-v3.css?v=5.7.0">
-<script src="push.js?v=5.7.0"></script>
+<link rel="stylesheet" href="theme-v3.css?v=5.8.0">
+<script src="push.js?v=5.8.0"></script>
 </head>
 <body>
 <div id="frame"></div>
@@ -307,7 +308,7 @@ function categoryArtwork(category){
 }
 function typeSummary(item){
   const d=item.item_details||{};
-  return [d.subtype,d.brand,d.model,d.author,d.platform].filter(Boolean).join(' · ');
+  return [d.subtype,d.brand,d.model,d.author,d.platform].filter(Boolean).map(v=>BadilniI18n.translate(v)).join(' · ');
 }
 function wantedLabel(item){
   return [catName(item.wants_category_id),item.wants_description].filter(Boolean).join(' · ')||'مفتوح للعروض';
@@ -446,17 +447,17 @@ function isEditingForm(){
   return state.view==='add' || !!(active && ['INPUT','TEXTAREA','SELECT'].includes(active.tagName));
 }
 async function enableNotifications(){
-  if (!('Notification' in window)){ alert('هذا المتصفح لا يدعم إشعارات الجهاز'); return; }
+  if (!('Notification' in window)){ localizedAlert('هذا المتصفح لا يدعم إشعارات الجهاز'); return; }
   try{
     if (!window.badilniPush) throw new Error('UNAVAILABLE');
     await window.badilniPush.enable();
     state.notificationPermission = Notification.permission;
     await loadNotifications(true); render();
-    alert('تم تفعيل الإشعارات المباشرة حتى عند إغلاق التطبيق');
+    localizedAlert('تم تفعيل الإشعارات المباشرة حتى عند إغلاق التطبيق');
   }catch(error){
     const code=error?.message||'';
     const message=code==='IOS_INSTALL_REQUIRED'?'ثبّت التطبيق على الشاشة الرئيسية أولاً، ثم افتحه وفعّل الإشعارات من داخله':code==='PERMISSION_DENIED'?'تم رفض إذن الإشعارات. اسمح بها من إعدادات الجهاز أو المتصفح':code==='UNSUPPORTED'?'هذا الجهاز أو المتصفح لا يدعم الإشعارات المباشرة':'تعذّر تسجيل الجهاز للإشعارات المباشرة حالياً';
-    alert(message); render();
+    localizedAlert(message); render();
   }
 }
 async function showDeviceNotification(row){
@@ -481,7 +482,7 @@ async function loadCategories(){
     state.catMap = Object.fromEntries(state.categories.map(c => [c.id, c]));
   }
 }
-function catName(id){ return id && state.catMap[id] ? state.catMap[id].name_ar : null; }
+function catName(id){ const c=id&&state.catMap[id]; return c ? (BadilniI18n.language==='en' ? c.name_en||BadilniI18n.translate(c.name_ar) : c.name_ar) : null; }
 function catEmoji(id){ return categoryMark(id); }
 
 /* ================= AUTH (Firebase email + verified identity) ================= */
@@ -522,10 +523,10 @@ async function handlePasswordReset(e){
 }
 async function handleSignOut(){await sb.auth.signOut();state.session=null;state.view='dashboard';state.authMode='login';if(notificationTimer)clearInterval(notificationTimer);render();}
 async function handleDeleteAccount(){
-  if(!confirm('سيتم حذف الحساب وكل بياناتك نهائياً. هل أنت متأكد؟'))return;
-  if(!confirm('تأكيد أخير: لا يمكن استعادة الحساب أو الإعلانات بعد الحذف.'))return;
+  if(!localizedConfirm('سيتم حذف الحساب وكل بياناتك نهائياً. هل أنت متأكد؟'))return;
+  if(!localizedConfirm('تأكيد أخير: لا يمكن استعادة الحساب أو الإعلانات بعد الحذف.'))return;
   const {error}=await sb.auth.deleteAccount();
-  if(error){alert('تعذّر حذف الحساب: '+error.message);return;}
+  if(error){localizedAlert('تعذّر حذف الحساب: '+error.message);return;}
   state.session=null;state.view='dashboard';state.authMode='login';render();
 }
 
@@ -597,14 +598,14 @@ async function handleSaveName(){
   const name = document.getElementById('p-name').value.trim();
   const uid = state.session.user.id;
   const { error } = await sb.from('profiles').update({ full_name: name }).eq('id', uid);
-  if (error){ alert('خطأ: '+error.message); return; }
+  if (error){ localizedAlert('خطأ: '+error.message); return; }
   state.editingName = false;
   await loadProfile(); render();
 }
 async function loadBrowse(){
   const uid = state.session.user.id;
   const { data, error } = await sb.from('items').select('*').order('created_at',{ascending:false});
-  if (error){ alert('تعذّر تحميل المعروضات: '+error.message); return; }
+  if (error){ localizedAlert('تعذّر تحميل المعروضات: '+error.message); return; }
   state.browseItems = (data || []).filter(item => item.owner_id !== uid && (!item.status || item.status === 'available'));
 }
 async function loadMine(){
@@ -703,7 +704,7 @@ async function handlePhotoSelect(e){
     if (error) throw error;
     const { data: pub } = sb.storage.from('item-photos').getPublicUrl(path);
     state.newPhotoUrl = pub.publicUrl;
-  } catch(err){ alert('تعذّر رفع الصورة: ' + err.message); }
+  } catch(err){ localizedAlert('تعذّر رفع الصورة: ' + err.message); }
   state.uploading = false; render();
 }
 function syncAddDraft(){
@@ -729,8 +730,8 @@ function selectCat(id){ syncAddDraft(); state.selectedCat = id; state.addDraft.d
 function selectListingSubtype(){ syncAddDraft(); render(); }
 function goAddStep(next){
   syncAddDraft();
-  if(next>0&&!state.selectedCat){alert('اختر فئة الغرض أولاً');return;}
-  if(next>1&&(!state.addDraft.title.trim()||(CATEGORY_SUBTYPES[state.selectedCat]?.length&&!state.addDraft.details.subtype))){alert('أكمل عنوان الغرض والتصنيف الداخلي');return;}
+  if(next>0&&!state.selectedCat){localizedAlert('اختر فئة الغرض أولاً');return;}
+  if(next>1&&(!state.addDraft.title.trim()||(CATEGORY_SUBTYPES[state.selectedCat]?.length&&!state.addDraft.details.subtype))){localizedAlert('أكمل عنوان الغرض والتصنيف الداخلي');return;}
   state.addStep=Math.max(0,Math.min(3,next));
   state.scrollPositions.add=0;render();
 }
@@ -739,7 +740,7 @@ async function handleAddItem(e){
   syncAddDraft();
   if(state.addStep!==3){goAddStep(state.addStep+1);return;}
   const uid = state.session.user.id;
-  if (!state.selectedCat){ alert('اختر فئة الغرض'); return; }
+  if (!state.selectedCat){ localizedAlert('اختر فئة الغرض'); return; }
   const d=state.addDraft;
   const payload = {
     owner_id: uid,
@@ -754,12 +755,12 @@ async function handleAddItem(e){
     photos: state.newPhotoUrl ? [state.newPhotoUrl] : [],
     status: 'available', visibility: 'public'
   };
-  if (!payload.title || !payload.condition || (CATEGORY_SUBTYPES[state.selectedCat]?.length&&!d.details.subtype)){ alert('أكمل عنوان الغرض والتصنيف'); state.addStep=1;render();return; }
+  if (!payload.title || !payload.condition || (CATEGORY_SUBTYPES[state.selectedCat]?.length&&!d.details.subtype)){ localizedAlert('أكمل عنوان الغرض والتصنيف'); state.addStep=1;render();return; }
   const operation = state.editingItemId
     ? sb.from('items').update(payload).eq('id', state.editingItemId).eq('owner_id', uid)
     : sb.from('items').insert(payload);
   const { error } = await operation;
-  if (error){ alert('حدث خطأ: ' + error.message); return; }
+  if (error){ localizedAlert('حدث خطأ: ' + error.message); return; }
   state.newPhotoUrl = null; state.selectedCat = null; state.editingItemId = null; state.addStep=0;
   state.addDraft = {title:'',description:'',condition:'good',wantsCategory:'',wantsDescription:'',acceptsPoints:true,details:{}};
   await goTo('mine', {force:true});
@@ -768,11 +769,11 @@ async function handleAddItem(e){
 async function handleQuickOfferItem(e){
   e.preventDefault();
   const target = state.viewingItem;
-  if (!target){ alert('تعذّر تحديد الغرض المطلوب'); return; }
+  if (!target){ localizedAlert('تعذّر تحديد الغرض المطلوب'); return; }
   const title = document.getElementById('q-title').value.trim();
   const categoryId = document.getElementById('q-category').value;
   const condition = document.getElementById('q-condition').value;
-  if (!title || !categoryId){ alert('أدخل اسم سلعتك واختر فئتها'); return; }
+  if (!title || !categoryId){ localizedAlert('أدخل اسم سلعتك واختر فئتها'); return; }
   state.loading = true; render();
   const payload = {
     owner_id: state.session.user.id,
@@ -787,7 +788,7 @@ async function handleQuickOfferItem(e){
     photos: [], status:'available', visibility:'public'
   };
   const { data, error } = await sb.from('items').insert(payload).select().single();
-  if (error){ state.loading=false; alert('تعذّر إضافة سلعتك: '+error.message); render(); return; }
+  if (error){ state.loading=false; localizedAlert('تعذّر إضافة سلعتك: '+error.message); render(); return; }
   state.myItems.unshift(data);
   state.quickOfferOpen = false;
   await openDealGeneric({ offer:null, targetItemId:target.id, myItem:data, otherItem:target });
@@ -808,7 +809,7 @@ async function openDealGeneric({ offer, matchId, targetItemId, myItem, otherItem
     if (matchId) payload.match_id = matchId;
     if (targetItemId) payload.target_item_id = targetItemId;
     const { data: created, error } = await sb.from('trade_offers').insert(payload).select().single();
-    if (error){ alert('خطأ: '+error.message); state.loading=false; render(); return; }
+    if (error){ localizedAlert('خطأ: '+error.message); state.loading=false; render(); return; }
     offer = created;
   }
   if (myItem){
@@ -876,60 +877,60 @@ async function handleUpdateTerms(e){
   const uid = state.session.user.id;
   const payerId = payer === 'me' ? uid : state.activeDeal.otherOwnerId;
   const { error } = await sb.from('trade_offers').update({ points_amount: amount, points_payer_id: amount>0 ? payerId : null }).eq('id', state.activeDeal.offer.id);
-  if (error){ alert('خطأ: '+error.message); return; }
+  if (error){ localizedAlert('خطأ: '+error.message); return; }
   await loadDeal(state.activeDeal.offer.id); render();
 }
 async function handleAgree(){
   const { error } = await sb.from('trade_offers').update({ status:'agreed', agreed_at: new Date().toISOString() }).eq('id', state.activeDeal.offer.id);
-  if (error){ alert('خطأ: '+error.message); return; }
+  if (error){ localizedAlert('خطأ: '+error.message); return; }
   await loadDeal(state.activeDeal.offer.id); render();
 }
 async function handleRejectOffer(){
-  if (!state.activeDeal?.isTargetOwner || !confirm('هل تريد رفض هذا العرض؟')) return;
+  if (!state.activeDeal?.isTargetOwner || !localizedConfirm('هل تريد رفض هذا العرض؟')) return;
   const {error} = await sb.from('trade_offers').update({status:'rejected', rejected_at:new Date().toISOString()}).eq('id',state.activeDeal.offer.id);
-  if (error){ alert('تعذّر رفض العرض: '+error.message); return; }
+  if (error){ localizedAlert('تعذّر رفض العرض: '+error.message); return; }
   await loadDeal(state.activeDeal.offer.id); render();
 }
 async function handleHoldPoints(){
   const { error } = await sb.rpc('hold_trade_points', { p_trade_offer_id: state.activeDeal.offer.id });
-  if (error){ alert(error.message); return; }
+  if (error){ localizedAlert(error.message); return; }
   await loadDeal(state.activeDeal.offer.id); render();
 }
 async function handleConfirmReceipt(){
   const { error } = await sb.rpc('confirm_trade_receipt', { p_trade_offer_id: state.activeDeal.offer.id });
-  if (error){ alert(error.message); return; }
+  if (error){ localizedAlert(error.message); return; }
   await loadDeal(state.activeDeal.offer.id); render();
 }
 async function handleCancelDeal(){
-  if (!confirm('هل تريد إلغاء هذه الصفقة؟')) return;
+  if (!localizedConfirm('هل تريد إلغاء هذه الصفقة؟')) return;
   const { error } = await sb.rpc('cancel_trade_offer', { p_trade_offer_id: state.activeDeal.offer.id });
-  if (error){ alert(error.message); return; }
+  if (error){ localizedAlert(error.message); return; }
   await loadDeal(state.activeDeal.offer.id); render();
 }
 function setRatingStars(n){ state.myRating = n; render(); }
 async function handleSubmitRating(){
   const comment = document.getElementById('rate-comment') ? document.getElementById('rate-comment').value.trim() : '';
-  if (!state.myRating){ alert('اختر عدد النجوم'); return; }
+  if (!state.myRating){ localizedAlert('اختر عدد النجوم'); return; }
   const { error } = await sb.from('reviews').insert({
     trade_offer_id: state.activeDeal.offer.id, reviewer_id: state.session.user.id,
     reviewee_id: state.activeDeal.otherOwnerId, rating: state.myRating, comment: comment || null
   });
-  if (error){ alert('خطأ: '+error.message); return; }
-  alert('شكراً على تقييمك!');
+  if (error){ localizedAlert('خطأ: '+error.message); return; }
+  localizedAlert('شكراً على تقييمك!');
   leaveDeal();
 }
 async function handleReport(){
-  const reason = prompt('ما سبب البلاغ؟');
+  const reason = localizedPrompt('ما سبب البلاغ؟');
   if (!reason) return;
   await sb.from('reports').insert({ reporter_id: state.session.user.id, reported_user_id: state.activeDeal.otherOwnerId, reported_item_id: state.activeDeal.otherItem.id, reason });
-  alert('تم إرسال البلاغ - سنراجعه قريباً');
+  localizedAlert('تم إرسال البلاغ - سنراجعه قريباً');
 }
 async function handleBlockUser(){
   const blockedId=state.activeDeal?.otherOwnerId;
-  if(!blockedId||!confirm('سيتم إيقاف المحادثات والعروض الجديدة مع هذا المستخدم. هل تريد حظره؟'))return;
+  if(!blockedId||!localizedConfirm('سيتم إيقاف المحادثات والعروض الجديدة مع هذا المستخدم. هل تريد حظره؟'))return;
   const {error}=await sb.from('blocked_users').insert({blocked_id:blockedId});
-  if(error){alert('تعذّر حظر المستخدم: '+error.message);return;}
-  alert('تم حظر المستخدم. يمكنك أيضاً إرسال بلاغ إذا صدر منه محتوى مخالف.');
+  if(error){localizedAlert('تعذّر حظر المستخدم: '+error.message);return;}
+  localizedAlert('تم حظر المستخدم. يمكنك أيضاً إرسال بلاغ إذا صدر منه محتوى مخالف.');
   leaveDeal();
 }
 
@@ -965,11 +966,11 @@ function editItem(id){
 async function deleteItem(id, fromAdmin=false){
   const item = [...(state.myItems||[]), ...(state.adminItems||[])].find(row=>row.id===id);
   const allowed = item && (item.owner_id===state.session.user.id || (fromAdmin && isAdmin()));
-  if (!allowed || !confirm('هل تريد حذف هذا الإعلان نهائياً؟')) return;
+  if (!allowed || !localizedConfirm('هل تريد حذف هذا الإعلان نهائياً؟')) return;
   const query = sb.from('items').delete().eq('id',id);
   if (!fromAdmin) query.eq('owner_id',state.session.user.id);
   const {error} = await query;
-  if (error){ alert('تعذّر حذف الإعلان: '+error.message); return; }
+  if (error){ localizedAlert('تعذّر حذف الإعلان: '+error.message); return; }
   if (state.view==='admin') await loadAdmin(); else await loadMine();
   state.viewingItem=null; state.view=fromAdmin?'admin':'mine'; render();
 }
@@ -998,6 +999,10 @@ async function joinDirectOffer(directOfferEntry){
   await openDealGeneric({ offer: directOfferEntry.offer, myItem: directOfferEntry.myItem, otherItem: directOfferEntry.otherItem });
 }
 
+function localizedAlert(message){window.alert(BadilniI18n.translate(message));}
+function localizedConfirm(message){return window.confirm(BadilniI18n.translate(message));}
+function localizedPrompt(message){return window.prompt(BadilniI18n.translate(message));}
+
 /* ================= NAV ================= */
 async function goTo(view, {force=false}={}){
   if (!force && state.view === view && isViewFresh(view)) return;
@@ -1019,10 +1024,11 @@ function render(){
   const oldMain=frame.querySelector('main');
   const oldView=oldMain?.className.match(/^view-(.+)$/)?.[1];
   if(oldView)state.scrollPositions[oldView]=oldMain.scrollTop;
-  if (state.authAction){ frame.innerHTML = renderAuthAction(); attachAuthActionEvents(); return; }
-  if (!state.session && state.view !== 'howit'){ frame.innerHTML = renderAuth(); attachAuthEvents(); return; }
-  if (!state.session && state.view === 'howit'){ frame.innerHTML = renderHowItStandalone(); attachHowItStandaloneEvents(); return; }
+  if (state.authAction){ frame.innerHTML = renderAuthAction(); BadilniI18n.apply(frame); attachAuthActionEvents(); return; }
+  if (!state.session && state.view !== 'howit'){ frame.innerHTML = renderAuth(); BadilniI18n.apply(frame); attachAuthEvents(); return; }
+  if (!state.session && state.view === 'howit'){ frame.innerHTML = renderHowItStandalone(); BadilniI18n.apply(frame); attachHowItStandaloneEvents(); return; }
   frame.innerHTML = renderShell();
+  BadilniI18n.apply(frame);
   const newMain=frame.querySelector('main');
   if(newMain)newMain.scrollTop=state.scrollPositions[state.view]||0;
   attachShellEvents();
@@ -1038,7 +1044,7 @@ function renderAuthAction(){
   const action=state.authAction;
   const reset=action.mode==='resetPassword' && action.status==='ready';
   const good=action.status==='success';
-  return `<div class="auth-wrap"><div class="auth-brand-panel"><div class="auth-logo">${brandMark(76)}</div><span class="auth-kicker">بادلني · حساب آمن</span><h1>${reset?'تعيين كلمة مرور جديدة':good?'تم بنجاح':'رابط الحساب'}</h1><p class="tag">${escapeHtml(action.message||'')}</p></div><div class="auth-form-panel">
+  return `<div class="auth-wrap"><div class="auth-brand-panel"><div class="auth-logo">${brandMark(76)}</div><span class="auth-kicker">بادلني · حساب آمن</span><h1>${reset?'تعيين كلمة مرور جديدة':good?'تم بنجاح':'رابط الحساب'}</h1><p class="tag">${escapeHtml(action.message||'')}</p></div><div class="auth-form-panel"><button type="button" class="language-picker" data-language-toggle aria-label="Change language">🌐 <span>${BadilniI18n.language==='ar'?'English':'العربية'}</span></button>
     ${reset?`<form id="action-reset-form"><div class="field"><label>البريد الإلكتروني</label><input value="${escapeHtml(action.email)}" disabled dir="ltr" style="text-align:left;"></div><div class="field"><label>كلمة المرور الجديدة</label><input id="action-new-password" type="password" minlength="8" autocomplete="new-password" required placeholder="8 أحرف على الأقل" dir="ltr" style="text-align:left;"></div><div class="field"><label>تأكيد كلمة المرور</label><input id="action-confirm-password" type="password" minlength="8" autocomplete="new-password" required dir="ltr" style="text-align:left;"></div>${action.formError?`<div class="msg err">${escapeHtml(action.formError)}</div>`:''}<button class="btn gold" type="submit" ${action.busy?'disabled':''}>${action.busy?'جارٍ الحفظ...':'حفظ كلمة المرور'}</button></form>`:`<div class="msg ${action.status==='error'?'err':'ok'}">${escapeHtml(action.message||'')}</div><button class="btn gold" id="action-back" style="margin-top:16px;">العودة إلى بادلني</button>`}
   </div></div>`;
 }
@@ -1073,6 +1079,7 @@ function renderDealMessagesOnly(){
   const el = document.getElementById('chat-msgs');
   if (!el) return;
   el.innerHTML = dealMessagesHtml();
+  BadilniI18n.apply(el);
   el.scrollTop = el.scrollHeight;
 }
 
@@ -1086,13 +1093,13 @@ function renderAuth(){
       <p class="tag">امنح أغراضك فرصة جديدة، واحصل على ما تحتاجه بدون شراء جديد.</p>
       <div class="auth-benefits"><span>مطابقة تلقائية</span><span>تفاوض مباشر</span><span>نقاط مرنة</span></div>
     </div>
-    <div class="auth-form-panel">
+    <div class="auth-form-panel"><button type="button" class="language-picker" data-language-toggle aria-label="Change language">🌐 <span>${BadilniI18n.language==='ar'?'English':'العربية'}</span></button>
       <div class="auth-form-head"><span>أهلاً بك</span><small>سجّل دخولك أو أنشئ حسابك خلال لحظات</small></div>
     <form id="auth-form">
       <div class="field"><label>البريد الإلكتروني</label><input id="auth-email" type="email" inputmode="email" autocomplete="email" required placeholder="name@example.com" dir="ltr" style="text-align:left;"></div>
       ${reset?'':`<div class="field"><label>كلمة المرور</label><input id="auth-password" type="password" minlength="8" autocomplete="${signup?'new-password':'current-password'}" required placeholder="8 أحرف على الأقل" dir="ltr" style="text-align:left;"></div>`}
       ${signup?`<div class="field"><label>تاريخ الميلاد</label><input id="auth-birth" type="date" required></div>
-      <label style="display:flex;align-items:flex-start;gap:9px;font-size:12px;line-height:1.7;margin:4px 0 16px;color:var(--muted);"><input id="auth-terms" type="checkbox" required style="width:18px;height:18px;margin-top:2px;">أؤكد أن عمري 13 سنة أو أكثر، وأوافق على <a href="terms.html" target="_blank">شروط الاستخدام</a> و<a href="privacy.html" target="_blank">سياسة الخصوصية</a>.</label>`:''}
+      <label style="display:flex;align-items:flex-start;gap:9px;font-size:12px;line-height:1.7;margin:4px 0 16px;color:var(--muted);"><input id="auth-terms" type="checkbox" required style="width:18px;height:18px;margin-top:2px;">أؤكد أن عمري 13 سنة أو أكثر، وأوافق على <a href="${BadilniI18n.language==='en'?'terms.en.html':'terms.html'}" target="_blank">شروط الاستخدام</a> و<a href="${BadilniI18n.language==='en'?'privacy.en.html':'privacy.html'}" target="_blank">سياسة الخصوصية</a>.</label>`:''}
       <button class="btn gold" type="submit" ${state.authBusy?'disabled':''}>${state.authBusy?'جارٍ التنفيذ...':reset?'إرسال رابط الاستعادة':signup?'إنشاء حساب':'تسجيل الدخول'}</button>
     </form>
     <div class="switch-mode" id="auth-mode-switch">${signup?'لديك حساب؟ سجّل الدخول':reset?'العودة إلى تسجيل الدخول':'ليس لديك حساب؟ أنشئ حساباً'}</div>
@@ -1127,7 +1134,7 @@ function renderHowItStandalone(){
     <header class="topbar">
       <div class="zone"><span class="back" id="howit-back">${icon('back',21,'#fff')}</span></div>
       <div class="zone title-zone"><div class="screen-title">كيف يعمل بادلني</div></div>
-      <div class="zone"><div class="brand-row">${brandMark(24)}<span class="brand">بادلني</span></div></div>
+      <div class="zone"><button type="button" class="language-picker topbar-language" data-language-toggle aria-label="Change language">🌐 <span>${BadilniI18n.language==='ar'?'EN':'عربي'}</span></button><div class="brand-row">${brandMark(24)}<span class="brand">بادلني</span></div></div>
     </header>
     <main>${howItStepsHtml()}<button class="btn gold" id="howit-start">ابدأ الآن</button></main>
   </div>`;
@@ -1149,7 +1156,7 @@ function renderShell(){
         ${showBack ? `<span class="back" id="${backId}">${icon('back',21,'#fff')}</span>` : `<span class="icon-btn notification-btn ${unreadCount?'has-unread':''}" id="notification-open">${icon('bell',19,'#fff')}${unreadCount?`<b>${Math.min(unreadCount,9)}</b>`:''}</span><span class="avatar-btn" id="profile-open">${icon('user',15,'#0e5a61')}</span>`}
       </div>
       <div class="zone title-zone"><div class="screen-title">${titles[state.view]}</div></div>
-      <div class="zone"><div class="brand-row">${brandMark(24)}<span class="brand">بادلني</span></div></div>
+      <div class="zone"><button type="button" class="language-picker topbar-language" data-language-toggle aria-label="Change language">🌐 <span>${BadilniI18n.language==='ar'?'EN':'عربي'}</span></button><div class="brand-row">${brandMark(24)}<span class="brand">بادلني</span></div></div>
     </header>
     ${state.notificationOpen ? renderNotificationPanel() : ''}
     <main class="view-${state.view}">${state.loading ? '<div class="empty loading-state"><span></span><span></span><span></span><p>جارٍ تحميل بياناتك...</p></div>' : renderView()}</main>
@@ -1169,7 +1176,7 @@ function renderNotificationPanel(){
   return `<section class="notification-panel">
     <div class="notification-head"><div><b>الإشعارات</b><small>${rows.filter(n=>!n.is_read).length} غير مقروء</small></div><button type="button" id="notification-close">×</button></div>
     ${permissionPrompt}
-    <div class="notification-list">${rows.length ? rows.map(n=>`<button type="button" class="notification-row ${n.is_read?'':'unread'}" onclick="openNotification('${n.id}')"><span>${icon(n.type==='direct_offer'?'swap':'bell',18,n.is_read?'#81798e':'#e65f69')}</span><div><b>${escapeHtml(n.title||'تنبيه جديد')}</b><p>${escapeHtml(n.body||'')}</p><small>${new Date(n.created_at).toLocaleString('ar-OM')}</small></div></button>`).join('') : '<div class="empty compact-empty">لا توجد إشعارات بعد</div>'}</div>
+    <div class="notification-list">${rows.length ? rows.map(n=>`<button type="button" class="notification-row ${n.is_read?'':'unread'}" onclick="openNotification('${n.id}')"><span>${icon(n.type==='direct_offer'?'swap':'bell',18,n.is_read?'#81798e':'#e65f69')}</span><div><b>${escapeHtml(n.title||'تنبيه جديد')}</b><p>${escapeHtml(n.body||'')}</p><small>${new Date(n.created_at).toLocaleString(BadilniI18n.locale())}</small></div></button>`).join('') : '<div class="empty compact-empty">لا توجد إشعارات بعد</div>'}</div>
   </section>`;
 }
 function renderView(){
@@ -1195,7 +1202,7 @@ function renderDashboard(){
   let html = `
     <section class="market-hero"><div class="market-hero-copy"><span class="market-eyebrow">سوق المبادلة في عُمان</span><h1>بدّل ما لديك بما تحتاجه.</h1><p>اكتشف أغراضاً قريبة من اهتماماتك، وقدّم عرض مبادلة واضحاً لصاحب الغرض.</p></div><div class="market-hero-actions"><button class="btn gold" id="dash-browse-btn">${icon('search',18)} تصفح السوق</button><button class="btn ghost" id="dash-add-btn">${icon('plus',18)} اعرض غرضاً</button></div></section>
   `;
-  html += `<section class="market-entry"><div class="market-entry-head"><b>تصفح حسب القسم</b><span>اختر ما يهمك</span></div><div class="market-entry-grid">${state.categories.map(c=>`<button type="button" class="category-theme category-theme-${c.icon}" onclick="setBrowseCategory('${c.id}');goTo('browse')">${categoryArtwork(c)}<b>${escapeHtml(c.name_ar)}</b><small>عرض الأغراض</small></button>`).join('')}</div></section>`;
+  html += `<section class="market-entry"><div class="market-entry-head"><b>تصفح حسب القسم</b><span>اختر ما يهمك</span></div><div class="market-entry-grid">${state.categories.map(c=>`<button type="button" class="category-theme category-theme-${c.icon}" onclick="setBrowseCategory('${c.id}');goTo('browse')">${categoryArtwork(c)}<b>${escapeHtml(catName(c.id))}</b><small>عرض الأغراض</small></button>`).join('')}</div></section>`;
   html += `<section class="home-listings"><div class="dash-section-head"><h2 class="section-title">وصل حديثاً للمبادلة</h2><button class="see-all" onclick="goTo('browse')">عرض الكل ${icon('back',15)}</button></div>${recent.length?`<div class="browse-grid">${recent.map(listingCardHtml).join('')}</div>`:`<div class="empty market-empty">لا توجد معروضات بعد. كن أول من يعرض غرضاً للمبادلة.</div>`}</section>`;
   html += `<div class="market-account-note"><span>${icon('box',17)} ${activeItems} أغراض نشطة</span><span>${icon('swap',17)} ${pendingMatches} مطابقات جديدة</span><button onclick="goTo('mine')">إدارة أغراضي</button></div>`;
   const suggested = (state.myMatches||[]).filter(m=>m.status==='suggested').slice(0,2);
@@ -1230,9 +1237,9 @@ function renderMarketPulse(){
 function renderProfile(){
   if (!state.profile) return '<div class="empty">جارٍ التحميل...</div>';
   const name = state.profile.full_name || '';
-  const initials = name ? name.trim().charAt(0).toUpperCase() : '؟';
+  const initials = name ? name.trim().charAt(0).toUpperCase() : '?';
   const registeredAt = state.profile.created_at || state.session.user.created_at;
-  const joinDate = registeredAt ? new Date(registeredAt).toLocaleDateString('ar-OM', {year:'numeric', month:'long', day:'numeric'}) : 'غير متاح';
+  const joinDate = registeredAt ? new Date(registeredAt).toLocaleDateString(BadilniI18n.locale(), {year:'numeric', month:'long', day:'numeric'}) : 'غير متاح';
   const ratingAvg = state.profileRating ? state.profileRating.rating_avg : null;
   const ratingCount = state.profileRating ? state.profileRating.rating_count : 0;
   const activeItems = (state.myItems||[]).filter(item=>!item.status||item.status==='available').length;
@@ -1293,6 +1300,7 @@ function renderProfile(){
   }
 
   if (isAdmin()) html += `<button class="btn admin-entry" id="admin-open" style="margin-top:20px;">${icon('badge',18,'#fff')} لوحة إدارة التطبيق</button>`;
+  html += `<div class="profile-legal-links"><a href="${BadilniI18n.language==='en'?'privacy.en.html':'privacy.html'}" target="_blank">سياسة الخصوصية</a><a href="${BadilniI18n.language==='en'?'terms.en.html':'terms.html'}" target="_blank">شروط الاستخدام</a></div>`;
   html += `<button class="btn danger" id="logout-btn" style="margin-top:12px;">تسجيل الخروج</button>`;
   html += `<button class="btn" id="delete-account-btn" style="margin-top:10px;background:transparent;color:#9c2d2d;border:1px solid #e7baba;">حذف الحساب والبيانات نهائياً</button>`;
   return html;
@@ -1302,7 +1310,7 @@ function renderAdmin(){
   if (!isAdmin()) return '<div class="empty">هذه الصفحة مخصصة لمشرف التطبيق</div>';
   return `<div class="admin-summary"><div><b>${state.adminUsers.length}</b><span>مستخدم</span></div><div><b>${state.adminItems.length}</b><span>إعلان</span></div><div><b>${state.adminReports.length}</b><span>بلاغ</span></div></div>
     <h2 class="section-title">${icon('flag',18)} البلاغات الحديثة</h2>
-    ${state.adminReports.length ? state.adminReports.slice(0,20).map(report=>`<div class="admin-report"><b>${escapeHtml(report.reason||'بلاغ')}</b><small>${new Date(report.created_at).toLocaleString('ar-OM')}</small>${report.reported_item_id?`<button onclick="deleteItem('${report.reported_item_id}',true)">حذف الإعلان المُبلّغ عنه</button>`:''}</div>`).join('') : '<div class="empty compact-empty">لا توجد بلاغات</div>'}
+    ${state.adminReports.length ? state.adminReports.slice(0,20).map(report=>`<div class="admin-report"><b>${escapeHtml(report.reason||'بلاغ')}</b><small>${new Date(report.created_at).toLocaleString(BadilniI18n.locale())}</small>${report.reported_item_id?`<button onclick="deleteItem('${report.reported_item_id}',true)">حذف الإعلان المُبلّغ عنه</button>`:''}</div>`).join('') : '<div class="empty compact-empty">لا توجد بلاغات</div>'}
     <h2 class="section-title">${icon('box',18)} إدارة كل المعروضات</h2>
     <div class="admin-items">${state.adminItems.length ? state.adminItems.map(item=>`<div class="admin-item">${itemPhoto(item)}<div><b>${escapeHtml(item.title)}</b><small>${catName(item.category_id)||'بدون فئة'} · ${(!item.status||item.status==='available')?'متاح':STATUS_LABEL[item.status]||item.status}</small></div><button onclick="deleteItem('${item.id}',true)">${icon('close',16)} حذف</button></div>`).join('') : '<div class="empty">لا توجد معروضات</div>'}</div>`;
 }
@@ -1342,7 +1350,7 @@ function renderItemDetail(){
         <div class="quick-offer-title"><span>${icon('box',18,'#e65f69')}</span><div><b>سلعتك المقترحة</b><small>ستُنشر في حسابك وتُرسل فورًا كعرض لصاحب الغرض</small></div></div>
         <div class="field"><label>اسم السلعة</label><input id="q-title" required maxlength="80" placeholder="مثال: سماعة لاسلكية بحالة ممتازة"></div>
         <div class="quick-offer-grid">
-          <div class="field"><label>الفئة</label><select id="q-category" required><option value="">اختر الفئة</option>${state.categories.map(c=>`<option value="${c.id}">${c.name_ar}</option>`).join('')}</select></div>
+          <div class="field"><label>الفئة</label><select id="q-category" required><option value="">اختر الفئة</option>${state.categories.map(c=>`<option value="${c.id}">${catName(c.id)}</option>`).join('')}</select></div>
           <div class="field"><label>الحالة</label><select id="q-condition"><option value="new">جديد</option><option value="like_new">كالجديد</option><option value="good" selected>جيد</option><option value="fair">مقبول</option></select></div>
         </div>
         <div class="field"><label>وصف مختصر (اختياري)</label><textarea id="q-description" maxlength="300" placeholder="اذكر أهم التفاصيل والحالة"></textarea></div>
@@ -1361,7 +1369,7 @@ async function offerFromBrowse(id){ openItemDetailById(id); if(state.viewingItem
 async function chatFromBrowse(id){ openItemDetailById(id); if(state.viewingItem?.id===id) await startListingChat(); }
 function listingDate(item){
   const date=new Date(item.created_at);
-  return Number.isNaN(date.getTime())?'':`نُشر ${date.toLocaleDateString('ar-OM',{day:'numeric',month:'short'})}`;
+  return Number.isNaN(date.getTime())?'':`${BadilniI18n.translate('نُشر')} ${date.toLocaleDateString(BadilniI18n.locale(),{day:'numeric',month:'short'})}`;
 }
 function itemPhoto(it){
   const url=safeImageUrl(it.photos && it.photos[0]);
@@ -1387,7 +1395,7 @@ function renderBrowse(){
   const visible = state.browseItems.filter(item => (state.browseCategory==='all' || item.category_id===state.browseCategory) && (state.browseSubtype==='all'||item.item_details?.subtype===state.browseSubtype) && (state.browseCondition==='all'||item.condition===state.browseCondition) && (!q || `${item.title||''} ${item.description||''} ${typeSummary(item)}`.toLowerCase().includes(q))).sort((a,b)=>state.browseSort==='oldest'?(Date.parse(a.created_at)||0)-(Date.parse(b.created_at)||0):(Date.parse(b.created_at)||0)-(Date.parse(a.created_at)||0));
   const subtypes=CATEGORY_SUBTYPES[state.browseCategory]||[];
   const subfilter=subtypes.length?`<div class="category-filter subcategory-filter"><button class="${state.browseSubtype==='all'?'active':''}" onclick="setBrowseSubtype('all')">كل الأنواع</button>${subtypes.map((s,i)=>`<button class="${state.browseSubtype===s?'active':''}" onclick="setBrowseSubtype(CATEGORY_SUBTYPES['${state.browseCategory}'][${i}])">${s}</button>`).join('')}</div>`:'';
-  const filters = `<section class="browse-intro"><span>سوق بادلني</span><h2>ابحث عمّا يناسبك</h2><p>كل المعروضات للمبادلة، ويمكنك التفاوض مباشرة مع صاحب الغرض.</p></section><div class="browse-tools"><form class="browse-search" id="browse-search-form"><span>${icon('search',21)}</span><input id="browse-search" type="search" value="${escapeHtml(state.browseSearch)}" placeholder="ابحث عن غرض أو نوع أو موديل..." aria-label="ابحث في المعروضات"><button type="submit" aria-label="بحث">بحث</button></form><div class="category-tiles" aria-label="فئات السوق"><button class="category-theme category-theme-all ${state.browseCategory==='all'?'active':''}" onclick="setBrowseCategory('all')"><span class="category-art category-art-all">${icon('box',25)}</span><b>الكل</b></button>${state.categories.map(c=>`<button class="category-theme category-theme-${c.icon} ${state.browseCategory===c.id?'active':''}" onclick="setBrowseCategory('${c.id}')">${categoryArtwork(c)}<b>${escapeHtml(c.name_ar)}</b></button>`).join('')}</div>${subfilter}<div class="browse-sortbar"><span>${visible.length} غرض للمبادلة</span><label>الترتيب <select aria-label="ترتيب المعروضات" onchange="setBrowseSort(this.value)"><option value="newest" ${state.browseSort==='newest'?'selected':''}>الأحدث</option><option value="oldest" ${state.browseSort==='oldest'?'selected':''}>الأقدم</option></select></label><label>الحالة <select aria-label="تصفية حسب الحالة" onchange="setBrowseCondition(this.value)"><option value="all" ${state.browseCondition==='all'?'selected':''}>الكل</option>${Object.entries(COND_LABEL).map(([value,label])=>`<option value="${value}" ${state.browseCondition===value?'selected':''}>${label}</option>`).join('')}</select></label></div></div>`;
+  const filters = `<section class="browse-intro"><span>سوق بادلني</span><h2>ابحث عمّا يناسبك</h2><p>كل المعروضات للمبادلة، ويمكنك التفاوض مباشرة مع صاحب الغرض.</p></section><div class="browse-tools"><form class="browse-search" id="browse-search-form"><span>${icon('search',21)}</span><input id="browse-search" type="search" value="${escapeHtml(state.browseSearch)}" placeholder="ابحث عن غرض أو نوع أو موديل..." aria-label="ابحث في المعروضات"><button type="submit" aria-label="بحث">بحث</button></form><div class="category-tiles" aria-label="فئات السوق"><button class="category-theme category-theme-all ${state.browseCategory==='all'?'active':''}" onclick="setBrowseCategory('all')"><span class="category-art category-art-all">${icon('box',25)}</span><b>الكل</b></button>${state.categories.map(c=>`<button class="category-theme category-theme-${c.icon} ${state.browseCategory===c.id?'active':''}" onclick="setBrowseCategory('${c.id}')">${categoryArtwork(c)}<b>${escapeHtml(catName(c.id))}</b></button>`).join('')}</div>${subfilter}<div class="browse-sortbar"><span>${visible.length} غرض للمبادلة</span><label>الترتيب <select aria-label="ترتيب المعروضات" onchange="setBrowseSort(this.value)"><option value="newest" ${state.browseSort==='newest'?'selected':''}>الأحدث</option><option value="oldest" ${state.browseSort==='oldest'?'selected':''}>الأقدم</option></select></label><label>الحالة <select aria-label="تصفية حسب الحالة" onchange="setBrowseCondition(this.value)"><option value="all" ${state.browseCondition==='all'?'selected':''}>الكل</option>${Object.entries(COND_LABEL).map(([value,label])=>`<option value="${value}" ${state.browseCondition===value?'selected':''}>${label}</option>`).join('')}</select></label></div></div>`;
   if (!visible.length) return `${filters}<div class="empty">${icon('search',40)}<br>لا توجد معروضات مطابقة حالياً</div>`;
   return `${filters}<div class="browse-grid">${visible.map(listingCardHtml).join('')}</div>`;
 }
@@ -1395,8 +1403,8 @@ function renderBrowse(){
 function renderAddForm(){
   const d = state.addDraft;
   const step=state.addStep;
-  const catChips = state.categories.map(c=>`<button type="button" class="cat-chip category-theme category-theme-${c.icon} ${state.selectedCat===c.id?'sel':''}" onclick="selectCat('${c.id}')">${categoryArtwork(c)}${escapeHtml(c.name_ar)}</button>`).join('');
-  const wantsOptions = state.categories.map(c=>`<option value="${c.id}" ${d.wantsCategory===c.id?'selected':''}>${CAT_EMOJI[c.icon]||''} ${c.name_ar}</option>`).join('');
+  const catChips = state.categories.map(c=>`<button type="button" class="cat-chip category-theme category-theme-${c.icon} ${state.selectedCat===c.id?'sel':''}" onclick="selectCat('${c.id}')">${categoryArtwork(c)}${escapeHtml(catName(c.id))}</button>`).join('');
+  const wantsOptions = state.categories.map(c=>`<option value="${c.id}" ${d.wantsCategory===c.id?'selected':''}>${CAT_EMOJI[c.icon]||''} ${catName(c.id)}</option>`).join('');
   const details=d.details||{};
   const subtypeChoices=CATEGORY_SUBTYPES[state.selectedCat]||[];
   let subtypeForm=subtypeChoices.length?`<div class="field"><label>التصنيف الداخلي</label><select id="f-subtype" required><option value="">اختر النوع</option>${subtypeChoices.map(s=>`<option value="${s}" ${details.subtype===s?'selected':''}>${s}</option>`).join('')}</select></div>`:'';
@@ -1404,7 +1412,7 @@ function renderAddForm(){
   if(state.selectedCat==='books')subtypeForm+=`<div class="field"><label>المؤلف</label><input id="f-author" value="${escapeHtml(details.author||'')}" maxlength="80"></div>`;
   if(state.selectedCat==='games')subtypeForm+=`<div class="field"><label>المنصة</label><select id="f-platform"><option value="">جميع المنصات</option>${['بلايستيشن','إكس بوكس','نينتندو','حاسوب','ألعاب لوحية'].map(v=>`<option value="${v}" ${details.platform===v?'selected':''}>${v}</option>`).join('')}</select></div>`;
   const steps=['القسم','الغرض','المبادلة','المراجعة'];
-  return `<div class="listing-form-head"><span>إعلان مبادلة ${state.editingItemId?'· تعديل':'جديد'}</span><h2>${['اختر قسم الغرض','عرّف الناس بغرضك','ماذا تقبل بالمقابل؟','راجع إعلانك قبل النشر'][step]}</h2><p>الصور والتفاصيل الواضحة تساعد الآخرين على تقديم عروض مناسبة.</p></div>
+  return `<div class="listing-form-head"><span>إعلان مبادلة ${state.editingItemId?'· تعديل':'جديد'}</span><h2>${BadilniI18n.translate(['اختر قسم الغرض','عرّف الناس بغرضك','ماذا تقبل بالمقابل؟','راجع إعلانك قبل النشر'][step])}</h2><p>الصور والتفاصيل الواضحة تساعد الآخرين على تقديم عروض مناسبة.</p></div>
     <div class="listing-progress" aria-label="تقدم نشر الإعلان">${steps.map((name,i)=>`<div class="${i===step?'current':i<step?'done':''}"><span>${i<step?icon('check',14):i+1}</span><b>${name}</b></div>`).join('')}</div>
     <form id="add-form">
       ${step===0?`<div class="form-section"><div class="sec-label">اختر القسم الأقرب لغرضك</div><div class="cat-grid">${catChips}</div><p class="form-tip">يمكنك تغييره قبل نشر الإعلان. لا يشترط أن يطابق القسم ما تريده بالمقابل.</p></div>`:''}
@@ -1587,7 +1595,7 @@ function escapeHtml(s){ const d=document.createElement('div'); d.textContent = s
 
 if ('serviceWorker' in navigator) window.addEventListener('load', async () => {
   try {
-    const reg = await navigator.serviceWorker.register('./sw.js?v=5.7.0', {scope:'./', updateViaCache:'none'});
+    const reg = await navigator.serviceWorker.register('./sw.js?v=5.8.0', {scope:'./', updateViaCache:'none'});
     await reg.update();
     const activateUpdate = worker => {
       if (worker && worker.state === 'installed' && navigator.serviceWorker.controller) worker.postMessage({type:'SKIP_WAITING'});
@@ -1599,10 +1607,16 @@ if ('serviceWorker' in navigator) window.addEventListener('load', async () => {
       if (worker) worker.addEventListener('statechange', () => activateUpdate(worker));
     });
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      const key='badilni-pwa-reloaded-5.7.0';
+      const key='badilni-pwa-reloaded-5.8.0';
       if (!sessionStorage.getItem(key)){ sessionStorage.setItem(key,'1'); location.reload(); }
     });
   } catch (_) {}
+});
+document.addEventListener('click', event => {
+  if(!event.target.closest('[data-language-toggle]'))return;
+  if(state.view==='add')syncAddDraft();
+  BadilniI18n.setLanguage(BadilniI18n.language==='ar'?'en':'ar');
+  render();
 });
 init();
 

@@ -15,7 +15,7 @@ const state = {
 const context = {
   state, document: { getElementById: id => id === 'add-form' ? {} : inputs.get(id) },
   CATEGORY_SUBTYPES: { books: ['روايات'] }, CAT_EMOJI: { book: '📚' }, COND_LABEL: { good: 'جيد' },
-  alert: message => warnings.push(message), render: () => {},
+  localizedAlert: message => warnings.push(message), BadilniI18n: { translate: text => text }, render: () => {},
   sb: { from: () => ({ insert: payload => { submitted = payload; return Promise.resolve({ error: null }); } }) },
   goTo: async () => {},
   escapeHtml: value => String(value ?? ''), icon: () => '', categoryArtwork: () => '', categoryMark: () => '',

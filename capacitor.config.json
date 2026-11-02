@@ -13,5 +13,16 @@
   "android": {
     "allowMixedContent": false,
     "captureInput": true
+  },
+  "experimental": {
+    "ios": {
+      "spm": {
+        "packageOptions": {
+          "@capacitor-firebase/messaging": {
+            "symlink": true
+          }
+        }
+      }
+    }
   }
 }
